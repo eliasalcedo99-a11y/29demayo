@@ -538,8 +538,8 @@ const total = paginas.length;
       text-align: center;
     }
     .ctrl-btn {
-      width: 2.4rem;
-      height: 2.4rem;
+      width: 2.85rem;
+      height: 2.85rem;
       border-radius: 50%;
       border: 1px solid var(--border);
       background: transparent;
@@ -550,6 +550,7 @@ const total = paginas.length;
       justify-content: center;
       transition: background 0.2s, border-color 0.2s, transform 0.15s;
     }
+    .ctrl-btn svg { width: 16px; height: 16px; }
     .ctrl-btn:hover:not(:disabled) {
       background: var(--amber);
       border-color: var(--amber);
@@ -653,18 +654,26 @@ const total = paginas.length;
       position: absolute;
       top: 1.5rem;
       right: 1.5rem;
-      width: 2.5rem;
-      height: 2.5rem;
+      width: 2.85rem;
+      height: 2.85rem;
       border-radius: 50%;
       border: 1px solid var(--border);
-      background: transparent;
+      background: rgba(17,13,14,0.6);
       color: var(--muted);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      backdrop-filter: blur(8px);
+      transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.2s;
     }
-    .end-close:hover { color: var(--paper); border-color: var(--paper); }
+    .end-close:hover {
+      color: var(--paper);
+      border-color: var(--amber);
+      background: rgba(163,21,21,0.18);
+      transform: scale(1.05);
+    }
+    .end-close svg { width: 18px; height: 18px; }
 
     /* ── Mobile: una sola página visible ─────────────────── */
     @media (max-width: 720px) {
@@ -720,11 +729,11 @@ const total = paginas.length;
     /* Toggle del focus mode */
     .focus-toggle {
       position: fixed;
-      top: 1rem;
-      right: 1rem;
+      top: 0.85rem;
+      right: 0.85rem;
       z-index: 51;
-      width: 2.4rem;
-      height: 2.4rem;
+      width: 2.85rem;
+      height: 2.85rem;
       border-radius: 50%;
       background: rgba(17,13,14,0.85);
       border: 1px solid var(--border);
@@ -734,8 +743,9 @@ const total = paginas.length;
       justify-content: center;
       cursor: pointer;
       backdrop-filter: blur(10px);
-      transition: background 0.2s, color 0.2s, border-color 0.2s, opacity 0.5s;
+      transition: background 0.2s, color 0.2s, border-color 0.2s, opacity 0.5s, transform 0.2s;
     }
+    .focus-toggle:active { transform: scale(0.92); }
     .focus-toggle:hover {
       background: rgba(163,21,21,0.18);
       color: var(--paper);
@@ -794,7 +804,7 @@ const total = paginas.length;
   <!-- Pantalla final -->
   <div class="end-screen" id="end-screen" aria-hidden="true">
     <button class="end-close" id="end-close" aria-label="Cerrar">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
     <p class="end-eyebrow">Fin del fragmento</p>
     <h2 class="end-title">¿Quieres saber qué pasó el 29 de mayo?</h2>

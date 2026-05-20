@@ -11,12 +11,18 @@ const amazonPaperback = 'https://amzn.to/4tIcIo0';
   <div class="max-w-6xl mx-auto grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] gap-12 md:gap-16 items-start">
 
     <!-- Three.js Book Canvas (left) — sticky en desktop para que acompañe -->
-    <div class="flex flex-col items-center md:items-end justify-center order-2 md:order-1 md:sticky md:top-24 md:self-start gap-3">
-      <div id="book-3d-stage" class="reveal-left relative w-full max-w-[440px] aspect-[3/4]">
+    <div class="flex flex-col items-center md:items-end justify-center order-2 md:order-1 md:sticky md:top-24 md:self-start gap-4">
+      <a
+        href="/demo"
+        id="book-3d-stage"
+        class="reveal-left relative w-full max-w-[440px] aspect-[3/4] cursor-pointer block"
+        aria-label="Abrir fragmento del libro"
+        data-cursor="Leer fragmento"
+      >
         <canvas
           id="book-3d-canvas"
-          class="absolute inset-0 w-full h-full cursor-pointer"
-          aria-label="Vista 3D del libro 29 de Mayo"
+          class="absolute inset-0 w-full h-full pointer-events-none"
+          aria-hidden="true"
         ></canvas>
         <!-- Fallback estático para no-JS o si Three.js falla -->
         <noscript>
@@ -28,14 +34,20 @@ const amazonPaperback = 'https://amzn.to/4tIcIo0';
             class="absolute inset-0 m-auto max-w-[280px] rounded-sm shadow-2xl"
           />
         </noscript>
+      </a>
+
+      <!-- CTAs claros bajo el libro — touch target garantizado -->
+      <div class="flex flex-col items-center gap-2.5 mt-2">
+        <a href="/demo" class="btn-amber" data-cursor="Demo gratuita" style="min-width: 220px;">
+          Leer un fragmento ↓
+        </a>
+        <p id="book-3d-tooltip"
+           class="opacity-0 whitespace-nowrap"
+           aria-hidden="true"
+           style="font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.4em; color: var(--color-muted); text-transform:uppercase; transition: opacity 0.6s ease;">
+          O mueve el libro con el ratón
+        </p>
       </div>
-      <!-- Tooltip que invita: aparece tras hover sostenido -->
-      <p id="book-3d-tooltip"
-         class="opacity-0 pointer-events-none whitespace-nowrap"
-         aria-hidden="true"
-         style="font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.45em; color: var(--color-amber); text-transform:uppercase; transition: opacity 0.6s ease;">
-        ← Movélo
-      </p>
     </div>
 
     <!-- Texto (right) — sin card, fluye directo sobre el surface -->
@@ -137,7 +149,7 @@ const amazonPaperback = 'https://amzn.to/4tIcIo0';
 
     // ── Three.js: libro 3D con grosor, lomo y materiales ─────────
     const canvas = document.getElementById('book-3d-canvas') as HTMLCanvasElement | null;
-    const stage  = document.getElementById('book-3d-stage');
+    const stage  = document.getElementById('book-3d-stage') as HTMLAnchorElement | null;
     if (!canvas || !stage) return;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

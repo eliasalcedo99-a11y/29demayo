@@ -42,7 +42,7 @@
     </div>
 
     <!-- 3D Interactive Stage -->
-    <div class="relative flex flex-col items-center justify-center">
+    <div class="relative flex flex-col items-center justify-center gap-4">
       <div id="libreta-3d-stage" class="relative w-full aspect-[4/3] max-w-[420px] rounded-lg cursor-pointer group">
         <!-- Floating canvas -->
         <canvas id="libreta-3d-canvas" class="w-full h-full block touch-none"></canvas>
@@ -53,10 +53,20 @@
           class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-[var(--color-surface)]/90 backdrop-blur-sm px-4 py-2 rounded-full border border-white/5 pointer-events-none opacity-0 transition-opacity duration-500 z-10"
         >
           <p class="font-mono text-[0.62rem] tracking-wider text-[var(--color-muted)] whitespace-nowrap uppercase">
-            Arrastra para rotar · Haz clic para abrir
+            Arrastra para rotar
           </p>
         </div>
       </div>
+      <!-- Botón explícito y prominente para abrir el modal — touch target garantizado -->
+      <button
+        id="btn-abrir-libreta-3d"
+        type="button"
+        class="btn-amber"
+        data-cursor="Abrir libreta"
+        style="min-width: 220px;"
+      >
+        Abrir libreta →
+      </button>
     </div>
 
   </div>
@@ -72,10 +82,11 @@
     <!-- Modal Close Button -->
     <button
       id="libreta-modal-close"
-      class="absolute top-6 right-6 font-mono text-[0.7rem] tracking-[0.3em] text-[var(--color-muted)] hover:text-white transition-colors duration-300 uppercase z-50 p-2"
+      class="absolute top-4 right-4 md:top-6 md:right-6 z-50 flex items-center gap-2 px-4 h-11 min-w-[44px] font-mono text-[0.65rem] tracking-[0.3em] text-[var(--color-muted)] hover:text-white border border-white/10 hover:border-white/30 rounded-full bg-[#080608]/80 backdrop-blur-sm transition-all duration-300 uppercase"
       aria-label="Cerrar libreta"
     >
-      Cerrar [esc] ×
+      <span class="hidden sm:inline">Cerrar</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
 
     <!-- Notebook Container -->
@@ -274,23 +285,23 @@
     </div>
 
     <!-- Pinned Pagination Controls below the notebook -->
-    <div class="mt-6 flex items-center justify-center gap-6 z-10">
+    <div class="mt-6 flex items-center justify-center gap-4 md:gap-6 z-10">
       <button
         id="btn-libreta-prev"
-        class="px-4 py-1.5 font-mono text-[0.65rem] tracking-[0.25em] bg-[#0c1810]/70 hover:bg-white/10 text-[var(--color-muted)] hover:text-white border border-white/10 rounded-full transition-all duration-300 uppercase disabled:opacity-20 disabled:pointer-events-none"
+        class="flex items-center justify-center min-w-[44px] h-11 px-5 font-mono text-[0.65rem] tracking-[0.25em] bg-[#0c1810]/70 hover:bg-white/10 text-[var(--color-muted)] hover:text-white border border-white/10 rounded-full transition-all duration-300 uppercase disabled:opacity-20 disabled:pointer-events-none"
         aria-label="Página anterior"
       >
-        ← Anterior
+        ← <span class="hidden sm:inline ml-1.5">Anterior</span>
       </button>
-      <span id="libreta-page-indicator" class="font-mono text-[0.65rem] tracking-[0.2em] text-[var(--color-amber)] uppercase select-none">
+      <span id="libreta-page-indicator" class="font-mono text-[0.65rem] tracking-[0.2em] text-[var(--color-amber)] uppercase select-none tabular-nums">
         Pág. 1-2 / 8
       </span>
       <button
         id="btn-libreta-next"
-        class="px-4 py-1.5 font-mono text-[0.65rem] tracking-[0.25em] bg-[#0c1810]/70 hover:bg-white/10 text-[var(--color-muted)] hover:text-white border border-white/10 rounded-full transition-all duration-300 uppercase disabled:opacity-20 disabled:pointer-events-none"
+        class="flex items-center justify-center min-w-[44px] h-11 px-5 font-mono text-[0.65rem] tracking-[0.25em] bg-[#0c1810]/70 hover:bg-white/10 text-[var(--color-muted)] hover:text-white border border-white/10 rounded-full transition-all duration-300 uppercase disabled:opacity-20 disabled:pointer-events-none"
         aria-label="Página siguiente"
       >
-        Siguiente →
+        <span class="hidden sm:inline mr-1.5">Siguiente</span> →
       </button>
     </div>
   </div>
@@ -562,6 +573,7 @@
     const modal = document.getElementById('libreta-modal');
     const closeBtn = document.getElementById('libreta-modal-close');
     const triggerTxt = document.getElementById('btn-abrir-libreta-txt');
+    const trigger3d  = document.getElementById('btn-abrir-libreta-3d');
     const bookSpine = document.getElementById('libreta-book-spine');
 
     let currentSpread = 0;
@@ -630,18 +642,18 @@
       }
     }
 
-    // Doble gatillo: hacer clic en el stage 3D o en el botón del texto
-    stage.addEventListener('click', (e) => {
-      // Solo abrir si no fue un arrastre de cámara prolongado
-      if (controls.state === -1) {
-        openModal();
-      }
-    });
-
+    // El canvas 3D es solo para rotar (OrbitControls). Los gatillos para abrir
+    // el modal son los dos botones explícitos — touch target garantizado.
     triggerTxt?.addEventListener('click', openModal);
+    trigger3d?.addEventListener('click', openModal);
     closeBtn?.addEventListener('click', closeModal);
     prevBtn?.addEventListener('click', onPrevClick);
     nextBtn?.addEventListener('click', onNextClick);
+
+    // Cerrar también al hacer clic en el fondo del modal (fuera del libro)
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
 
     // Cerrar con Escape / Pasar página con flechas de teclado
     const onKeyDown = (e: KeyboardEvent) => {
