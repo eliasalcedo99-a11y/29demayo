@@ -121,42 +121,61 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
-  const lines  = ['#fl-a','#fl-b','#fl-c','#fl-e','#fl-f','#fl-h','#fl-i','#fl-k','#fl-l','#fl-m'];
+  let fragTrigger: any = null;
 
-  // Estado inicial — enmascarado hacia abajo
-  gsap.set('#frag-title', { yPercent: 110 });
-  gsap.set(lines, { yPercent: 110 });
-  gsap.set('#frag-cta', { y: 16 });
+  const lines = ['#fl-a','#fl-b','#fl-c','#fl-e','#fl-f','#fl-h','#fl-i','#fl-k','#fl-l','#fl-m'];
 
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: '#fragmento',
-      start: 'top 62%',
-      once: true,
-    },
-  });
+  function initFragmento() {
+    cleanupFragmento();
 
-  tl
-    .to('#frag-title', {
-      yPercent: 0,
-      duration: 0.7,
-      ease: 'power3.out',
-    })
-    .to(lines, {
-      yPercent: 0,
-      duration: 0.65,
-      ease: 'power3.out',
-      stagger: 0.1,
-    }, '-=0.3')
-    .to('#frag-footer', {
-      opacity: 1,
-      duration: 0.6,
-      ease: 'power2.out',
-    }, '-=0.2')
-    .to('#frag-cta', {
-      opacity: 1,
-      y: 0,
-      duration: 0.7,
-      ease: 'power3.out',
-    }, '-=0.1');
+    // Reset inicial — enmascarado hacia abajo
+    gsap.set('#frag-title', { yPercent: 110 });
+    gsap.set(lines, { yPercent: 110 });
+    gsap.set('#frag-footer', { opacity: 0 });
+    gsap.set('#frag-cta', { opacity: 0, y: 16 });
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: '#fragmento',
+        start: 'top 62%',
+        once: true,
+      },
+    });
+
+    tl
+      .to('#frag-title', {
+        yPercent: 0,
+        duration: 0.7,
+        ease: 'power3.out',
+      })
+      .to(lines, {
+        yPercent: 0,
+        duration: 0.65,
+        ease: 'power3.out',
+        stagger: 0.1,
+      }, '-=0.3')
+      .to('#frag-footer', {
+        opacity: 1,
+        duration: 0.6,
+        ease: 'power2.out',
+      }, '-=0.2')
+      .to('#frag-cta', {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        ease: 'power3.out',
+      }, '-=0.1');
+
+    fragTrigger = tl.scrollTrigger;
+  }
+
+  function cleanupFragmento() {
+    if (fragTrigger) {
+      fragTrigger.kill();
+      fragTrigger = null;
+    }
+  }
+
+  document.addEventListener('astro:page-load', initFragmento);
+  document.addEventListener('astro:before-swap', cleanupFragmento);
 </script>

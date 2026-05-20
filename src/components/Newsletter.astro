@@ -10,7 +10,7 @@
   <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-amber/6 rounded-full blur-[100px] pointer-events-none" aria-hidden="true"></div>
 
   <div class="relative max-w-2xl mx-auto">
-    <div class="card-glass p-10 md:p-14 rounded-2xl text-center relative">
+    <div class="card-glass p-10 md:p-14 rounded text-center relative">
 
     <span class="section-label">Newsletter</span>
 
@@ -70,24 +70,40 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
-  // Reveal animations
-  gsap.utils.toArray<HTMLElement>('#newsletter .reveal').forEach((el, i) => {
-    gsap.fromTo(el,
-      { opacity: 0, y: 24 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: i * 0.1,
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 84%',
-          once: true,
-        },
-      }
-    );
-  });
+  let nlTriggers: any[] = [];
+
+  function initNewsletter() {
+    cleanupNewsletter();
+
+    // Reveal animations
+    gsap.utils.toArray<HTMLElement>('#newsletter .reveal').forEach((el, i) => {
+      gsap.set(el, { opacity: 0, y: 24 });
+      const anim = gsap.fromTo(el,
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          delay: i * 0.1,
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 84%',
+            once: true,
+          },
+        }
+      );
+      if (anim.scrollTrigger) nlTriggers.push(anim.scrollTrigger);
+    });
+  }
+
+  function cleanupNewsletter() {
+    nlTriggers.forEach(t => t.kill());
+    nlTriggers = [];
+  }
+
+  document.addEventListener('astro:page-load', initNewsletter);
+  document.addEventListener('astro:before-swap', cleanupNewsletter);
 
   // Form submission
   const form    = document.getElementById('newsletter-form') as HTMLFormElement | null;

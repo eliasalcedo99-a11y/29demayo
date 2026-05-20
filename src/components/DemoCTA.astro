@@ -20,7 +20,7 @@
   <div class="relative z-10 text-center max-w-2xl mx-auto">
 
     <!-- Glass panel -->
-    <div class="card-glass rounded-2xl p-10 md:p-14 relative">
+    <div class="card-glass rounded p-10 md:p-14 relative">
       <!-- Corner glow -->
       <div class="absolute -top-8 -left-8 w-40 h-40 bg-amber/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -42,7 +42,7 @@
         Una experiencia de lectura diseñada para el libro.
       </p>
       <p id="demo-sub2" class="font-sans text-[var(--color-muted)] text-[0.9rem] mb-10 opacity-0">
-        Gratis, sin registro. Instalable en tu móvil.
+        Gratis. Sin registro. Empieza ahora mismo.
       </p>
 
       <a
@@ -57,7 +57,7 @@
       </a>
 
       <p id="demo-note" class="font-mono text-[0.65rem] tracking-[0.3em] text-[var(--color-muted)] mt-6 opacity-0">
-        Compatible con iOS · Android · Desktop
+        iOS · Android · Desktop
       </p>
     </div>
 
@@ -70,36 +70,57 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: '#demo-cta',
-      start: 'top 65%',
-      once: true,
-    },
-  });
+  let demoCTATrigger: any = null;
 
-  tl.fromTo('#demo-icon',
-    { opacity: 0, scale: 0.8 },
-    { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }
-  )
-  .fromTo('#demo-title',
-    { opacity: 0, y: 24 },
-    { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' },
-    '-=0.3'
-  )
-  .fromTo(['#demo-sub', '#demo-sub2'],
-    { opacity: 0, y: 12 },
-    { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', stagger: 0.15 },
-    '-=0.4'
-  )
-  .fromTo('#demo-btn',
-    { opacity: 0, y: 16, scale: 0.95 },
-    { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'power3.out' },
-    '-=0.2'
-  )
-  .fromTo('#demo-note',
-    { opacity: 0 },
-    { opacity: 1, duration: 0.5, ease: 'power2.out' },
-    '-=0.2'
-  );
+  function initDemoCTA() {
+    cleanupDemoCTA();
+
+    // Reset inicial
+    gsap.set(['#demo-icon', '#demo-title', '#demo-sub', '#demo-sub2', '#demo-btn', '#demo-note'], { opacity: 0 });
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: '#demo-cta',
+        start: 'top 65%',
+        once: true,
+      },
+    });
+
+    tl.fromTo('#demo-icon',
+      { opacity: 0, scale: 0.8 },
+      { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }
+    )
+    .fromTo('#demo-title',
+      { opacity: 0, y: 24 },
+      { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' },
+      '-=0.3'
+    )
+    .fromTo(['#demo-sub', '#demo-sub2'],
+      { opacity: 0, y: 12 },
+      { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', stagger: 0.15 },
+      '-=0.4'
+    )
+    .fromTo('#demo-btn',
+      { opacity: 0, y: 16, scale: 0.95 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'power3.out' },
+      '-=0.2'
+    )
+    .fromTo('#demo-note',
+      { opacity: 0 },
+      { opacity: 1, duration: 0.5, ease: 'power2.out' },
+      '-=0.2'
+    );
+
+    demoCTATrigger = tl.scrollTrigger;
+  }
+
+  function cleanupDemoCTA() {
+    if (demoCTATrigger) {
+      demoCTATrigger.kill();
+      demoCTATrigger = null;
+    }
+  }
+
+  document.addEventListener('astro:page-load', initDemoCTA);
+  document.addEventListener('astro:before-swap', cleanupDemoCTA);
 </script>

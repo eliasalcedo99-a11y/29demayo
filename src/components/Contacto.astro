@@ -54,7 +54,7 @@
         method="POST"
         data-netlify="true"
         netlify-honeypot="bot-field"
-        class="card-glass rounded-2xl p-8 md:p-10 space-y-4"
+        class="card-glass rounded p-8 md:p-10 space-y-4"
         novalidate
       >
         <input type="hidden" name="form-name" value="contacto" />
@@ -140,23 +140,39 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
-  gsap.utils.toArray<HTMLElement>('#contacto .reveal').forEach((el, i) => {
-    gsap.fromTo(el,
-      { opacity: 0, y: 24 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: i * 0.1,
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 84%',
-          once: true,
-        },
-      }
-    );
-  });
+  let contactoTriggers: any[] = [];
+
+  function initContacto() {
+    cleanupContacto();
+
+    gsap.utils.toArray<HTMLElement>('#contacto .reveal').forEach((el, i) => {
+      gsap.set(el, { opacity: 0, y: 24 });
+      const anim = gsap.fromTo(el,
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          delay: i * 0.1,
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 84%',
+            once: true,
+          },
+        }
+      );
+      if (anim.scrollTrigger) contactoTriggers.push(anim.scrollTrigger);
+    });
+  }
+
+  function cleanupContacto() {
+    contactoTriggers.forEach(t => t.kill());
+    contactoTriggers = [];
+  }
+
+  document.addEventListener('astro:page-load', initContacto);
+  document.addEventListener('astro:before-swap', cleanupContacto);
 
   // Netlify Forms success (URL redirect or JS)
   const form    = document.getElementById('contacto-form') as HTMLFormElement | null;
