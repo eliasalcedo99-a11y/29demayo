@@ -1,124 +1,305 @@
 ---
+/**
+ * LaFecha — el momento que parte el libro en dos.
+ *
+ * Composición editorial asimétrica:
+ * - Marca temporal periodística arriba
+ * - Fecha gigante desplazada (no centrada), como cicatriz visual
+ * - Cronología vertical del día con timestamps reales
+ * - Clímax tipográfico tipo lápida/monumento
+ * - Silueta de carretera al fondo (SVG hand-drawn)
+ */
 ---
-<section id="seccion-fecha" class="relative w-full min-h-screen flex flex-col items-center justify-center bg-bg overflow-hidden py-24">
 
-  <!-- Atmósfera cinematográfica -->
+<section
+  id="seccion-fecha"
+  class="relative w-full min-h-screen overflow-hidden bg-bg"
+  aria-label="29 de Mayo de 2023"
+>
+
+  <!-- ───── ATMÓSFERA DE FONDO ───── -->
+
+  <!-- Vignette radial granate concentrada -->
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
+       style="background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(163,21,21,0.10) 0%, transparent 65%);"></div>
+
+  <!-- Foto-paisaje difuminada al fondo (atmosférica, no protagonista) -->
   <div
-    class="absolute inset-0 bg-cover bg-center"
-    style="background-image: url('/images/portada.jpg'); filter: blur(50px) saturate(0.3) brightness(0.25); transform: scale(1.15);"
+    class="absolute inset-0 bg-cover bg-center opacity-25"
+    style="background-image: url('/images/portada.jpg'); filter: blur(80px) saturate(0.3) brightness(0.35); transform: scale(1.2);"
     aria-hidden="true"
   ></div>
-  <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-bg)]/85 via-[var(--color-bg)]/55 to-[var(--color-bg)]/95" aria-hidden="true"></div>
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--color-amber)]/8 rounded-full blur-[140px] pointer-events-none" aria-hidden="true"></div>
 
-  <!-- Partículas ceniza -->
-  <div id="fecha-particles" class="absolute inset-0 z-[2] pointer-events-none" aria-hidden="true"></div>
+  <!-- Carretera SVG: silueta hand-drawn en el fondo, perspectiva -->
+  <svg id="fecha-road" class="absolute inset-x-0 bottom-0 w-full pointer-events-none"
+       viewBox="0 0 1440 600" preserveAspectRatio="xMidYMid slice"
+       style="height: 65%; opacity: 0; mix-blend-mode: lighten;"
+       aria-hidden="true">
+    <!-- Líneas de carretera con perspectiva — convergen en horizonte -->
+    <path id="road-edge-l" d="M 100,600 Q 600,300 720,250 L 720,260 Q 600,310 100,610 Z"
+          fill="rgba(196,30,30,0.04)" stroke="rgba(163,21,21,0.18)" stroke-width="1" />
+    <path id="road-edge-r" d="M 1340,600 Q 840,300 720,250 L 720,260 Q 840,310 1340,610 Z"
+          fill="rgba(196,30,30,0.04)" stroke="rgba(163,21,21,0.18)" stroke-width="1" />
+    <!-- Línea central interrumpida -->
+    <g stroke="rgba(196,30,30,0.35)" stroke-width="2" stroke-dasharray="20 30" fill="none">
+      <line id="road-center" x1="720" y1="250" x2="720" y2="600" />
+    </g>
+    <!-- "Corte" granate brutal en la línea, signo del accidente -->
+    <line id="road-cut" x1="700" y1="445" x2="740" y2="455"
+          stroke="#C41E1E" stroke-width="3" stroke-linecap="round" />
+  </svg>
 
-  <div class="relative z-10 px-6 max-w-3xl mx-auto">
+  <!-- Partículas ceniza minimal -->
+  <div id="fecha-particles" class="absolute inset-0 z-[1] pointer-events-none" aria-hidden="true"></div>
 
-    <!-- Encabezado: contexto editorial -->
-    <div class="text-center mb-12">
-      <p id="fecha-eyebrow" class="opacity-0 font-mono text-[0.6rem] tracking-[0.55em] uppercase mb-3"
-         style="color: rgba(163,21,21,0.85);">
-        Capítulo 7 · Lunes
-      </p>
-      <p id="fecha-overture" class="opacity-0 font-italic italic max-w-md mx-auto leading-relaxed"
-         style="font-family:'Lora',Georgia,serif; font-size:clamp(0.95rem,1.6vw,1.05rem); color:var(--color-muted);">
-        Era un día como cualquier otro. Sólo que no lo fue.
-      </p>
-    </div>
+  <!-- Grain extra para esta sección — más denso, más cinema -->
+  <div class="absolute inset-0 pointer-events-none mix-blend-overlay"
+       aria-hidden="true"
+       style="background-image: url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='nF'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23nF)' opacity='0.55'/%3E%3C/svg%3E&quot;); background-size: 200px 200px; opacity: 0.06;"></div>
 
-    <!-- ── Fecha gigante ─────────────────────────────────────── -->
-    <div class="text-center mb-8">
-      <div class="w-px h-12 bg-gradient-to-b from-transparent via-[var(--color-amber)]/40 to-transparent mx-auto mb-6" aria-hidden="true"></div>
 
-      <div class="overflow-hidden mb-3">
-        <h2
-          id="fecha-dia"
-          class="font-serif leading-[0.85] opacity-0"
-          style="
-            font-size: clamp(7rem, 28vw, 20rem);
-            letter-spacing: -0.045em;
-            font-feature-settings: 'kern' 1, 'liga' 1;
-            color: #F2EAE0;
-            font-weight: 500;
-            text-shadow: 0 0 80px rgba(163,21,21,0.18);
-          "
-          aria-label="29"
-        >29</h2>
+  <!-- ───── CONTENIDO ───── -->
+
+  <div class="relative z-10 max-w-6xl mx-auto px-6 md:px-10 pt-24 pb-28 md:pt-32 md:pb-36">
+
+    <!-- ── BLOQUE 1: Marca temporal periodística ── -->
+    <div class="grid grid-cols-12 gap-6 mb-16 md:mb-24">
+      <div class="col-span-12 md:col-span-7" id="fecha-newshead">
+        <div class="flex items-center gap-3 mb-4 opacity-0" id="fecha-newshead-line">
+          <span class="font-mono text-[0.6rem] tracking-[0.5em] uppercase"
+                style="color: var(--color-amber);">Capítulo 7</span>
+          <span class="flex-1 h-px bg-[var(--color-amber)]/30 max-w-[5rem]"></span>
+        </div>
+        <p class="opacity-0 font-italic italic leading-[1.5]"
+           id="fecha-overture"
+           style="font-family:'Lora',Georgia,serif; font-size:clamp(1rem,1.8vw,1.3rem); color: rgba(242,234,224,0.78); max-width: 32rem;">
+          Era un día como cualquier otro.<br/>
+          Sólo que no lo fue.
+        </p>
       </div>
-
-      <div class="overflow-hidden">
-        <div
-          id="fecha-mes-anyo"
-          class="font-mono opacity-0 flex items-center justify-center gap-3 md:gap-4"
-          style="color: var(--color-amber); font-size: clamp(0.85rem,2.2vw,1.5rem); letter-spacing: 0.7em;"
-        >
-          <span class="w-1 h-1 rounded-full bg-[var(--color-amber)]/50"></span>
-          <span>MAYO</span>
-          <span class="w-1 h-1 rounded-full bg-[var(--color-amber)]/50"></span>
-          <span>2023</span>
-          <span class="w-1 h-1 rounded-full bg-[var(--color-amber)]/50"></span>
+      <div class="col-span-12 md:col-span-5 flex md:justify-end items-start">
+        <div class="opacity-0 text-left md:text-right" id="fecha-metadata">
+          <p class="font-mono text-[0.55rem] tracking-[0.4em] uppercase text-[var(--color-muted)] mb-1">
+            Lunes
+          </p>
+          <p class="font-mono text-[0.55rem] tracking-[0.4em] uppercase"
+             style="color: rgba(163,21,21,0.7);">
+            29 · 05 · 2023
+          </p>
         </div>
       </div>
     </div>
 
-    <!-- ── Narrativa escalonada: frases del libro ───────────── -->
-    <div class="mt-16 max-w-xl mx-auto space-y-6" id="fecha-narrativa">
 
-      <div class="overflow-hidden">
-        <p class="fecha-line opacity-0 translate-y-full font-sans leading-relaxed text-center"
-           style="font-size:clamp(0.95rem,1.7vw,1.15rem); color:rgba(242,234,224,0.85);">
-          A las <span style="color:var(--color-amber); font-weight:500;">8:30 de la mañana</span>,
-          Kike decidió ir en moto al trabajo.
-        </p>
+    <!-- ── BLOQUE 2: Fecha-monumento ASIMÉTRICA ── -->
+    <div class="relative mb-24 md:mb-32">
+
+      <!-- "29" gigante desplazado a la izquierda, rompiendo el grid -->
+      <div class="relative" style="margin-left: -2vw;">
+        <div class="overflow-hidden" style="padding-bottom: 0.05em;">
+          <h2
+            id="fecha-num"
+            class="font-serif leading-[0.82] opacity-0 select-none"
+            style="
+              font-size: clamp(9rem, 32vw, 24rem);
+              letter-spacing: -0.06em;
+              font-feature-settings: 'kern' 1, 'liga' 1;
+              color: #F2EAE0;
+              font-weight: 500;
+              text-shadow: 0 0 100px rgba(163,21,21,0.25);
+              line-height: 0.82;
+            "
+            aria-label="29"
+          >29</h2>
+        </div>
+
+        <!-- "MAYO 2023" como mini-créditos asimétricos a la derecha del 29 -->
+        <div class="absolute opacity-0"
+             id="fecha-mes-stack"
+             style="right: 4%; top: 12%; bottom: 12%; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end;">
+          <!-- Mayo gigante vertical -->
+          <span
+            class="font-serif"
+            style="
+              font-family: 'Cormorant Garamond', Georgia, serif;
+              font-size: clamp(2.5rem, 6vw, 4.5rem);
+              font-weight: 500;
+              font-style: italic;
+              letter-spacing: -0.01em;
+              color: var(--color-amber);
+              line-height: 1;
+            ">Mayo</span>
+          <!-- Año más pequeño -->
+          <span
+            class="font-mono"
+            style="
+              font-size: clamp(0.85rem, 1.8vw, 1.4rem);
+              letter-spacing: 0.45em;
+              color: rgba(242,234,224,0.55);
+              padding-right: 0.1em;
+            ">2023</span>
+        </div>
       </div>
 
-      <div class="overflow-hidden">
-        <p class="fecha-line opacity-0 translate-y-full font-sans leading-relaxed text-center"
-           style="font-size:clamp(0.95rem,1.7vw,1.15rem); color:rgba(242,234,224,0.7);">
-          Al terminar una curva a ciegas,<br/>
-          una inmensa vaca se interpuso entre él y su destino.
-        </p>
+      <!-- Trazo granate horizontal: como una cicatriz -->
+      <div class="mt-3 md:mt-6 flex items-center gap-4">
+        <div id="fecha-scar"
+             class="h-[2px] origin-left"
+             style="width:0; max-width: 16rem; background: linear-gradient(to right, #A31515, #C41E1E, transparent); box-shadow: 0 0 16px rgba(163,21,21,0.5);"></div>
+        <span class="font-mono text-[0.55rem] tracking-[0.4em] uppercase opacity-0"
+              id="fecha-scar-label"
+              style="color: rgba(163,21,21,0.65);">08:30 ·</span>
       </div>
-
-      <!-- Pausa visual: línea -->
-      <div class="overflow-hidden flex justify-center py-3">
-        <div id="fecha-rule" class="w-0 h-px bg-[var(--color-amber)]/50"></div>
-      </div>
-
-      <!-- Frase clímax -->
-      <div class="overflow-hidden">
-        <p class="fecha-line opacity-0 translate-y-full font-italic italic text-center font-medium"
-           style="font-family:'Lora',Georgia,serif; font-size:clamp(1.15rem,2.4vw,1.6rem); color:var(--color-amber); letter-spacing:0.01em;">
-          Enrique no llegó a casa.
-        </p>
-      </div>
-
-      <!-- Reacción -->
-      <div class="overflow-hidden mt-8">
-        <p class="fecha-line opacity-0 translate-y-full font-italic italic text-center max-w-md mx-auto"
-           style="font-family:'Lora',Georgia,serif; font-size:clamp(0.9rem,1.5vw,1.05rem); color:var(--color-muted); line-height:1.7;">
-          "La luz del año se apagó de golpe,<br/>
-          dejando una herida y un vacío insondable."
-        </p>
-      </div>
-
     </div>
 
-    <!-- Cierre decorativo + CTA sutil -->
-    <div class="text-center mt-20" id="fecha-footer">
-      <div class="w-px h-12 bg-gradient-to-b from-[var(--color-amber)]/30 to-transparent mx-auto mb-6 opacity-0" id="fecha-line-bottom" aria-hidden="true"></div>
-      <a href="#fragmento"
-         id="fecha-cta"
-         class="opacity-0 inline-flex items-center gap-3 font-mono uppercase"
-         style="font-size:0.62rem; letter-spacing:0.4em; color:var(--color-muted); text-decoration:none;">
-        Leer cómo lo cuenta
-        <span style="color:var(--color-amber);">↓</span>
-      </a>
+
+    <!-- ── BLOQUE 3: Cronología del día ── -->
+    <div class="grid grid-cols-12 gap-x-6 gap-y-8 mb-24 md:mb-32">
+
+      <!-- Eyebrow izquierdo -->
+      <div class="col-span-12 md:col-span-3">
+        <p class="font-mono text-[0.55rem] tracking-[0.5em] uppercase opacity-0"
+           id="fecha-timeline-eyebrow"
+           style="color: rgba(163,21,21,0.6);">
+          Cronología<br/>de un lunes
+        </p>
+      </div>
+
+      <!-- Timeline vertical -->
+      <div class="col-span-12 md:col-span-9 md:col-start-4">
+        <ol id="fecha-timeline" class="space-y-7 md:space-y-9">
+
+          <li class="fecha-event flex items-start gap-6 md:gap-8 opacity-0">
+            <time class="shrink-0 font-mono text-[0.7rem] md:text-[0.8rem] tracking-[0.18em] tabular-nums uppercase pt-1"
+                  style="color: rgba(242,234,224,0.55); min-width: 4rem;">08:00</time>
+            <div class="flex-1">
+              <p class="font-sans leading-[1.65]"
+                 style="font-size:clamp(0.95rem,1.4vw,1.1rem); color: rgba(242,234,224,0.85);">
+                Elías se prepara para ir al instituto.
+                Es lunes, otro lunes cualquiera de los muchos que han venido y vendrán.
+              </p>
+            </div>
+          </li>
+
+          <li class="fecha-event flex items-start gap-6 md:gap-8 opacity-0">
+            <time class="shrink-0 font-mono text-[0.7rem] md:text-[0.8rem] tracking-[0.18em] tabular-nums uppercase pt-1"
+                  style="color: rgba(242,234,224,0.55); min-width: 4rem;">08:25</time>
+            <div class="flex-1">
+              <p class="font-sans leading-[1.65]"
+                 style="font-size:clamp(0.95rem,1.4vw,1.1rem); color: rgba(242,234,224,0.78);">
+                A unos kilómetros de allí, Kike decide ir en moto al trabajo.
+                No es lo habitual. Se pone el casco. Arranca.
+              </p>
+            </div>
+          </li>
+
+          <!-- Evento clímax — destacado en granate -->
+          <li class="fecha-event flex items-start gap-6 md:gap-8 opacity-0 relative">
+            <span class="absolute -left-3 md:-left-4 top-3 w-1 h-1 rounded-full"
+                  style="background: #C41E1E; box-shadow: 0 0 12px rgba(196,30,30,0.9);" aria-hidden="true"></span>
+            <time class="shrink-0 font-mono text-[0.75rem] md:text-[0.85rem] tracking-[0.18em] tabular-nums uppercase pt-1 font-medium"
+                  style="color: var(--color-amber); min-width: 4rem;">08:30</time>
+            <div class="flex-1">
+              <p class="font-italic italic leading-[1.55] font-medium"
+                 style="font-family:'Lora',Georgia,serif; font-size:clamp(1.05rem,1.7vw,1.3rem); color: var(--color-text);">
+                Una curva a ciegas. Una vaca en mitad del asfalto.<br/>
+                <span style="color: var(--color-amber);">El instante que parte la vida en dos.</span>
+              </p>
+            </div>
+          </li>
+
+          <li class="fecha-event flex items-start gap-6 md:gap-8 opacity-0">
+            <time class="shrink-0 font-mono text-[0.7rem] md:text-[0.8rem] tracking-[0.18em] tabular-nums uppercase pt-1"
+                  style="color: rgba(242,234,224,0.55); min-width: 4rem;">08:31</time>
+            <div class="flex-1">
+              <p class="font-sans leading-[1.65]"
+                 style="font-size:clamp(0.95rem,1.4vw,1.1rem); color: rgba(242,234,224,0.6); font-style: italic;">
+                Silencio. La carretera sigue siendo carretera.
+                Pero ya nada será igual.
+              </p>
+            </div>
+          </li>
+
+          <li class="fecha-event flex items-start gap-6 md:gap-8 opacity-0">
+            <time class="shrink-0 font-mono text-[0.7rem] md:text-[0.8rem] tracking-[0.18em] tabular-nums uppercase pt-1"
+                  style="color: rgba(242,234,224,0.55); min-width: 4rem;">14:35</time>
+            <div class="flex-1">
+              <p class="font-sans leading-[1.65]"
+                 style="font-size:clamp(0.95rem,1.4vw,1.1rem); color: rgba(242,234,224,0.85);">
+                Elías sale del instituto. David se acerca con la cara descompuesta.
+                Su voz, al pronunciar el nombre de Kike, se quiebra antes de terminar la frase.
+              </p>
+            </div>
+          </li>
+
+        </ol>
+      </div>
+    </div>
+
+
+    <!-- ── BLOQUE 4: Clímax — frase monumento ── -->
+    <div class="relative mb-20 md:mb-24">
+      <div class="grid grid-cols-12 gap-6 items-center">
+
+        <!-- Línea decorativa izquierda -->
+        <div class="hidden md:block md:col-span-2">
+          <div id="fecha-monument-line" class="h-px bg-[var(--color-amber)]/40" style="width:0; max-width:100%;"></div>
+        </div>
+
+        <!-- La frase tipo lápida -->
+        <div class="col-span-12 md:col-span-8 text-center">
+          <p class="font-serif opacity-0"
+             id="fecha-monument"
+             style="
+               font-family: 'Cormorant Garamond', Georgia, serif;
+               font-size: clamp(1.8rem, 4.5vw, 3.2rem);
+               line-height: 1.18;
+               letter-spacing: -0.015em;
+               color: var(--color-text);
+               font-weight: 500;
+             ">
+            <span style="display:block;">Enrique no llegó</span>
+            <span style="display:block; color: var(--color-amber); font-style: italic;">a casa.</span>
+          </p>
+        </div>
+
+        <!-- Línea decorativa derecha -->
+        <div class="hidden md:block md:col-span-2">
+          <div id="fecha-monument-line-r" class="h-px bg-[var(--color-amber)]/40 ml-auto" style="width:0; max-width:100%;"></div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ── BLOQUE 5: Cierre + CTA ── -->
+    <div class="grid grid-cols-12 gap-6 items-end" id="fecha-footer">
+
+      <!-- Cita lateral -->
+      <div class="col-span-12 md:col-span-7 opacity-0" id="fecha-quote">
+        <p class="font-italic italic leading-[1.7]"
+           style="font-family:'Lora',Georgia,serif; font-size:clamp(0.9rem,1.3vw,1.05rem); color: var(--color-muted); max-width: 28rem;">
+          "La luz del año se apagó de golpe, dejando una herida y un vacío insondable.
+          Sólo quedaba escribir para no perderlo del todo."
+        </p>
+      </div>
+
+      <!-- CTA derecha -->
+      <div class="col-span-12 md:col-span-5 md:text-right opacity-0" id="fecha-cta-wrap">
+        <a href="#fragmento"
+           id="fecha-cta"
+           data-cursor="Leer fragmento"
+           class="inline-flex items-center gap-3 font-mono uppercase group"
+           style="font-size:0.65rem; letter-spacing:0.35em; color:var(--color-text); text-decoration:none; padding: 0.75rem 0; border-bottom: 1px solid rgba(163,21,21,0.4); transition: border-color 0.3s;">
+          Leer cómo lo cuenta
+          <span style="color:var(--color-amber); display:inline-block; transition: transform 0.3s;">↓</span>
+        </a>
+      </div>
+
     </div>
 
   </div>
+
 </section>
 
 <script>
@@ -129,17 +310,14 @@
 
   let particlesContainer: any = null;
   let scrollTriggerInstance: any = null;
-  let scrambleInterval: ReturnType<typeof setInterval> | null = null;
-  let ctaHandlers: (() => void)[] | null = null;
 
   function initFecha() {
-    // Limpiar instancias previas
     cleanupFecha();
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isLowEnd = navigator.hardwareConcurrency <= 4;
 
-    // ── Partículas tipo ceniza/polvo flotando ────────────────────
+    // ── Partículas ceniza ────────────────────
     if (!isLowEnd && !prefersReducedMotion) {
       import('@tsparticles/engine').then(({ tsParticles }) =>
         import('@tsparticles/slim').then(({ loadSlim }) =>
@@ -151,29 +329,26 @@
                 background: { color: { value: 'transparent' } },
                 fpsLimit: 30,
                 particles: {
-                  number: { value: 55, density: { enable: true, width: 1920 } },
-                  color: { value: ['#A31515', '#C0785A', '#8A7A74', '#D4A57A'] },
+                  number: { value: 35, density: { enable: true, width: 1920 } },
+                  color: { value: ['#A31515', '#C0785A', '#8A7A74'] },
                   opacity: {
-                    value: { min: 0.05, max: 0.22 },
-                    animation: { enable: true, speed: 0.3, minimumValue: 0.05, sync: false },
+                    value: { min: 0.04, max: 0.18 },
+                    animation: { enable: true, speed: 0.3, sync: false },
                   },
-                  size: { value: { min: 0.4, max: 1.8 } },
+                  size: { value: { min: 0.4, max: 1.6 } },
                   move: {
                     enable: true,
-                    speed: { min: 0.15, max: 0.5 },
+                    speed: { min: 0.1, max: 0.4 },
                     direction: 'top',
                     random: true,
                     straight: false,
                     outModes: { default: 'out', top: 'out', bottom: 'destroy' },
                   },
                   shape: { type: 'circle' },
-                  twinkle: {
-                    particles: { enable: true, frequency: 0.04, opacity: 0.35 },
-                  },
                 },
                 detectRetina: true,
               },
-            }).then(container => {
+            }).then((container) => {
               particlesContainer = container;
             })
           )
@@ -181,106 +356,91 @@
       ).catch(() => {});
     }
 
-    const CHARS = '0123456789';
-
-    function scrambleTo(el: HTMLElement, target: string, duration = 1.2) {
-      const chars = target.split('');
-      let frame = 0;
-      const interval = 40;
-      const totalFrames = (duration * 1000) / interval;
-
-      gsap.set(el, { opacity: 1 });
-
-      scrambleInterval = setInterval(() => {
-        frame++;
-        const progress = frame / totalFrames;
-
-        el.textContent = chars.map((ch, i) => {
-          if (!/\d/.test(ch)) return ch;
-          if (progress > (i + 1) / chars.filter(c => /\d/.test(c)).length) return ch;
-          return CHARS[Math.floor(Math.random() * CHARS.length)];
-        }).join('');
-
-        if (frame >= totalFrames) {
-          if (scrambleInterval) clearInterval(scrambleInterval);
-          el.textContent = target;
-        }
-      }, interval);
-    }
-
-    let triggered = false;
+    // ── Reset estados iniciales ────────────
+    gsap.set('#fecha-newshead-line', { opacity: 0, y: -8 });
+    gsap.set('#fecha-overture',      { opacity: 0, y: 16 });
+    gsap.set('#fecha-metadata',      { opacity: 0, y: -8 });
+    gsap.set('#fecha-num',           { opacity: 0, yPercent: 105 });
+    gsap.set('#fecha-mes-stack',     { opacity: 0, y: 20 });
+    gsap.set('#fecha-scar-label',    { opacity: 0 });
+    gsap.set('#fecha-timeline-eyebrow', { opacity: 0, x: -10 });
+    gsap.set('.fecha-event',         { opacity: 0, x: -20 });
+    gsap.set('#fecha-monument',      { opacity: 0, y: 24 });
+    gsap.set('#fecha-quote',         { opacity: 0, y: 16 });
+    gsap.set('#fecha-cta-wrap',      { opacity: 0, y: 16 });
 
     scrollTriggerInstance = ScrollTrigger.create({
       trigger: '#seccion-fecha',
-      start: 'top 60%',
-      once: true,
+      start:   'top 55%',
+      once:    true,
       onEnter: () => {
-        if (triggered) return;
-        triggered = true;
 
-        // Reset elements to start state in case of navigation updates
-        gsap.set(['#fecha-eyebrow', '#fecha-overture', '#fecha-mes-anyo', '#fecha-line-bottom', '#fecha-cta'], { opacity: 0 });
-        gsap.set('.fecha-line', { opacity: 0, yPercent: 100 });
-        gsap.set('#fecha-rule', { width: 0 });
+        const tl = gsap.timeline();
 
-        // 1. Eyebrow + overture
-        gsap.to('#fecha-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.1 });
-        gsap.to('#fecha-overture', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', delay: 0.3 });
+        // 1. Apertura periodística
+        tl.to('#fecha-newshead-line', { opacity: 1, y: 0, duration: 0.65, ease: 'power3.out' })
+          .to('#fecha-metadata',      { opacity: 1, y: 0, duration: 0.65, ease: 'power3.out' }, '<')
+          .to('#fecha-overture',      { opacity: 1, y: 0, duration: 0.85, ease: 'power3.out' }, '-=0.35');
 
-        // 2. El 29 entra dramático con scramble
-        gsap.fromTo('#fecha-dia',
-          { yPercent: 100, opacity: 0 },
-          {
-            yPercent: 0,
-            opacity: 1,
-            duration: 1.3,
-            ease: 'power4.out',
-            delay: 0.7,
-            onComplete: () => {
-              const el = document.getElementById('fecha-dia');
-              if (el) scrambleTo(el, '29', 0.7);
-            },
-          }
-        );
+        // 2. Carretera SVG aparece sutil
+        tl.to('#fecha-road', { opacity: 0.7, duration: 1.4, ease: 'power2.out' }, '-=0.4');
 
-        // 3. MAYO 2023
-        gsap.fromTo('#fecha-mes-anyo',
-          { y: 25, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', delay: 1.4 }
-        );
+        // 3. EL "29" gigante (climax visual)
+        tl.to('#fecha-num',       { opacity: 1, yPercent: 0, duration: 1.2, ease: 'expo.out' }, '+=0.1')
+          .to('#fecha-mes-stack', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.5');
 
-        // 4. Narrativa escalonada
-        gsap.to('.fecha-line', {
+        // 4. La cicatriz horizontal granate
+        tl.to('#fecha-scar', {
+          width: '16rem',
+          duration: 0.9,
+          ease: 'expo.out',
+        }, '-=0.3')
+        .to('#fecha-scar-label', { opacity: 1, duration: 0.5 }, '-=0.2');
+
+        // 5. Timeline eyebrow
+        tl.to('#fecha-timeline-eyebrow', { opacity: 1, x: 0, duration: 0.7, ease: 'power3.out' }, '+=0.3');
+
+        // 6. Cronología — eventos uno tras otro, dejando respirar
+        tl.to('.fecha-event', {
           opacity: 1,
-          y: 0,
-          duration: 0.85,
+          x: 0,
+          duration: 0.75,
           ease: 'power3.out',
-          stagger: 0.55,
-          delay: 2.1,
-        });
+          stagger: 0.45, // pausa dramática entre eventos
+        }, '-=0.3');
 
-        // 5. Línea separadora (entre las primeras frases y la frase clímax)
-        gsap.to('#fecha-rule', {
-          width: '4rem',
-          duration: 0.8,
-          ease: 'power2.out',
-          delay: 3.4,
-        });
+        // 7. Monumento — frases clímax aparecen tras la cronología
+        tl.to('#fecha-monument-line', {
+          width: '100%',
+          duration: 0.7,
+          ease: 'expo.out',
+        }, '+=0.4');
+        tl.to('#fecha-monument-line-r', {
+          width: '100%',
+          duration: 0.7,
+          ease: 'expo.out',
+        }, '<');
+        tl.to('#fecha-monument', { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out' }, '-=0.4');
 
-        // 6. Cierre: línea + CTA
-        gsap.to('#fecha-line-bottom', { opacity: 1, duration: 0.6, delay: 5.0 });
-        gsap.to('#fecha-cta', { opacity: 1, duration: 0.8, delay: 5.2 });
+        // 8. Cierre + CTA
+        tl.to('#fecha-quote',    { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '+=0.3');
+        tl.to('#fecha-cta-wrap', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4');
       },
     });
 
-    // Hover sutil en CTA
+    // Hover CTA
     const cta = document.getElementById('fecha-cta');
     if (cta) {
-      const enter = () => { cta.style.color = 'var(--color-text)'; };
-      const leave = () => { cta.style.color = 'var(--color-muted)'; };
-      cta.addEventListener('mouseenter', enter);
-      cta.addEventListener('mouseleave', leave);
-      ctaHandlers = [enter, leave];
+      cta.addEventListener('mouseenter', () => {
+        cta.style.borderBottomColor = 'var(--color-amber)';
+        const arrow = cta.querySelector('span:last-child') as HTMLElement | null;
+        if (arrow) arrow.style.transform = 'translateY(3px)';
+      });
+      cta.addEventListener('mouseleave', () => {
+        cta.style.borderBottomColor = 'rgba(163,21,21,0.4)';
+        const arrow = cta.querySelector('span:last-child') as HTMLElement | null;
+        if (arrow) arrow.style.transform = 'translateY(0)';
+      });
     }
   }
 
@@ -292,18 +452,6 @@
     if (scrollTriggerInstance) {
       scrollTriggerInstance.kill();
       scrollTriggerInstance = null;
-    }
-    if (scrambleInterval) {
-      clearInterval(scrambleInterval);
-      scrambleInterval = null;
-    }
-    if (ctaHandlers) {
-      const cta = document.getElementById('fecha-cta');
-      if (cta) {
-        cta.removeEventListener('mouseenter', ctaHandlers[0]);
-        cta.removeEventListener('mouseleave', ctaHandlers[1]);
-      }
-      ctaHandlers = null;
     }
   }
 
