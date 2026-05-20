@@ -56,12 +56,17 @@
         </p>
       </div>
 
-      <!-- Sugerencias -->
+      <!-- Sugerencias (todas las respuestas pre-escritas disponibles) -->
+      <p class="ask-suggestions-label">Prueba con estas preguntas:</p>
       <div class="ask-suggestions" id="ask-suggestions">
         <button class="ask-chip" data-prompt="¿De qué trata el libro?">¿De qué trata?</button>
         <button class="ask-chip" data-prompt="¿Quién es Kike?">¿Quién es Kike?</button>
-        <button class="ask-chip" data-prompt="¿Por qué tengo que leerlo?">¿Por qué leerlo?</button>
         <button class="ask-chip" data-prompt="¿Es triste todo el libro?">¿Es muy triste?</button>
+        <button class="ask-chip" data-prompt="¿Por qué tengo que leerlo?">¿Por qué leerlo?</button>
+        <button class="ask-chip" data-prompt="¿Quién eres tú, el autor?">¿Quién es el autor?</button>
+        <button class="ask-chip" data-prompt="¿Y qué pinta la moto en la historia?">¿Y las motos?</button>
+        <button class="ask-chip" data-prompt="¿Dónde puedo comprarlo?">¿Dónde lo compro?</button>
+        <button class="ask-chip" data-prompt="¿Qué es la libreta verde?">¿Y la libreta verde?</button>
       </div>
     </div>
 
@@ -351,11 +356,20 @@
   }
 
   /* Chips de sugerencias */
+  .ask-suggestions-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.35em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
   .ask-suggestions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
   }
   .ask-chip {
     background: transparent;
@@ -368,11 +382,26 @@
     padding: 0.5rem 0.85rem;
     border-radius: 999px;
     cursor: pointer;
-    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+    white-space: nowrap;
   }
   .ask-chip:hover {
     background: rgba(163,21,21,0.12);
     border-color: rgba(163,21,21,0.55);
+    transform: translateY(-1px);
+  }
+  .ask-chip:active {
+    transform: translateY(0) scale(0.96);
+  }
+  .ask-chip.used {
+    background: rgba(163,21,21,0.18);
+    border-color: rgba(163,21,21,0.5);
+    color: var(--color-muted);
+    opacity: 0.65;
+  }
+  .ask-chip.used::before {
+    content: '✓ ';
+    color: var(--color-amber);
   }
 
   /* Form */
@@ -485,12 +514,14 @@
       if (e.key === 'Escape' && modal!.classList.contains('open')) closeModal();
     });
 
-    // Chips de sugerencias
+    // Chips de sugerencias — disparan directamente la respuesta pre-escrita
+    // sin pasar por el endpoint (que devolveria 501 sin API key configurada).
     suggestions?.querySelectorAll<HTMLButtonElement>('.ask-chip').forEach((chip) => {
       chip.addEventListener('click', () => {
         const prompt = chip.dataset.prompt || chip.textContent || '';
-        input!.value = prompt;
-        form!.requestSubmit();
+        // Marcar el chip como ya usado
+        chip.classList.add('used');
+        sendQuestion(prompt, /* fromChip */ true);
       });
     });
 
@@ -561,43 +592,50 @@
       return div;
     }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const q = input.value.trim();
-      if (!q) return;
-
-      // Ocultar sugerencias tras la primera pregunta
-      if (suggestions) suggestions.style.display = 'none';
-
+    async function sendQuestion(q: string, fromChip = false) {
       addMessage('user', q.replace(/</g, '&lt;'));
       input.value = '';
 
       const typing = addTyping();
 
-      // Intentar llamar al endpoint de IA (si hay API key configurada)
       let reply = '';
-      try {
-        const res = await fetch('/api/ask-book', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question: q }),
-        });
 
-        if (res.ok) {
-          const data = await res.json();
-          reply = data.reply || findFallbackReply(q);
-        } else {
+      if (fromChip) {
+        // Chip click: usar directamente la respuesta pre-escrita (rapido)
+        reply = findFallbackReply(q);
+      } else {
+        // Pregunta libre: intentar el endpoint de IA, fallback si no hay API key
+        try {
+          const res = await fetch('/api/ask-book', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question: q }),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            reply = data.reply || findFallbackReply(q);
+          } else {
+            reply = findFallbackReply(q);
+          }
+        } catch {
           reply = findFallbackReply(q);
         }
-      } catch {
-        reply = findFallbackReply(q);
       }
 
-      // Pequeño delay para naturalidad
+      // Delay corto para sensacion natural de "escribiendo"
+      const delay = fromChip ? 550 : Math.min(700 + reply.length * 3, 1800);
       setTimeout(() => {
         typing.remove();
         addMessage('bot', reply);
-      }, 700 + Math.min(reply.length * 4, 1400));
+      }, delay);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const q = input.value.trim();
+      if (!q) return;
+      sendQuestion(q, /* fromChip */ false);
     });
   }
 
