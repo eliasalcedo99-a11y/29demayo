@@ -1,42 +1,5 @@
 ---
-// Blog placeholder — se integra con Notion API cuando lleguen las credenciales
-// Por ahora muestra posts de ejemplo con la estructura final
-
-interface Post {
-  titulo:    string;
-  fecha:     string;
-  tipo:      'articulo' | 'video';
-  slug:      string;
-  extracto:  string;
-  thumbnail: string;
-}
-
-const posts: Post[] = [
-  {
-    titulo:    'Lo que nadie te dice sobre el duelo',
-    fecha:     '12 mayo 2026',
-    tipo:      'articulo',
-    slug:      'lo-que-nadie-te-dice-sobre-el-duelo',
-    extracto:  'El duelo no tiene manual. No hay cinco fases perfectas ni un momento exacto en el que "se supera". Hay días, y luego más días.',
-    thumbnail: '/images/blog/post-1.jpg',
-  },
-  {
-    titulo:    'Por qué escribí este libro a los 18 años',
-    fecha:     '28 abril 2026',
-    tipo:      'articulo',
-    slug:      'por-que-escribi-este-libro',
-    extracto:  'No fue valentía. Fue necesidad. Cuando no sabes qué hacer con el dolor, lo único que puedes hacer es ponerle nombre.',
-    thumbnail: '/images/blog/post-2.jpg',
-  },
-  {
-    titulo:    'La moto como metáfora',
-    fecha:     '10 abril 2026',
-    tipo:      'articulo',
-    slug:      'la-moto-como-metafora',
-    extracto:  'Kike y yo teníamos la moto en común antes de que yo la tuviera. Hay vínculos que no necesitan palabras, solo kilómetros.',
-    thumbnail: '/images/blog/post-3.jpg',
-  },
-];
+import { posts } from '../data/posts';
 ---
 
 <section
@@ -53,7 +16,6 @@ const posts: Post[] = [
           Reflexiones
         </h2>
       </div>
-      <!-- Ver todos -->
       <a
         href="/blog"
         class="hidden md:flex items-center gap-2 font-mono text-[0.7rem] tracking-[0.2em] text-[var(--color-muted)] hover:text-[var(--color-amber)] transition-colors duration-300 uppercase"
@@ -69,24 +31,20 @@ const posts: Post[] = [
           class="blog-card group relative overflow-hidden bg-[var(--color-bg)] rounded-sm opacity-0"
           style={`--delay: ${i * 0.12}s`}
         >
-          <!-- Thumbnail -->
-          <div class="relative h-48 overflow-hidden bg-[var(--color-border)]">
-            <img
-              src={post.thumbnail}
-              alt={post.titulo}
-              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60"
-              loading="lazy"
-              onerror="this.style.display='none'"
-            />
-            <!-- Type badge -->
-            <span class="absolute top-3 left-3 font-mono text-[0.6rem] tracking-[0.2em] uppercase bg-[var(--color-amber)] text-[var(--color-bg)] px-2 py-1">
+          <!-- Color header (editorial, sin imagen) -->
+          <div
+            class="relative h-36 overflow-hidden flex items-end p-4"
+            style={`background: ${post.temaColor}; border-bottom: 1px solid rgba(163,21,21,0.12);`}
+          >
+            <!-- Tipo badge -->
+            <span class="font-mono text-[0.58rem] tracking-[0.2em] uppercase bg-[var(--color-amber)] text-[var(--color-bg)] px-2 py-0.5">
               {post.tipo === 'video' ? '▶ Vídeo' : '✍ Artículo'}
             </span>
           </div>
 
           <!-- Card body -->
           <div class="p-6">
-            <time class="font-mono text-[0.65rem] tracking-[0.3em] text-[var(--color-muted)] uppercase block mb-3">
+            <time datetime={post.fechaISO} class="font-mono text-[0.65rem] tracking-[0.3em] text-[var(--color-muted)] uppercase block mb-3">
               {post.fecha}
             </time>
             <h3 class="font-serif text-[1.1rem] text-[var(--color-text)] leading-tight mb-3 group-hover:text-[var(--color-amber)] transition-colors duration-300">
@@ -97,7 +55,7 @@ const posts: Post[] = [
             </p>
           </div>
 
-          <!-- Read link -->
+          <!-- Invisible full-card link -->
           <a
             href={`/blog/${post.slug}`}
             class="absolute inset-0"
@@ -126,22 +84,38 @@ const posts: Post[] = [
 
   gsap.registerPlugin(ScrollTrigger);
 
-  gsap.utils.toArray<HTMLElement>('.blog-card').forEach((card) => {
-    const delay = parseFloat(card.style.getPropertyValue('--delay')) || 0;
-    gsap.fromTo(card,
-      { opacity: 0, y: 32 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay,
-        scrollTrigger: {
-          trigger: card,
-          start: 'top 84%',
-          once: true,
-        },
-      }
-    );
-  });
+  let blogTriggers: any[] = [];
+
+  function initBlog() {
+    cleanupBlog();
+
+    gsap.utils.toArray<HTMLElement>('.blog-card').forEach((card) => {
+      const delay = parseFloat(card.style.getPropertyValue('--delay')) || 0;
+      gsap.set(card, { opacity: 0, y: 32 });
+      const anim = gsap.fromTo(card,
+        { opacity: 0, y: 32 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          delay,
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 84%',
+            once: true,
+          },
+        }
+      );
+      if (anim.scrollTrigger) blogTriggers.push(anim.scrollTrigger);
+    });
+  }
+
+  function cleanupBlog() {
+    blogTriggers.forEach(t => t.kill());
+    blogTriggers = [];
+  }
+
+  document.addEventListener('astro:page-load', initBlog);
+  document.addEventListener('astro:before-swap', cleanupBlog);
 </script>

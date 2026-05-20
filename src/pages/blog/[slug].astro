@@ -1,0 +1,179 @@
+---
+import Base  from '../../layouts/Base.astro';
+import Nav   from '../../components/Nav.astro';
+import { posts } from '../../data/posts';
+
+export function getStaticPaths() {
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props:  { post },
+  }));
+}
+
+const { post } = Astro.props;
+
+// Next post (for navigation)
+const idx  = posts.findIndex(p => p.slug === post.slug);
+const next = posts[idx + 1] ?? posts[0];
+---
+
+<Base
+  title={`${post.titulo} | Elías Alcedo Espinosa`}
+  description={post.extracto}
+>
+  <Nav />
+
+  <main class="min-h-screen bg-[var(--color-bg)] pt-24 pb-32">
+
+    <!-- Hero del post -->
+    <div class="relative py-20 px-6 overflow-hidden" style={`background: ${post.temaColor.replace('0.', '0.0')};`}>
+      <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
+           style={`background: radial-gradient(ellipse at 30% 50%, ${post.temaColor} 0%, transparent 70%);`}></div>
+      <div class="absolute inset-0 pointer-events-none"
+           style="background: linear-gradient(to bottom, transparent 60%, var(--color-bg) 100%);"
+           aria-hidden="true"></div>
+
+      <div class="relative max-w-3xl mx-auto">
+        <a href="/blog" class="font-mono text-[0.62rem] tracking-[0.35em] text-[var(--color-muted)] hover:text-[var(--color-amber)] uppercase transition-colors duration-300 inline-block mb-10">
+          ← Blog
+        </a>
+
+        <div class="flex items-center gap-4 mb-6">
+          <time datetime={post.fechaISO}
+                class="font-mono text-[0.6rem] tracking-[0.35em] uppercase text-[var(--color-muted)]">
+            {post.fecha}
+          </time>
+          <span class="w-1 h-1 rounded-full bg-[var(--color-border)]"></span>
+          <span class="font-mono text-[0.6rem] tracking-[0.35em] uppercase"
+                style="color: var(--color-amber);">
+            Elías Alcedo Espinosa
+          </span>
+        </div>
+
+        <h1 class="font-serif text-[clamp(2rem,6vw,4rem)] text-[var(--color-text)] leading-[1.05]"
+            style="letter-spacing: -0.02em;">
+          {post.titulo}
+        </h1>
+
+        <div class="w-12 h-px mt-8" style="background: rgba(163,21,21,0.5);"></div>
+      </div>
+    </div>
+
+    <!-- Contenido -->
+    <div class="max-w-3xl mx-auto px-6 mt-4">
+      <div
+        class="post-content font-sans text-[var(--color-muted)] leading-[1.85] text-[1.05rem]"
+        set:html={post.contenido}
+      />
+
+      <!-- Firma -->
+      <div class="mt-16 pt-10 border-t border-[var(--color-border)] flex items-center gap-5">
+        <img
+          src="/images/autor.jpg"
+          alt="Elías Alcedo Espinosa"
+          width="52"
+          height="52"
+          class="rounded-full object-cover grayscale"
+          style="width:52px; height:52px; filter:grayscale(100%);"
+        />
+        <div>
+          <p class="font-serif text-[var(--color-text)] text-[0.95rem]">Elías Alcedo Espinosa</p>
+          <p class="font-mono text-[0.62rem] tracking-[0.2em] text-[var(--color-muted)] uppercase mt-0.5">
+            Cádiz · 2025 · Autor de 29 de Mayo
+          </p>
+        </div>
+      </div>
+
+      <!-- CTA Amazon -->
+      <div class="mt-12 p-8 border border-[rgba(163,21,21,0.15)] rounded"
+           style="background: rgba(163,21,21,0.04);">
+        <p class="font-italic italic text-[var(--color-text)] leading-relaxed mb-6"
+           style="font-family:'Lora',Georgia,serif; font-size:clamp(1rem,2vw,1.15rem);">
+          Si estas palabras te han resonado, el libro cuenta mucho más. El año entero. Mes a mes.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href="https://amzn.to/3RlmkaH" target="_blank" rel="noopener noreferrer"
+             class="btn-amber btn-amber-solid">
+            Leer en Amazon →
+          </a>
+          <a href="/demo" class="btn-amber">
+            Leer gratis la demo
+          </a>
+        </div>
+      </div>
+
+      <!-- Siguiente artículo -->
+      <div class="mt-16">
+        <p class="font-mono text-[0.6rem] tracking-[0.4em] text-[var(--color-muted)] uppercase mb-4">
+          Siguiente artículo
+        </p>
+        <a href={`/blog/${next.slug}`}
+           class="group flex items-start justify-between gap-6 py-6 border-t border-[var(--color-border)] hover:border-[rgba(163,21,21,0.3)] transition-colors duration-300">
+          <div>
+            <h3 class="font-serif text-[1.2rem] text-[var(--color-text)] leading-tight group-hover:text-[var(--color-amber)] transition-colors duration-300">
+              {next.titulo}
+            </h3>
+            <p class="font-sans text-[var(--color-muted)] text-[0.85rem] mt-2 max-w-md leading-relaxed line-clamp-2">
+              {next.extracto}
+            </p>
+          </div>
+          <span class="font-mono text-[0.7rem] tracking-[0.2em] uppercase text-[var(--color-amber)] shrink-0 self-center group-hover:translate-x-1 transition-transform duration-300">→</span>
+        </a>
+      </div>
+
+    </div>
+  </main>
+</Base>
+
+<style>
+  /* Estilo tipográfico del cuerpo del post */
+  .post-content :global(p) {
+    margin-bottom: 1.5rem;
+    max-width: 65ch;
+  }
+
+  .post-content :global(p:first-child::first-letter) {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 3.8rem;
+    font-weight: 700;
+    line-height: 0.85;
+    float: left;
+    margin-right: 0.1em;
+    margin-top: 0.05em;
+    color: #A31515;
+  }
+
+  .post-content :global(h2) {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    color: var(--color-text);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    max-width: 65ch;
+  }
+
+  .post-content :global(em) {
+    font-family: 'Lora', Georgia, serif;
+    font-style: italic;
+    color: var(--color-text);
+  }
+
+  .post-content :global(strong) {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .post-content :global(p),
+    .post-content :global(h2) {
+      animation: fadeUp 0.6s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>

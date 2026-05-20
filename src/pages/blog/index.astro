@@ -1,0 +1,71 @@
+---
+import Base  from '../../layouts/Base.astro';
+import Nav   from '../../components/Nav.astro';
+import { posts } from '../../data/posts';
+---
+
+<Base
+  title="Blog | Elías Alcedo Espinosa"
+  description="Reflexiones de Elías Alcedo Espinosa sobre el duelo, la escritura y la vida. Artículos escritos desde la experiencia de '29 de Mayo'."
+>
+  <Nav />
+
+  <main class="min-h-screen bg-[var(--color-bg)] pt-28 pb-32 px-6">
+    <div class="max-w-4xl mx-auto">
+
+      <!-- Header -->
+      <div class="mb-16">
+        <a href="/#blog" class="font-mono text-[0.62rem] tracking-[0.35em] text-[var(--color-muted)] hover:text-[var(--color-amber)] uppercase transition-colors duration-300 inline-block mb-8">
+          ← Volver
+        </a>
+        <span class="font-mono text-[0.6rem] tracking-[0.5em] text-[var(--color-amber)] uppercase block mb-4">Blog</span>
+        <h1 class="font-serif text-[clamp(2.5rem,6vw,4rem)] text-[var(--color-text)] leading-tight">
+          Reflexiones
+        </h1>
+        <p class="font-sans text-[var(--color-muted)] mt-4 max-w-lg leading-relaxed">
+          Escritos sobre el duelo, la escritura, la memoria y las cosas que no caben en un libro pero que necesitan existir en algún sitio.
+        </p>
+      </div>
+
+      <!-- Posts list -->
+      <div class="space-y-0">
+        {posts.map((post, i) => (
+          <article class="group border-t border-[var(--color-border)] py-10 first:border-t-0">
+            <a href={`/blog/${post.slug}`} class="block">
+              <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-12">
+
+                <div class="flex-1 space-y-3">
+                  <div class="flex items-center gap-4">
+                    <time class="font-mono text-[0.6rem] tracking-[0.3em] text-[var(--color-muted)] uppercase">
+                      {post.fecha}
+                    </time>
+                    <span class="font-mono text-[0.6rem] tracking-[0.2em] uppercase px-2 py-0.5"
+                          style={`background: ${post.temaColor}; color: var(--color-amber); border: 1px solid rgba(163,21,21,0.2);`}>
+                      {post.tipo === 'video' ? '▶ Vídeo' : '✍ Artículo'}
+                    </span>
+                  </div>
+
+                  <h2 class="font-serif text-[clamp(1.4rem,3vw,2rem)] text-[var(--color-text)] leading-tight group-hover:text-[var(--color-amber)] transition-colors duration-300">
+                    {post.titulo}
+                  </h2>
+
+                  <p class="font-sans text-[var(--color-muted)] leading-relaxed text-[0.95rem] max-w-xl">
+                    {post.extracto}
+                  </p>
+                </div>
+
+                <div class="shrink-0 self-start md:self-center">
+                  <span class="font-mono text-[0.62rem] tracking-[0.25em] uppercase text-[var(--color-amber)] group-hover:translate-x-1 transition-transform duration-300 inline-block">
+                    Leer →
+                  </span>
+                </div>
+
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+
+    </div>
+  </main>
+</Base>
