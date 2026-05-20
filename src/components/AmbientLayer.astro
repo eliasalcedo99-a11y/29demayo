@@ -1,0 +1,164 @@
+---
+/**
+ * AmbientLayer — Capa atmosférica fija detrás del contenido.
+ * Cambia de color/gradiente según la sección visible.
+ *
+ * No se ve directamente. Crea una "respiración" cromática que guía
+ * emocionalmente al lector por las secciones del libro.
+ */
+---
+
+<div id="ambient-layer" aria-hidden="true">
+  <div id="ambient-blob" class="ambient-blob"></div>
+  <div id="ambient-tint" class="ambient-tint"></div>
+</div>
+
+<style>
+  #ambient-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .ambient-blob {
+    position: absolute;
+    width: 80vmax;
+    height: 80vmax;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle at center,
+      rgba(163,21,21,0.07) 0%,
+      rgba(163,21,21,0.025) 35%,
+      transparent 65%);
+    filter: blur(60px);
+    transition: opacity 1.4s cubic-bezier(0.4,0,0.2,1),
+                background 1.4s cubic-bezier(0.4,0,0.2,1),
+                transform 1.6s cubic-bezier(0.4,0,0.2,1);
+    will-change: transform, opacity, background;
+  }
+
+  .ambient-tint {
+    position: absolute;
+    inset: 0;
+    transition: background 1.4s cubic-bezier(0.4,0,0.2,1);
+    background: transparent;
+  }
+</style>
+
+<script>
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import gsap from 'gsap';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let ambientTriggers: any[] = [];
+
+  // Paleta de atmósferas — cada sección tiene su propia "respiración"
+  const atmospheres: Record<string, {
+    blobColor: string;
+    blobPosition: string;
+    tint: string;
+  }> = {
+    'hero': {
+      blobColor: 'radial-gradient(circle at center, rgba(163,21,21,0.10) 0%, rgba(163,21,21,0.035) 35%, transparent 65%)',
+      blobPosition: 'translate(-50%, -50%)',
+      tint: 'transparent',
+    },
+    'seccion-fecha': {
+      blobColor: 'radial-gradient(circle at center, rgba(196,30,30,0.16) 0%, rgba(163,21,21,0.06) 30%, transparent 60%)',
+      blobPosition: 'translate(-50%, -50%)',
+      tint: 'linear-gradient(to bottom, transparent, rgba(196,30,30,0.04), transparent)',
+    },
+    'contador': {
+      blobColor: 'radial-gradient(circle at center, rgba(138,122,116,0.10) 0%, rgba(138,122,116,0.04) 35%, transparent 70%)',
+      blobPosition: 'translate(-30%, -50%)',
+      tint: 'transparent',
+    },
+    'sobre-el-libro': {
+      blobColor: 'radial-gradient(circle at center, rgba(163,21,21,0.08) 0%, rgba(163,21,21,0.03) 35%, transparent 65%)',
+      blobPosition: 'translate(-50%, -40%)',
+      tint: 'transparent',
+    },
+    'timeline-section': {
+      blobColor: 'radial-gradient(circle at center, rgba(196,120,90,0.07) 0%, rgba(163,21,21,0.025) 35%, transparent 65%)',
+      blobPosition: 'translate(-60%, -50%)',
+      tint: 'transparent',
+    },
+    'fragmento': {
+      blobColor: 'radial-gradient(circle at center, rgba(220,180,140,0.10) 0%, rgba(196,120,90,0.05) 35%, transparent 65%)',
+      blobPosition: 'translate(-50%, -50%)',
+      tint: 'transparent',
+    },
+    'sobre-elias': {
+      blobColor: 'radial-gradient(circle at center, rgba(192,120,90,0.09) 0%, rgba(196,120,90,0.035) 35%, transparent 65%)',
+      blobPosition: 'translate(-40%, -50%)',
+      tint: 'transparent',
+    },
+    'libreta-verde-section': {
+      blobColor: 'radial-gradient(circle at center, rgba(45,106,79,0.10) 0%, rgba(45,106,79,0.04) 35%, transparent 65%)',
+      blobPosition: 'translate(-55%, -50%)',
+      tint: 'transparent',
+    },
+    'resenyas': {
+      blobColor: 'radial-gradient(circle at center, rgba(163,21,21,0.07) 0%, rgba(163,21,21,0.025) 35%, transparent 65%)',
+      blobPosition: 'translate(-50%, -50%)',
+      tint: 'transparent',
+    },
+    'blog': {
+      blobColor: 'radial-gradient(circle at center, rgba(138,122,116,0.08) 0%, rgba(138,122,116,0.03) 35%, transparent 65%)',
+      blobPosition: 'translate(-45%, -50%)',
+      tint: 'transparent',
+    },
+    'newsletter': {
+      blobColor: 'radial-gradient(circle at center, rgba(163,21,21,0.07) 0%, rgba(163,21,21,0.025) 35%, transparent 65%)',
+      blobPosition: 'translate(-50%, -50%)',
+      tint: 'transparent',
+    },
+    'contacto': {
+      blobColor: 'radial-gradient(circle at center, rgba(138,122,116,0.07) 0%, rgba(138,122,116,0.025) 35%, transparent 65%)',
+      blobPosition: 'translate(-50%, -50%)',
+      tint: 'transparent',
+    },
+  };
+
+  function initAmbient() {
+    cleanupAmbient();
+
+    const blob = document.getElementById('ambient-blob');
+    const tint = document.getElementById('ambient-tint');
+    if (!blob || !tint) return;
+
+    Object.entries(atmospheres).forEach(([id, atm]) => {
+      const section = document.getElementById(id);
+      if (!section) return;
+
+      const trigger = ScrollTrigger.create({
+        trigger: section,
+        start: 'top 60%',
+        end: 'bottom 40%',
+        onEnter:     () => applyAtmosphere(atm),
+        onEnterBack: () => applyAtmosphere(atm),
+      });
+
+      ambientTriggers.push(trigger);
+    });
+
+    function applyAtmosphere(atm: typeof atmospheres[string]) {
+      blob.style.background = atm.blobColor;
+      blob.style.transform  = atm.blobPosition;
+      tint.style.background = atm.tint;
+    }
+  }
+
+  function cleanupAmbient() {
+    ambientTriggers.forEach(t => t.kill());
+    ambientTriggers = [];
+  }
+
+  document.addEventListener('astro:page-load', initAmbient);
+  document.addEventListener('astro:before-swap', cleanupAmbient);
+</script>

@@ -218,40 +218,96 @@ const total = paginas.length;
       display: flex;
       align-items: center;
       justify-content: center;
-      perspective: 2800px;
-      perspective-origin: 50% 45%;
+      perspective: 3000px;
+      perspective-origin: 50% 50%;
       padding: 4.5rem 1.5rem 5.5rem;
     }
 
     /* ── Libro container ───────────────────────────────────── */
     .book {
       position: relative;
-      width: min(92vw, 960px);
-      height: min(75vh, 640px);
+      width: min(92vw, 980px);
+      height: min(76vh, 660px);
       transform-style: preserve-3d;
-      transform: rotateX(6deg);
-      filter: drop-shadow(0 30px 80px rgba(0,0,0,0.75));
+      transform: rotateX(8deg);
+      /* Sombras realistas multi-capa: una difusa amplia + una directa intensa
+         debajo. Esto crea la sensación de un objeto físico sobre una superficie. */
+      filter:
+        drop-shadow(0 50px 70px rgba(0,0,0,0.7))
+        drop-shadow(0 18px 18px rgba(0,0,0,0.45));
     }
 
-    /* Lomo central */
-    .book-spine {
+    /* Textura sutil de papel sobre todo el libro */
+    .book::before {
+      content: '';
       position: absolute;
-      left: calc(50% - 6px);
-      top: -4px;
-      bottom: -4px;
-      width: 12px;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.45'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      mix-blend-mode: multiply;
+      opacity: 0.16;
+      pointer-events: none;
+      z-index: 28;
+      border-radius: 2px;
+    }
+
+    /* Bordes laterales del libro — apilamiento de páginas visible */
+    .book::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: -4px;
+      right: -4px;
       background:
         linear-gradient(to right,
-          rgba(0,0,0,0.4) 0%,
-          rgba(0,0,0,0.8) 40%,
-          rgba(0,0,0,0.95) 50%,
-          rgba(0,0,0,0.8) 60%,
-          rgba(0,0,0,0.4) 100%);
-      z-index: 30;
+          #C7BFA9 0%, #B8AE94 1.5%, transparent 3%,
+          transparent 97%, #B8AE94 98.5%, #C7BFA9 100%),
+        linear-gradient(to bottom, transparent 0%, transparent 4%, #C7BFA9 4%, #C7BFA9 96%, transparent 96%);
+      z-index: -1;
+      border-radius: 1px;
+    }
+
+    /* Lomo central — encuadernación realista */
+    .book-spine {
+      position: absolute;
+      left: calc(50% - 9px);
+      top: -6px;
+      bottom: -6px;
+      width: 18px;
+      background:
+        /* Sombra interior profunda en el centro */
+        radial-gradient(ellipse at center,
+          rgba(0,0,0,0.95) 0%,
+          rgba(0,0,0,0.7) 30%,
+          rgba(0,0,0,0.4) 60%,
+          transparent 100%),
+        /* Hilos de encuadernación verticales — barely visible */
+        repeating-linear-gradient(to bottom,
+          rgba(50,30,20,0.6) 0px,
+          rgba(50,30,20,0.6) 1px,
+          transparent 1px,
+          transparent 8px);
+      z-index: 31;
       pointer-events: none;
       box-shadow:
-        -4px 0 8px rgba(0,0,0,0.4),
-         4px 0 8px rgba(0,0,0,0.4);
+        -6px 0 12px rgba(0,0,0,0.45),
+         6px 0 12px rgba(0,0,0,0.45),
+        inset 0 0 8px rgba(0,0,0,0.7);
+      border-radius: 1px;
+    }
+
+    /* Pequeño separador de cinta marca-páginas en la parte superior */
+    .book-spine::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 14px;
+      background: linear-gradient(to bottom, #A31515, #7B0F0F);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.6);
     }
 
     /* ── Páginas estáticas (background): la base que vemos siempre ── */
@@ -267,13 +323,25 @@ const total = paginas.length;
     .page-static.left {
       left: 0;
       background:
-        linear-gradient(to right, rgba(0,0,0,0.15) 0%, transparent 12%),
+        /* Curvatura sutil hacia el lomo: oscuridad interior creciente */
+        linear-gradient(to right,
+          rgba(80,60,30,0.0) 0%,
+          rgba(80,60,30,0.0) 65%,
+          rgba(80,60,30,0.12) 90%,
+          rgba(60,40,15,0.32) 100%),
+        /* Borde exterior con sombra leve */
+        linear-gradient(to right, rgba(0,0,0,0.18) 0%, transparent 8%),
         linear-gradient(to right, var(--paper-soft) 0%, var(--paper) 4%);
     }
     .page-static.right {
       right: 0;
       background:
-        linear-gradient(to left, rgba(0,0,0,0.15) 0%, transparent 12%),
+        linear-gradient(to left,
+          rgba(80,60,30,0.0) 0%,
+          rgba(80,60,30,0.0) 65%,
+          rgba(80,60,30,0.12) 90%,
+          rgba(60,40,15,0.32) 100%),
+        linear-gradient(to left, rgba(0,0,0,0.18) 0%, transparent 8%),
         linear-gradient(to left, var(--paper-soft) 0%, var(--paper) 4%);
     }
 
@@ -284,7 +352,8 @@ const total = paginas.length;
       width: 50%;
       height: 100%;
       transform-style: preserve-3d;
-      transition: transform 1.0s cubic-bezier(0.55, 0.05, 0.25, 1);
+      /* Animación más fluida con curva de papel real */
+      transition: transform 1.1s cubic-bezier(0.45, 0.05, 0.35, 1);
       will-change: transform;
       pointer-events: none;
       z-index: 25;
@@ -315,16 +384,46 @@ const total = paginas.length;
       background: var(--paper);
       overflow: hidden;
     }
+    /* La página que se voltea — la cara frontal tiene una sombra dinámica hacia el lomo */
     .leaf-face.front {
       background:
-        linear-gradient(to left, rgba(0,0,0,0.15) 0%, transparent 12%),
+        /* Curvatura hacia el lomo (izquierda en la hoja forward) */
+        linear-gradient(to left,
+          rgba(80,60,30,0.0) 0%,
+          rgba(80,60,30,0.0) 60%,
+          rgba(80,60,30,0.15) 88%,
+          rgba(60,40,15,0.35) 100%),
+        linear-gradient(to left, rgba(0,0,0,0.18) 0%, transparent 8%),
         var(--paper);
     }
     .leaf-face.back {
       transform: rotateY(180deg);
       background:
-        linear-gradient(to right, rgba(0,0,0,0.15) 0%, transparent 12%),
+        linear-gradient(to right,
+          rgba(80,60,30,0.0) 0%,
+          rgba(80,60,30,0.0) 60%,
+          rgba(80,60,30,0.15) 88%,
+          rgba(60,40,15,0.35) 100%),
+        linear-gradient(to right, rgba(0,0,0,0.18) 0%, transparent 8%),
         var(--paper);
+    }
+
+    /* Sombra que se proyecta durante el flip — añade sensación de hoja real */
+    .flip-leaf.forward.flipping::after,
+    .flip-leaf.backward.flipping::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to left, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%);
+      opacity: 0;
+      pointer-events: none;
+      animation: flip-shadow 1.1s ease-in-out;
+    }
+    @keyframes flip-shadow {
+      0%   { opacity: 0; }
+      40%  { opacity: 0.4; }
+      60%  { opacity: 0.4; }
+      100% { opacity: 0; }
     }
 
     /* ── Contenido de página ────────────────────────────────── */
@@ -587,6 +686,65 @@ const total = paginas.length;
     @media (prefers-reduced-motion: reduce) {
       .flip-leaf { transition: none; }
     }
+
+    /* ── Focus mode: oculta toda la UI excepto el libro ─────── */
+    body.focus-mode .topbar,
+    body.focus-mode .controls,
+    body.focus-mode .hint,
+    body.focus-mode .focus-toggle {
+      opacity: 0;
+      pointer-events: none;
+    }
+    body.focus-mode .focus-toggle.always-visible {
+      opacity: 0.3;
+      pointer-events: auto;
+    }
+    body.focus-mode .focus-toggle.always-visible:hover {
+      opacity: 1;
+    }
+    body.focus-mode .stage {
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+    }
+    body.focus-mode .book {
+      transform: rotateX(4deg) scale(1.06);
+    }
+
+    .topbar, .controls, .hint, .focus-toggle {
+      transition: opacity 0.5s ease;
+    }
+    .book {
+      transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* Toggle del focus mode */
+    .focus-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 51;
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: 50%;
+      background: rgba(17,13,14,0.85);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: background 0.2s, color 0.2s, border-color 0.2s, opacity 0.5s;
+    }
+    .focus-toggle:hover {
+      background: rgba(163,21,21,0.18);
+      color: var(--paper);
+      border-color: rgba(163,21,21,0.55);
+    }
+    .focus-toggle.is-active {
+      color: var(--amber);
+      border-color: rgba(163,21,21,0.55);
+    }
   </style>
 </head>
 
@@ -598,6 +756,18 @@ const total = paginas.length;
     <span class="title">29 de Mayo</span>
     <span style="opacity:0.5;">Demo</span>
   </header>
+
+  <!-- Focus mode toggle -->
+  <button class="focus-toggle always-visible" id="focus-toggle" aria-label="Modo concentración" aria-pressed="false" title="Modo concentración (F)">
+    <svg id="focus-icon-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/>
+    </svg>
+    <svg id="focus-icon-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="display:none;">
+      <circle cx="12" cy="12" r="9"/>
+      <circle cx="12" cy="12" r="3" fill="currentColor"/>
+    </svg>
+  </button>
 
   <!-- Stage donde vive el libro -->
   <main class="stage" role="main">
@@ -802,11 +972,40 @@ const total = paginas.length;
       pageRightEl.addEventListener('click', flipForward);
       pageLeftEl.addEventListener('click', flipBackward);
 
+      // ── Focus mode ──────────────────────────────────────
+      const focusToggle  = document.getElementById('focus-toggle');
+      const focusIconOff = document.getElementById('focus-icon-off');
+      const focusIconOn  = document.getElementById('focus-icon-on');
+
+      function toggleFocus() {
+        const active = document.body.classList.toggle('focus-mode');
+        if (focusToggle) {
+          focusToggle.setAttribute('aria-pressed', String(active));
+          focusToggle.classList.toggle('is-active', active);
+        }
+        if (focusIconOff && focusIconOn) {
+          focusIconOff.style.display = active ? 'none'  : 'block';
+          focusIconOn.style.display  = active ? 'block' : 'none';
+        }
+      }
+      focusToggle?.addEventListener('click', toggleFocus);
+
       // Teclado
       document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { flipForward(); e.preventDefault(); }
         if (e.key === 'ArrowLeft' || e.key === 'PageUp') { flipBackward(); e.preventDefault(); }
-        if (e.key === 'Escape') hideEnd();
+        if (e.key === 'Escape') {
+          if (document.body.classList.contains('focus-mode')) {
+            toggleFocus();
+          } else {
+            hideEnd();
+          }
+        }
+        if (e.key === 'f' || e.key === 'F') {
+          if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+          toggleFocus();
+          e.preventDefault();
+        }
       });
 
       // Swipe mobile

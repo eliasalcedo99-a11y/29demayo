@@ -1,6 +1,9 @@
 ---
 import Base         from '../layouts/Base.astro';
 import Nav          from '../components/Nav.astro';
+import AmbientLayer from '../components/AmbientLayer.astro';
+import AudioAmbient from '../components/AudioAmbient.astro';
+import AskBook      from '../components/AskBook.astro';
 import Splash       from '../components/Splash.astro';
 import Hero         from '../components/Hero.astro';
 import LaFecha      from '../components/LaFecha.astro';
@@ -24,7 +27,10 @@ import StickyCTA    from '../components/StickyCTA.astro';
   title="29 de Mayo | Elías Alcedo Espinosa"
   description="Descubre '29 de Mayo' de Elías Alcedo Espinosa. Un relato literario íntimo y honesto sobre el duelo, la familia y la resiliencia tras la trágica pérdida de un ser querido."
 >
+  <AmbientLayer />
   <Nav />
+  <AudioAmbient />
+  <AskBook />
   <Splash />
   <Hero />
   <LaFecha />

@@ -1,0 +1,224 @@
+---
+/**
+ * AudioAmbient — Botón discreto para activar/desactivar audio ambiente.
+ * Reproduce un loop de piano minimalista cuando el usuario lo activa.
+ *
+ * El archivo /audio/ambient.mp3 debe ser añadido manualmente.
+ * Mientras no exista, el botón muestra un tooltip "próximamente".
+ */
+---
+
+<button
+  id="audio-ambient-btn"
+  class="audio-ambient-btn"
+  aria-label="Activar audio ambiente"
+  aria-pressed="false"
+  title="Audio ambiente"
+>
+  <span class="audio-icon" aria-hidden="true">
+    <!-- Música off (rayitas onduladas estáticas) -->
+    <svg id="audio-icon-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+      <path d="M9 18V5l12-2v13"/>
+      <circle cx="6" cy="18" r="3"/>
+      <circle cx="18" cy="16" r="3"/>
+    </svg>
+    <!-- Música on (ondas animadas) -->
+    <svg id="audio-icon-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:none;">
+      <path d="M3 12h2" class="wave wave-1"/>
+      <path d="M7 8v8" class="wave wave-2"/>
+      <path d="M11 5v14" class="wave wave-3"/>
+      <path d="M15 9v6" class="wave wave-4"/>
+      <path d="M19 11v2" class="wave wave-5"/>
+    </svg>
+  </span>
+</button>
+
+<!-- Tooltip "próximamente" si no hay audio -->
+<div id="audio-tooltip" class="audio-tooltip" aria-hidden="true">
+  Audio ambiente · próximamente
+</div>
+
+<audio id="audio-ambient-source" loop preload="none">
+  <source src="/audio/ambient.mp3" type="audio/mpeg" />
+</audio>
+
+<style>
+  .audio-ambient-btn {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9985;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: rgba(17,13,14,0.7);
+    border: 1px solid rgba(163,21,21,0.18);
+    color: rgba(242,234,224,0.55);
+    cursor: pointer;
+    display: none; /* sólo aparece tras pasar el hero */
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.5s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+  }
+
+  .audio-ambient-btn.visible {
+    display: flex;
+    opacity: 1;
+  }
+
+  @media (min-width: 769px) {
+    .audio-ambient-btn {
+      top: 1rem;
+      right: 4.5rem; /* a la izquierda del botón "Comprar →" del nav */
+    }
+  }
+
+  .audio-ambient-btn:hover {
+    background: rgba(26,18,20,0.92);
+    border-color: rgba(163,21,21,0.5);
+    color: var(--color-text);
+    transform: scale(1.06);
+  }
+
+  .audio-ambient-btn[aria-pressed="true"] {
+    color: var(--color-amber);
+    border-color: rgba(163,21,21,0.55);
+    background: rgba(163,21,21,0.10);
+  }
+
+  /* Ondas animadas cuando suena */
+  .audio-ambient-btn[aria-pressed="true"] .wave {
+    animation: wave-pulse 1.4s ease-in-out infinite;
+    transform-origin: center;
+  }
+  .wave-1 { animation-delay: 0.0s; }
+  .wave-2 { animation-delay: 0.18s; }
+  .wave-3 { animation-delay: 0.36s; }
+  .wave-4 { animation-delay: 0.54s; }
+  .wave-5 { animation-delay: 0.72s; }
+
+  @keyframes wave-pulse {
+    0%, 100% { transform: scaleY(0.6); opacity: 0.7; }
+    50%      { transform: scaleY(1.2); opacity: 1; }
+  }
+
+  /* Tooltip */
+  .audio-tooltip {
+    position: fixed;
+    top: 3.4rem;
+    right: 1rem;
+    z-index: 9984;
+    background: rgba(17,13,14,0.95);
+    border: 1px solid rgba(163,21,21,0.18);
+    padding: 0.5rem 0.85rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+    border-radius: 2px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 769px) {
+    .audio-tooltip {
+      right: 4.5rem;
+    }
+  }
+
+  .audio-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  function initAudioAmbient() {
+    const btn        = document.getElementById('audio-ambient-btn');
+    const audio      = document.getElementById('audio-ambient-source') as HTMLAudioElement | null;
+    const iconOff    = document.getElementById('audio-icon-off');
+    const iconOn     = document.getElementById('audio-icon-on');
+    const tooltip    = document.getElementById('audio-tooltip');
+    if (!btn || !audio || !iconOff || !iconOn) return;
+
+    // Aparece tras pasar el hero
+    const heroEl = document.getElementById('hero');
+    const heroH  = heroEl?.offsetHeight ?? window.innerHeight;
+
+    function onScroll() {
+      if (window.scrollY > heroH * 0.85) {
+        btn!.classList.add('visible');
+      } else {
+        btn!.classList.remove('visible');
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    let isPlaying = false;
+    let audioAvailable: boolean | null = null;
+
+    // Comprobar si el archivo existe
+    async function checkAudioAvailable(): Promise<boolean> {
+      if (audioAvailable !== null) return audioAvailable;
+      try {
+        const res = await fetch('/audio/ambient.mp3', { method: 'HEAD' });
+        audioAvailable = res.ok;
+      } catch {
+        audioAvailable = false;
+      }
+      return audioAvailable;
+    }
+
+    btn.addEventListener('click', async () => {
+      const available = await checkAudioAvailable();
+
+      if (!available) {
+        // Mostrar tooltip "próximamente"
+        if (tooltip) {
+          tooltip.classList.add('visible');
+          setTimeout(() => tooltip.classList.remove('visible'), 2200);
+        }
+        return;
+      }
+
+      if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+        btn.setAttribute('aria-pressed', 'false');
+        iconOff.style.display = 'block';
+        iconOn.style.display  = 'none';
+      } else {
+        audio.volume = 0.25;
+        audio.play().then(() => {
+          isPlaying = true;
+          btn.setAttribute('aria-pressed', 'true');
+          iconOff.style.display = 'none';
+          iconOn.style.display  = 'block';
+        }).catch(() => {
+          // Permiso de autoplay denegado o error
+          if (tooltip) {
+            tooltip.textContent = 'Permite el audio en tu navegador';
+            tooltip.classList.add('visible');
+            setTimeout(() => tooltip.classList.remove('visible'), 2400);
+          }
+        });
+      }
+    });
+
+    // Persistencia: si el usuario lo activó, recordarlo (sessionStorage)
+    if (sessionStorage.getItem('29-mayo-audio') === 'on') {
+      btn.click();
+    }
+  }
+
+  document.addEventListener('astro:page-load', initAudioAmbient);
+</script>
