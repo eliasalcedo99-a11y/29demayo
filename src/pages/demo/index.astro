@@ -1,0 +1,831 @@
+---
+/**
+ * Demo del libro — experiencia inmersiva con paso de páginas 3D.
+ * Texto real extraído del PDF "29 de Mayo".
+ *
+ * Modelo de páginas:
+ * - Cada página es un objeto con metadata + parrafos
+ * - El libro muestra 2 páginas a la vez (spread)
+ * - Una "hoja" se voltea con CSS perspective + rotateY
+ */
+
+interface Bloque {
+  texto: string;
+  estilo?: 'normal' | 'dialogo' | 'enfasis' | 'cita' | 'titulo';
+}
+
+interface Pagina {
+  capitulo: string;
+  titulo?: string;
+  bloques: Bloque[];
+  numero: number;
+}
+
+// === Páginas (8 en total para asegurar fluidez) ===
+const paginas: Pagina[] = [
+  // ─── PRÓLOGO (página 1-2) ───
+  {
+    capitulo: 'Prólogo',
+    titulo: 'Una advertencia antes de empezar',
+    numero: 1,
+    bloques: [
+      { texto: 'Esta narración nos adentrará en la vida de un joven español, más concretamente gaditano, cuya existencia se despliega en un marco idealizado, casi idílico.' },
+      { texto: 'No obstante, poco a poco, la realidad del mundo comenzará a desvelarse ante sus ojos. Las penumbras y las tinieblas, como sombras insidiosas, se irán filtrando en su día a día, transformando su percepción de la vida y la esencia misma de su camino.' },
+      { texto: 'Nos embarcaremos en una travesía repleta de aprendizaje, donde se revelará una verdad inquietante: el sendero que emprendemos al nacer puede transitar bruscamente de los tonos rosados de la ilusión a la negrura más absoluta, sin que haya transición por matices intermedios.' },
+    ],
+  },
+  {
+    capitulo: 'Prólogo',
+    numero: 2,
+    bloques: [
+      { texto: 'Hay quienes aseguran que el destino es una escritura predefinida; otros, que lo labramos con esfuerzo y determinación. Yo sostengo que cada acción que emprendemos conlleva una consecuencia, una repercusión modelada por la manera en que nuestra mente percibe y clasifica dicha acción.' },
+      { texto: 'En esta historia viviremos el triunfo y la soledad. Seremos partícipes de actos de valentía y enfrentaremos el terror más visceral.', estilo: 'enfasis' },
+      { texto: 'Ten cautela. Al concluir este libro, se te revelará el mundo que subyace tras nuestras idealizaciones, y tal vez descubras que no todos están preparados para afrontar la realidad.' },
+      { texto: 'Abraza a tus padres, a tus abuelos y a todas aquellas personas que consideres familia.', estilo: 'cita' },
+      { texto: 'Y ahora, sin más demora, pasa la página.', estilo: 'enfasis' },
+    ],
+  },
+  // ─── CAPÍTULO 1 (página 3-4) ───
+  {
+    capitulo: 'Capítulo 1 · 4 de Junio, 2006',
+    titulo: 'Un lunes apacible',
+    numero: 3,
+    bloques: [
+      { texto: 'Era un domingo apacible, uno de esos días en los que el sol acaricia la piel y el aroma del verano comienza a instalarse en el aire.' },
+      { texto: 'La familia Alcedo, unida y bulliciosa, disfrutaba de una barbacoa en la casa de María Jesús, la mayor de los tres hermanos. Esta reunión no era diferente de otras tantas que habían compartido, pero había algo en el ambiente, una energía sutil, como si el destino estuviera al borde de una revelación.' },
+      { texto: 'Francisco David, conocido por todos como Paco, hablaba emocionado de su hijo que estaba por nacer. Con un brillo en los ojos y una cerveza en la mano, sus palabras se entremezclaban con el rugido de las motos en la televisión.' },
+      { texto: 'Entre risas y copas, Enrique, con su habitual picardía, advirtió a Paco:' },
+      { texto: '— Tu hijo puede decidir que hoy es el día de conocer el mundo.', estilo: 'dialogo' },
+    ],
+  },
+  {
+    capitulo: 'Capítulo 1 · 4 de Junio, 2006',
+    numero: 4,
+    bloques: [
+      { texto: 'Las palabras, pronunciadas con aire de broma, resultaron casi proféticas. Apenas unas horas después, Silvia interrumpió la algarabía con una frase que lo cambiaría todo:' },
+      { texto: '— Creo que he roto aguas.', estilo: 'dialogo' },
+      { texto: 'En el hospital, el tiempo pareció detenerse. El parto, lejos de ser sencillo, se prolongó con complicaciones que mantuvieron a todos al borde del colapso emocional.' },
+      { texto: 'Cuando finalmente Elías llegó al mundo, algo no estaba bien. Los gritos de los médicos llenaron la sala. El recién nacido no respiraba.' },
+      { texto: 'Elías se reveló desde el primer momento como un luchador. Aunque nació bajo la sombra de la adversidad, Elías siempre ha sido, y será, un sobreviviente.', estilo: 'enfasis' },
+    ],
+  },
+  // ─── CAPÍTULO 2 (página 5-6) ───
+  {
+    capitulo: 'Capítulo 2 · 31 de Diciembre, 2022',
+    titulo: 'La última Nochevieja',
+    numero: 5,
+    bloques: [
+      { texto: 'A lo lejos se escucha un grave sonido que despierta a Elías la mañana del último día del año. Otra vez su madre estaba limpiando la casa.' },
+      { texto: '— Es temprano para estar limpiando, Silvia —dice con tono burlón.', estilo: 'dialogo' },
+      { texto: '— Son las 12:30, niño, vaya horario que tienes —responde ella, con una sonrisa entre divertida y resignada.', estilo: 'dialogo' },
+      { texto: 'En casa de la abuela Antonia, el bullicio lo envuelve. Tito Kike está de pie junto a la mesa, sirviendo un vino tinto que parece tan robusto como su risa.' },
+      { texto: '— ¡Este crianza es como yo, elegante y con cuerpo! —dice, alzando la copa.', estilo: 'dialogo' },
+    ],
+  },
+  {
+    capitulo: 'Capítulo 2 · 31 de Diciembre, 2022',
+    numero: 6,
+    bloques: [
+      { texto: 'A las doce, el reloj marca la hora de las uvas. Doce campanadas, doce deseos apresurados y una ronda de abrazos y besos que parecen interminables.' },
+      { texto: 'Elías pensaba que sería un año histórico. Sin embargo, 2023 se presentaría como un año de contrastes. Comenzó como una promesa luminosa, un lienzo en blanco listo para ser pintado con los colores más vibrantes de la alegría y la esperanza.' },
+      { texto: 'Pero la vida, caprichosa e implacable, escondía entre sus pliegues una sombra que cambiaría todo.', estilo: 'enfasis' },
+      { texto: '"La felicidad siempre fue una promesa efímera."', estilo: 'cita' },
+    ],
+  },
+  // ─── CAPÍTULO 3 (página 7-8) ───
+  {
+    capitulo: 'Capítulo 3 · Enero, 2023',
+    titulo: 'La libreta verde',
+    numero: 7,
+    bloques: [
+      { texto: 'Navidad ya ha acabado, y la vuelta a la rutina es una realidad aplastante que teme todo estudiante. Sin mucha motivación, Elías ya tenía preparada la maleta y estaba listo para volver a darlo todo en los estudios.' },
+      { texto: 'Escribir para Elías era como encontrar un oasis en medio del desierto; una fuente de calma y satisfacción que lo alejaba del ruido y las tensiones del mundo exterior.' },
+      { texto: 'Cada palabra que plasmaba en papel era un paso hacia un universo paralelo, un lugar donde podía ser quien quisiera y donde sus pensamientos fluían con total libertad.', estilo: 'enfasis' },
+      { texto: 'En clase, los profesores le llamaban la atención porque siempre estaba escribiendo en su libretita verde de escasas dimensiones. Ese cuadernillo, ajado por el uso y cargado de secretos, se convertía en su refugio personal.' },
+    ],
+  },
+  {
+    capitulo: 'Capítulo 3 · Enero, 2023',
+    numero: 8,
+    bloques: [
+      { texto: 'Escribir también le permitía procesar sus emociones, especialmente aquellas que no se atrevía a compartir con nadie.' },
+      { texto: '"Cuando todo parece perdido, siempre queda la palabra."', estilo: 'cita' },
+      { texto: 'Enero se desvaneció con una fugacidad insólita. Para Elías, lejos de ser un tiempo de tedio, fue un mes colmado de ilusiones. Entre la aparente normalidad, se sumergía en una incansable búsqueda de su sueño: su primera moto.' },
+      { texto: 'Tras una tarde sumergido en notas musicales y versos compartidos con Migue y Cristian, Elías se dispuso a volver a casa, sin sospechar que en cuestión de minutos la vida le demostraría, con cruel contundencia, que la mejor literatura nace de las heridas más profundas.', estilo: 'enfasis' },
+    ],
+  },
+];
+
+const total = paginas.length;
+---
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#080608" />
+  <title>29 de Mayo — Demo interactiva</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@300;400&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #080608;
+      --surface:    #110D0E;
+      --paper:      #F2EDE3;
+      --paper-soft: #E8E2D5;
+      --ink:        #1A1208;
+      --ink-soft:   rgba(26,18,8,0.82);
+      --muted:      #8A7A74;
+      --amber:      #A31515;
+      --amber-light:#C41E1E;
+      --border:     #231212;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--paper);
+      font-family: 'Lora', Georgia, serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Fondo cinematográfico */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 40%, rgba(163,21,21,0.07), transparent 70%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(196,30,30,0.04), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9997;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 128px 128px;
+    }
+
+    /* ── Top bar ────────────────────────────────────────────── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 1.75rem;
+      background: linear-gradient(to bottom, rgba(8,6,8,0.95), transparent);
+    }
+    .topbar a, .topbar span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .topbar a:hover { color: var(--amber-light); }
+    .topbar .title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+      color: var(--paper);
+      text-transform: none;
+      font-weight: 500;
+    }
+
+    /* ── Stage 3D donde vive el libro ───────────────────────── */
+    .stage {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 2800px;
+      perspective-origin: 50% 45%;
+      padding: 4.5rem 1.5rem 5.5rem;
+    }
+
+    /* ── Libro container ───────────────────────────────────── */
+    .book {
+      position: relative;
+      width: min(92vw, 960px);
+      height: min(75vh, 640px);
+      transform-style: preserve-3d;
+      transform: rotateX(6deg);
+      filter: drop-shadow(0 30px 80px rgba(0,0,0,0.75));
+    }
+
+    /* Lomo central */
+    .book-spine {
+      position: absolute;
+      left: calc(50% - 6px);
+      top: -4px;
+      bottom: -4px;
+      width: 12px;
+      background:
+        linear-gradient(to right,
+          rgba(0,0,0,0.4) 0%,
+          rgba(0,0,0,0.8) 40%,
+          rgba(0,0,0,0.95) 50%,
+          rgba(0,0,0,0.8) 60%,
+          rgba(0,0,0,0.4) 100%);
+      z-index: 30;
+      pointer-events: none;
+      box-shadow:
+        -4px 0 8px rgba(0,0,0,0.4),
+         4px 0 8px rgba(0,0,0,0.4);
+    }
+
+    /* ── Páginas estáticas (background): la base que vemos siempre ── */
+    .page-static {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      overflow: hidden;
+    }
+    .page-static.left {
+      left: 0;
+      background:
+        linear-gradient(to right, rgba(0,0,0,0.15) 0%, transparent 12%),
+        linear-gradient(to right, var(--paper-soft) 0%, var(--paper) 4%);
+    }
+    .page-static.right {
+      right: 0;
+      background:
+        linear-gradient(to left, rgba(0,0,0,0.15) 0%, transparent 12%),
+        linear-gradient(to left, var(--paper-soft) 0%, var(--paper) 4%);
+    }
+
+    /* ── Hoja que se voltea (única, encima de las páginas estáticas) ── */
+    .flip-leaf {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 1.0s cubic-bezier(0.55, 0.05, 0.25, 1);
+      will-change: transform;
+      pointer-events: none;
+      z-index: 25;
+    }
+    /* Para flip hacia adelante: la hoja arranca a la derecha y se gira a la izquierda */
+    .flip-leaf.forward {
+      right: 0;
+      transform-origin: left center;
+    }
+    .flip-leaf.forward.flipping {
+      transform: rotateY(-180deg);
+    }
+    /* Para flip hacia atrás: arranca a la izquierda y se gira a la derecha */
+    .flip-leaf.backward {
+      left: 0;
+      transform-origin: right center;
+      transform: rotateY(180deg);
+    }
+    .flip-leaf.backward.flipping {
+      transform: rotateY(0deg);
+    }
+
+    .leaf-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      background: var(--paper);
+      overflow: hidden;
+    }
+    .leaf-face.front {
+      background:
+        linear-gradient(to left, rgba(0,0,0,0.15) 0%, transparent 12%),
+        var(--paper);
+    }
+    .leaf-face.back {
+      transform: rotateY(180deg);
+      background:
+        linear-gradient(to right, rgba(0,0,0,0.15) 0%, transparent 12%),
+        var(--paper);
+    }
+
+    /* ── Contenido de página ────────────────────────────────── */
+    .page-content {
+      padding: clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.75rem);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .page-chapter {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 0.5rem;
+    }
+    .page-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.15;
+      letter-spacing: -0.005em;
+      margin-bottom: 0.5rem;
+    }
+    .page-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      font-size: clamp(0.85rem, 1.05vw, 0.98rem);
+      line-height: 1.75;
+      color: var(--ink-soft);
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+    .page-body p { text-align: justify; hyphens: auto; }
+    /* Diálogos — convención tipográfica española sin side-stripe.
+       El em dash inicial "—" basta como marcador de diálogo. */
+    .page-body p.dialogue {
+      font-style: italic;
+      color: var(--ink);
+      text-align: left;
+      text-indent: -0.6em;
+      padding-left: 1.2rem;
+      letter-spacing: 0.005em;
+    }
+    .page-body p.dialogue::first-letter {
+      /* El em dash queda en color granate, sutil */
+      color: var(--amber);
+    }
+    .page-body p.enfasis {
+      font-style: italic;
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .page-body p.cita {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.18em;
+      font-style: italic;
+      text-align: center;
+      padding: 0.6rem 0;
+      color: var(--amber);
+      line-height: 1.4;
+    }
+
+    .page-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(120,90,70,0.18);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      color: rgba(26,18,8,0.45);
+    }
+
+    /* Scrollbar discreto */
+    .page-body::-webkit-scrollbar { width: 4px; }
+    .page-body::-webkit-scrollbar-thumb {
+      background: rgba(120,90,70,0.3);
+      border-radius: 2px;
+    }
+    .page-body::-webkit-scrollbar-track { background: transparent; }
+
+    /* ── Controles ────────────────────────────────────────── */
+    .controls {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      z-index: 50;
+      padding: 0.45rem 0.5rem 0.45rem 1.25rem;
+      background: rgba(17,13,14,0.9);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+    }
+    .ctrl-progress {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      min-width: 3.6rem;
+      text-align: center;
+    }
+    .ctrl-btn {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--paper);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .ctrl-btn:hover:not(:disabled) {
+      background: var(--amber);
+      border-color: var(--amber);
+      transform: scale(1.05);
+    }
+    .ctrl-btn:disabled {
+      opacity: 0.28;
+      cursor: not-allowed;
+    }
+    .ctrl-buy {
+      padding: 0 1.25rem;
+      height: 2.4rem;
+      border-radius: 999px;
+      background: var(--amber);
+      color: var(--paper);
+      border: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .ctrl-buy:hover {
+      background: var(--amber-light);
+      transform: translateY(-1px);
+    }
+
+    /* Hint inicial */
+    .hint {
+      position: fixed;
+      bottom: 5.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.32em;
+      color: rgba(138,122,116,0.6);
+      text-transform: uppercase;
+      pointer-events: none;
+      animation: hint-pulse 3s ease-in-out infinite;
+    }
+    @keyframes hint-pulse {
+      0%, 100% { opacity: 0.35; }
+      50%      { opacity: 0.85; }
+    }
+    .hint.gone { display: none; }
+
+    /* ── Pantalla final ──────────────────────────────────── */
+    .end-screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(8,6,8,0.96);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.8rem;
+      padding: 2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease;
+      z-index: 60;
+    }
+    .end-screen.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .end-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.5em;
+      color: var(--amber);
+      text-transform: uppercase;
+    }
+    .end-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      font-weight: 500;
+      text-align: center;
+      max-width: 30rem;
+      color: var(--paper);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+    .end-quote {
+      font-style: italic;
+      color: var(--muted);
+      text-align: center;
+      max-width: 30rem;
+      font-size: 1rem;
+      font-family: 'Lora', Georgia, serif;
+      line-height: 1.6;
+    }
+    .end-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .end-close:hover { color: var(--paper); border-color: var(--paper); }
+
+    /* ── Mobile: una sola página visible ─────────────────── */
+    @media (max-width: 720px) {
+      .stage {
+        padding: 4rem 0.5rem 5rem;
+      }
+      .book {
+        width: 95vw;
+        height: calc(100vh - 10rem);
+        max-height: 700px;
+      }
+      .book-spine { display: none; }
+      .page-static.left { display: none; }
+      .page-static.right { left: 0; right: 0; width: 100%; }
+      .flip-leaf { width: 100%; }
+      .page-content { padding: 1.5rem 1.25rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .flip-leaf { transition: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <a href="/" aria-label="Volver a la web">← Volver</a>
+    <span class="title">29 de Mayo</span>
+    <span style="opacity:0.5;">Demo</span>
+  </header>
+
+  <!-- Stage donde vive el libro -->
+  <main class="stage" role="main">
+
+    <div class="book" id="book" aria-label="Libro interactivo">
+
+      <!-- Lomo -->
+      <div class="book-spine" aria-hidden="true"></div>
+
+      <!-- Páginas estáticas: siempre visibles, se actualizan tras cada flip -->
+      <div class="page-static left" id="page-left" aria-live="polite"></div>
+      <div class="page-static right" id="page-right" aria-live="polite"></div>
+
+      <!-- Hoja que se voltea (oculta al inicio) -->
+      <div class="flip-leaf forward" id="flip-leaf" style="display:none;">
+        <div class="leaf-face front" id="leaf-front"></div>
+        <div class="leaf-face back"  id="leaf-back"></div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Pantalla final -->
+  <div class="end-screen" id="end-screen" aria-hidden="true">
+    <button class="end-close" id="end-close" aria-label="Cerrar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <p class="end-eyebrow">Fin del fragmento</p>
+    <h2 class="end-title">¿Quieres saber qué pasó el 29 de mayo?</h2>
+    <p class="end-quote">"De la herida nació la palabra,<br/>y al nombrar el dolor, la soledad se volvió abrazo."</p>
+    <div style="display:flex; gap:0.75rem; flex-wrap:wrap; justify-content:center;">
+      <a href="https://amzn.to/3RlmkaH" target="_blank" rel="noopener noreferrer" class="ctrl-buy" style="height:3rem; padding:0 2rem; font-size:0.75rem;">
+        Comprar Ebook · Amazon ↗
+      </a>
+      <a href="https://amzn.to/4tIcIo0" target="_blank" rel="noopener noreferrer" class="ctrl-btn" style="border-radius:999px; width:auto; padding:0 2rem; height:3rem; font-family:'DM Mono',monospace; font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; text-decoration:none; gap:0.5rem;">
+        Tapa blanda
+      </a>
+    </div>
+  </div>
+
+  <!-- Controles -->
+  <nav class="controls" aria-label="Navegación del libro">
+    <button class="ctrl-btn" id="prev-btn" aria-label="Página anterior" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="ctrl-progress" id="progress" aria-live="polite">{1} / {total}</span>
+    <button class="ctrl-btn" id="next-btn" aria-label="Página siguiente">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <a href="https://amzn.to/3RlmkaH" target="_blank" rel="noopener noreferrer" class="ctrl-buy">
+      Amazon ↗
+    </a>
+  </nav>
+
+  <!-- Hint inicial -->
+  <p class="hint" id="hint" aria-hidden="true">Pasa la página →</p>
+
+  <!-- Datos -->
+  <script type="application/json" id="pages-data" set:html={JSON.stringify(paginas)}></script>
+
+  <script is:inline>
+    (function() {
+      const pages = JSON.parse(document.getElementById('pages-data').textContent);
+      const total = pages.length;
+
+      // Estado: índice de la página IZQUIERDA actual.
+      // Right = leftIdx + 1
+      // Inicio: leftIdx = -1 (sólo se ve la página 0 a la derecha como "primera apertura")
+      // Realmente lo simplifico: leftIdx = 0 al inicio, vemos pages[0] | pages[1]
+      let leftIdx = 0;
+      let flipping = false;
+
+      const pageLeftEl  = document.getElementById('page-left');
+      const pageRightEl = document.getElementById('page-right');
+      const flipLeafEl  = document.getElementById('flip-leaf');
+      const leafFrontEl = document.getElementById('leaf-front');
+      const leafBackEl  = document.getElementById('leaf-back');
+      const progressEl  = document.getElementById('progress');
+      const prevBtn     = document.getElementById('prev-btn');
+      const nextBtn     = document.getElementById('next-btn');
+      const hintEl      = document.getElementById('hint');
+      const endScreen   = document.getElementById('end-screen');
+      const endClose    = document.getElementById('end-close');
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, (c) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[c]);
+      }
+
+      function buildPageHTML(page) {
+        if (!page) {
+          return '<div class="page-content"><div class="page-body" style="display:flex;align-items:center;justify-content:center;"><p style="color:rgba(26,18,8,0.25);font-style:italic;">— —</p></div></div>';
+        }
+        const cap = escapeHtml(page.capitulo);
+        const tit = page.titulo ? '<h2 class="page-title">' + escapeHtml(page.titulo) + '</h2>' : '';
+        const blocks = page.bloques.map((b) => {
+          const cls = b.estilo && b.estilo !== 'normal' ? ' class="' + b.estilo + '"' : '';
+          return '<p' + cls + '>' + escapeHtml(b.texto) + '</p>';
+        }).join('');
+        return (
+          '<div class="page-content">' +
+            '<span class="page-chapter">' + cap + '</span>' +
+            tit +
+            '<div class="page-body">' + blocks + '</div>' +
+            '<div class="page-footer">' +
+              '<span>29 de Mayo</span>' +
+              '<span>· ' + page.numero + ' ·</span>' +
+            '</div>' +
+          '</div>'
+        );
+      }
+
+      function renderStatic() {
+        pageLeftEl.innerHTML  = buildPageHTML(pages[leftIdx]);
+        pageRightEl.innerHTML = buildPageHTML(pages[leftIdx + 1]);
+      }
+
+      function updateProgress() {
+        const current = Math.min(leftIdx + 2, total);
+        progressEl.textContent = current + ' / ' + total;
+        prevBtn.disabled = leftIdx === 0;
+        nextBtn.disabled = leftIdx + 2 >= total;
+      }
+
+      function showEnd() {
+        endScreen.classList.add('visible');
+        endScreen.setAttribute('aria-hidden', 'false');
+      }
+      function hideEnd() {
+        endScreen.classList.remove('visible');
+        endScreen.setAttribute('aria-hidden', 'true');
+      }
+
+      function flipForward() {
+        if (flipping || leftIdx + 2 >= total) {
+          if (leftIdx + 2 >= total) showEnd();
+          return;
+        }
+        flipping = true;
+        if (hintEl) hintEl.classList.add('gone');
+
+        // La hoja que se voltea muestra:
+        // - Frente: la página derecha actual (pages[leftIdx + 1])
+        // - Dorso:  la próxima página izquierda (pages[leftIdx + 2])
+        leafFrontEl.innerHTML = buildPageHTML(pages[leftIdx + 1]);
+        leafBackEl.innerHTML  = buildPageHTML(pages[leftIdx + 2]);
+
+        // Configurar hoja para flip forward
+        flipLeafEl.style.display = 'block';
+        flipLeafEl.className = 'flip-leaf forward';
+
+        // Forzar reflow antes de animar
+        void flipLeafEl.offsetWidth;
+
+        flipLeafEl.classList.add('flipping');
+
+        setTimeout(() => {
+          leftIdx += 2;
+          flipLeafEl.style.display = 'none';
+          flipLeafEl.classList.remove('flipping');
+          renderStatic();
+          updateProgress();
+          flipping = false;
+        }, 1020);
+      }
+
+      function flipBackward() {
+        if (flipping || leftIdx === 0) return;
+        flipping = true;
+
+        // La hoja vuelve:
+        // - Frente (visible al final, lado derecho): página derecha anterior (pages[leftIdx - 1])
+        // - Dorso (lado izquierdo durante flip): la página izquierda actual (pages[leftIdx])
+        leafFrontEl.innerHTML = buildPageHTML(pages[leftIdx - 1]);
+        leafBackEl.innerHTML  = buildPageHTML(pages[leftIdx]);
+
+        flipLeafEl.style.display = 'block';
+        flipLeafEl.className = 'flip-leaf backward';
+
+        void flipLeafEl.offsetWidth;
+
+        flipLeafEl.classList.add('flipping');
+
+        setTimeout(() => {
+          leftIdx -= 2;
+          flipLeafEl.style.display = 'none';
+          flipLeafEl.classList.remove('flipping');
+          renderStatic();
+          updateProgress();
+          flipping = false;
+        }, 1020);
+      }
+
+      // Eventos
+      nextBtn.addEventListener('click', flipForward);
+      prevBtn.addEventListener('click', flipBackward);
+      endClose?.addEventListener('click', hideEnd);
+
+      // Click en la página derecha avanza, en la izquierda retrocede
+      pageRightEl.addEventListener('click', flipForward);
+      pageLeftEl.addEventListener('click', flipBackward);
+
+      // Teclado
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { flipForward(); e.preventDefault(); }
+        if (e.key === 'ArrowLeft' || e.key === 'PageUp') { flipBackward(); e.preventDefault(); }
+        if (e.key === 'Escape') hideEnd();
+      });
+
+      // Swipe mobile
+      let touchStartX = 0;
+      document.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      document.addEventListener('touchend', (e) => {
+        const dx = e.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(dx) > 50) {
+          if (dx < 0) flipForward();
+          else flipBackward();
+        }
+      }, { passive: true });
+
+      // Render inicial
+      renderStatic();
+      updateProgress();
+    })();
+  </script>
+</body>
+</html>

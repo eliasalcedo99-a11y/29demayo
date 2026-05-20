@@ -1,0 +1,105 @@
+---
+---
+
+<section
+  id="demo-cta"
+  class="relative bg-[var(--color-bg)] py-28 px-6 overflow-hidden flex items-center justify-center min-h-[60vh]"
+  aria-label="Demo del libro"
+>
+  <!-- Blurred book background -->
+  <div
+    class="absolute inset-0 bg-cover bg-center opacity-10"
+    style="background-image: url('/images/portada.jpg'); filter: blur(24px) saturate(0.3); transform: scale(1.1);"
+    aria-hidden="true"
+  ></div>
+  <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-bg)]/70 via-transparent to-[var(--color-bg)]/80"></div>
+
+  <!-- Ambient glow -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber/8 rounded-full blur-[100px] pointer-events-none" aria-hidden="true"></div>
+
+  <div class="relative z-10 text-center max-w-2xl mx-auto">
+
+    <!-- Glass panel -->
+    <div class="card-glass rounded-2xl p-10 md:p-14 relative">
+      <!-- Corner glow -->
+      <div class="absolute -top-8 -left-8 w-40 h-40 bg-amber/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Icon -->
+      <div id="demo-icon" class="mb-8 flex justify-center opacity-0">
+        <div class="w-16 h-16 border border-[var(--color-amber)]/30 rounded-xl flex items-center justify-center bg-amber/5 backdrop-blur-sm">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-[var(--color-amber)]">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+        </div>
+      </div>
+
+      <h2 id="demo-title" class="font-serif text-[clamp(1.8rem,4vw,3rem)] text-[var(--color-text)] leading-tight mb-4 opacity-0">
+        Llévate los primeros capítulos<br />donde quieras.
+      </h2>
+
+      <p id="demo-sub" class="font-sans text-[var(--color-muted)] text-[1rem] mb-2 opacity-0">
+        Una experiencia de lectura diseñada para el libro.
+      </p>
+      <p id="demo-sub2" class="font-sans text-[var(--color-muted)] text-[0.9rem] mb-10 opacity-0">
+        Gratis, sin registro. Instalable en tu móvil.
+      </p>
+
+      <a
+        id="demo-btn"
+        href="/demo"
+        class="btn-amber btn-amber-solid inline-flex items-center gap-3 opacity-0"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 3l14 9-14 9V3z"/>
+        </svg>
+        Abrir la demo gratuita
+      </a>
+
+      <p id="demo-note" class="font-mono text-[0.65rem] tracking-[0.3em] text-[var(--color-muted)] mt-6 opacity-0">
+        Compatible con iOS · Android · Desktop
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: '#demo-cta',
+      start: 'top 65%',
+      once: true,
+    },
+  });
+
+  tl.fromTo('#demo-icon',
+    { opacity: 0, scale: 0.8 },
+    { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }
+  )
+  .fromTo('#demo-title',
+    { opacity: 0, y: 24 },
+    { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' },
+    '-=0.3'
+  )
+  .fromTo(['#demo-sub', '#demo-sub2'],
+    { opacity: 0, y: 12 },
+    { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', stagger: 0.15 },
+    '-=0.4'
+  )
+  .fromTo('#demo-btn',
+    { opacity: 0, y: 16, scale: 0.95 },
+    { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'power3.out' },
+    '-=0.2'
+  )
+  .fromTo('#demo-note',
+    { opacity: 0 },
+    { opacity: 1, duration: 0.5, ease: 'power2.out' },
+    '-=0.2'
+  );
+</script>

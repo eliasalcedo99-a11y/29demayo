@@ -1,0 +1,38 @@
+[
+  {
+    "nombre": "Carmen",
+    "ciudad": "Sevilla",
+    "estrellas": 5,
+    "texto": "Un relato desgarrador pero hermoso. Elías consigue poner en palabras ese vacío asfixiante que deja la pérdida de un ser querido. Me hizo llorar y, a la vez, tener ganas de abrazar más fuerte a mi familia."
+  },
+  {
+    "nombre": "Javier",
+    "ciudad": "Madrid",
+    "estrellas": 5,
+    "texto": "Sorprende la madurez con la que está escrito teniendo el autor solo 18 años. No es el típico libro de autoayuda, es literatura pura nacida del dolor. Una lectura imprescindible."
+  },
+  {
+    "nombre": "Lucía",
+    "ciudad": "Cádiz",
+    "estrellas": 5,
+    "texto": "Se nota que cada página está escrita desde el fondo del alma. La honestidad con la que trata la soledad y la resiliencia me ha conmovido profundamente."
+  },
+  {
+    "nombre": "Antonio",
+    "ciudad": "Málaga",
+    "estrellas": 4,
+    "texto": "Una historia intensa que te atrapa desde el principio. Te hace reflexionar sobre la fragilidad de la vida y cómo un solo segundo en una carretera puede cambiarlo todo."
+  },
+  {
+    "nombre": "Marta",
+    "ciudad": "Barcelona",
+    "estrellas": 5,
+    "texto": "Es un viaje duro pero muy necesario. Me quedo con la última cita del libro, que resonará en mí durante mucho tiempo. Es un gran debut de este joven talento andaluz."
+  },
+  {
+    "nombre": "Raúl",
+    "ciudad": "Valencia",
+    "estrellas": 5,
+    "texto": "Íntimo, sincero y sin cursilerías. Elías desnuda sus emociones de una forma admirable. Me sentí reflejado en su manera de procesar el duelo tras haber pasado por una situación parecida."
+  }
+]

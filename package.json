@@ -1,0 +1,30 @@
+{
+  "name": "29-de-mayo-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/netlify": "^7.0.10",
+    "@astrojs/tailwind": "^5.1.0",
+    "@studio-freight/lenis": "^1.0.42",
+    "@tsparticles/engine": "^4.0.5",
+    "@tsparticles/slim": "^4.0.5",
+    "astro": "^6.3.5",
+    "gsap": "^3.15.0",
+    "lenis": "^1.3.23",
+    "resend": "^4.0.0",
+    "tailwindcss": "^3.4.13",
+    "three": "^0.168.0",
+    "tsparticles": "^4.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/three": "^0.168.0",
+    "playwright": "^1.60.0",
+    "typescript": "^5.5.0"
+  }
+}

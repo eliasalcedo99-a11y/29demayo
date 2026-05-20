@@ -1,0 +1,133 @@
+---
+/**
+ * Mini-CTA flotante que aparece tras 30% de scroll.
+ * Discreto, sólo en desktop, oculto en LaFecha/Fragmento (momentos íntimos).
+ */
+const amazonEbook = 'https://amzn.to/3RlmkaH';
+---
+
+<a
+  id="sticky-cta"
+  href={amazonEbook}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Comprar 29 de Mayo en Amazon"
+  class="hidden md:flex"
+>
+  <span class="sticky-cta-icon" aria-hidden="true">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 19V5M5 12l7-7 7 7"/>
+    </svg>
+  </span>
+  <span class="sticky-cta-text">Comprar</span>
+  <span class="sticky-cta-divider" aria-hidden="true"></span>
+  <span class="sticky-cta-platform">Amazon</span>
+</a>
+
+<style>
+  #sticky-cta {
+    position: fixed;
+    bottom: 1.75rem;
+    right: 1.75rem;
+    z-index: 60;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.25rem 0.85rem 1.1rem;
+    background: #A31515;
+    color: #F2EAE0;
+    border: 1px solid rgba(196,30,30,0.7);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 999px;
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.6),
+      0 0 24px rgba(163,21,21,0.35),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition:
+      opacity 0.5s cubic-bezier(0.4,0,0.2,1),
+      transform 0.5s cubic-bezier(0.4,0,0.2,1),
+      background 0.3s,
+      box-shadow 0.3s;
+  }
+
+  #sticky-cta.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  #sticky-cta:hover {
+    background: #C41E1E;
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.7),
+      0 0 36px rgba(196,30,30,0.55),
+      inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+
+  .sticky-cta-icon {
+    display: inline-flex;
+    transform: rotate(45deg);
+    opacity: 0.85;
+  }
+
+  .sticky-cta-divider {
+    display: inline-block;
+    width: 1px;
+    height: 12px;
+    background: rgba(242,234,224,0.3);
+    margin: 0 0.15rem;
+  }
+
+  .sticky-cta-platform {
+    opacity: 0.8;
+    font-weight: 400;
+  }
+
+  /* En LaFecha y Fragmento: el sticky se desvanece para respetar el momento */
+  body.sticky-mute #sticky-cta {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const cta = document.getElementById('sticky-cta');
+    if (!cta) return;
+
+    const SCROLL_THRESHOLD = 0.30; // aparece a 30% del scroll total
+
+    function onScroll() {
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = window.scrollY / Math.max(total, 1);
+      if (ratio > SCROLL_THRESHOLD) {
+        cta!.classList.add('visible');
+      } else {
+        cta!.classList.remove('visible');
+      }
+    }
+
+    // Mutear el CTA en secciones íntimas: LaFecha + Fragmento
+    const muteSections = ['#seccion-fecha', '#fragmento'];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const anyMuted = entries.some((e) => e.isIntersecting && e.intersectionRatio > 0.4);
+        document.body.classList.toggle('sticky-mute', anyMuted);
+      },
+      { threshold: [0, 0.4, 0.7] }
+    );
+    muteSections.forEach((sel) => {
+      const el = document.querySelector(sel);
+      if (el) observer.observe(el);
+    });
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  });
+</script>

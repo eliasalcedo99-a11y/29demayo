@@ -1,0 +1,388 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Component layer ─────────────────────────────────────────────── */
+@layer components {
+
+  /* Lora Italic utility */
+  .font-lora-italic {
+    font-family: 'Lora', Georgia, serif;
+    font-style: italic;
+  }
+
+  /* ── Buttons ─────────────────────────────────────────────────── */
+  .btn-amber {
+    @apply relative inline-flex items-center justify-center gap-2 px-7;
+    min-height: 2.75rem;   /* WCAG 2.5.5: 44px touch target */
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #F2EAE0;
+    border: 1px solid rgba(163, 21, 21, 0.55);
+    background: transparent;
+    transition: color 0.3s, border-color 0.3s, background 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+    will-change: transform;
+  }
+  .btn-amber::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(163,21,21,0.12), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .btn-amber:hover {
+    color: #F2EAE0;
+    background: #A31515;
+    border-color: #A31515;
+    box-shadow: 0 0 32px rgba(163,21,21,0.4), 0 4px 16px rgba(0,0,0,0.5);
+  }
+  .btn-amber:hover::before { opacity: 1; }
+
+  .btn-amber-solid {
+    color: #F2EAE0;
+    background: #A31515;
+    border-color: #A31515;
+  }
+  .btn-amber-solid::before {
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+    opacity: 1;
+  }
+  .btn-amber-solid:hover {
+    background: #B91C1C;
+    border-color: #B91C1C;
+    box-shadow: 0 0 40px rgba(185,28,28,0.5), 0 4px 20px rgba(0,0,0,0.5);
+  }
+
+  /* ── Section label ───────────────────────────────────────────── */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: #8A6A60;
+    display: block;
+    margin-bottom: 1rem;
+    position: relative;
+    padding-left: 2rem;
+  }
+  .section-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 1.25rem;
+    height: 1px;
+    background: #8A6A60;
+    transform: translateY(-50%);
+  }
+
+  /* ── Card glass ──────────────────────────────────────────────── */
+  .card-glass {
+    background: linear-gradient(145deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.008) 100%);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-top-color: rgba(255,255,255,0.12);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.65),
+      0 2px 8px rgba(0,0,0,0.45),
+      inset 0 1px 0 rgba(255,255,255,0.04);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  /* ── Slider track ────────────────────────────────────────────── */
+  .slider-track {
+    display: flex;
+    gap: 1.5rem;
+    width: max-content;
+  }
+
+  /* ── Paper fragment ─────────────────────────────────────────── */
+  .paper {
+    background: #F0EDE8;
+    box-shadow: 0 4px 80px rgba(0, 0, 0, 0.45);
+    border-radius: 2px;
+    position: relative;
+  }
+  .paper::before {
+    content: '';
+    position: absolute;
+    left: 4.5rem;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(163, 21, 21, 0.18);
+    pointer-events: none;
+  }
+
+  /* ── Reveal helpers ──────────────────────────────────────────── */
+  .reveal, .reveal-left { /* initial state managed by GSAP */ }
+
+  /* ── Drop cap literario (Fragmento, primera letra) ─────────── */
+  .drop-cap {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 3.5em;
+    line-height: 0.85;
+    float: left;
+    margin: 0.05em 0.12em 0 0;
+    color: #A31515;
+    letter-spacing: -0.02em;
+  }
+
+  /* ── Underline animado para enlaces de texto ──────────────── */
+  .link-underline {
+    position: relative;
+    display: inline-block;
+  }
+  .link-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+
+  /* ── Fragmento: botón secundario (sin inline handlers) ──────── */
+  .frag-btn-secondary {
+    background: rgba(163,21,21,0.12);
+    color: #F2EAE0;
+    border: 1px solid rgba(163,21,21,0.35);
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+  .frag-btn-secondary:hover {
+    background: rgba(163,21,21,0.25);
+    border-color: rgba(163,21,21,0.55);
+  }
+
+  /* ── Garnet pulse (timeline special node) ─────────────────────── */
+  @keyframes pulse-amber {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(163,21,21,0.7); }
+    50%       { box-shadow: 0 0 0 12px rgba(163,21,21,0); }
+  }
+  .animate-pulse-amber {
+    animation: pulse-amber 2s ease-in-out infinite;
+  }
+}
+
+/* ── Base layer ──────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    /* Colors — Noir literario + Granate */
+    --color-bg:          #080608;
+    --color-surface:     #110D0E;
+    --color-amber:       #A31515;
+    --color-amber-light: #C41E1E;
+    --color-text:        #F2EAE0;
+    --color-muted:       #8A7A74;
+    --color-border:      #231212;
+    --color-bg-light:    #F0EDE8;
+    --color-text-light:  #180A0A;
+
+    /* Shadow system */
+    --shadow-sm:   0 2px 8px rgba(0,0,0,0.5);
+    --shadow-md:   0 8px 32px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4);
+    --shadow-lg:   0 20px 60px rgba(0,0,0,0.75), 0 4px 16px rgba(0,0,0,0.5);
+    --shadow-glow: 0 0 40px rgba(163,21,21,0.2);
+
+    /* Typography features */
+    --font-feature-serif: "kern" 1, "liga" 1, "calt" 1, "swsh" 1;
+  }
+
+  /* Lenis */
+  html.lenis { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+  .lenis.lenis-stopped { overflow: hidden; }
+  .lenis.lenis-scrolling iframe { pointer-events: none; }
+
+  body {
+    @apply bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased overflow-x-hidden;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  /* ── Grain cinematográfico ─────────────────────────────────── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9997;
+    opacity: 0.032;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px 128px;
+  }
+
+  /* Custom cursor — sólo cuando body lo activa.
+     Fallback de accesibilidad: si el JS del cursor falla o JS está off,
+     los interactivos mantienen su cursor nativo. */
+  @media (pointer: fine) {
+    body.has-custom-cursor,
+    body.has-custom-cursor::before,
+    body.has-custom-cursor::after { cursor: none; }
+    body.has-custom-cursor a,
+    body.has-custom-cursor button,
+    body.has-custom-cursor input,
+    body.has-custom-cursor textarea,
+    body.has-custom-cursor select,
+    body.has-custom-cursor [role="button"],
+    body.has-custom-cursor [tabindex]:not([tabindex="-1"]) {
+      cursor: none;
+    }
+  }
+
+  /* ── Scroll progress bar ─────────────────────────────────────── */
+  #scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 1.5px;
+    background: linear-gradient(90deg, #7B0F0F, #C41E1E);
+    z-index: 9998;
+    width: 0%;
+    pointer-events: none;
+    box-shadow: 0 0 14px rgba(163,21,21,0.6);
+    transition: width 0.05s linear;
+  }
+
+  /* ── Cursor ──────────────────────────────────────────────────── */
+  @media (pointer: fine) {
+    #cursor-dot {
+      position: fixed;
+      top: 0; left: 0;
+      width: 5px; height: 5px;
+      background: #C41E1E;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10001;
+      will-change: transform;
+    }
+    #cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(163,21,21,0.45);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      will-change: transform;
+    }
+  }
+
+  /* ── Typography ──────────────────────────────────────────────── */
+  h1, h2, h3 {
+    font-feature-settings: var(--font-feature-serif);
+    text-rendering: optimizeLegibility;
+    text-wrap: balance;
+  }
+
+  /* Prosa: max 65ch + text-wrap pretty para evitar widows/orphans */
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Aplica max-width 65ch a párrafos de prosa larga.
+     No afecta a .page-body (demo) ni a párrafos dentro de cards específicas. */
+  section p:not(.fecha-line):not(.section-label):not(.ctrl-progress) {
+    max-width: 65ch;
+  }
+
+  /* Pero los párrafos que viven en un grid o están centrados pueden expandirse */
+  .text-center > p,
+  [class*="text-center"] p,
+  .flex > p,
+  blockquote p {
+    max-width: none;
+  }
+
+  /* ── Tabular nums global (contadores, fechas, stats) ─────────── */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Focus states con identidad de marca ──────────────────── */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid #C41E1E;
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  /* ── Section separators ──────────────────────────────────────── */
+  .section-fade-top {
+    position: relative;
+  }
+  .section-fade-top::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 8rem;
+    background: linear-gradient(to bottom, var(--color-bg), transparent);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .section-fade-bottom::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 8rem;
+    background: linear-gradient(to top, var(--color-bg), transparent);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Selection con identidad de marca */
+  ::selection {
+    background: rgba(163,21,21,0.45);
+    color: #F2EAE0;
+  }
+
+  /* Imágenes responsive por defecto */
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Smooth scrolling con respeto a reduced-motion */
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+
+  /* Anti-FOUC para fuentes web */
+  body {
+    font-display: swap;
+  }
+
+  /* ── prefers-reduced-motion: kill all animations ─────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    /* GSAP honrado — se inicializa sin animar */
+    .hero-char-inner { transform: none !important; opacity: 1 !important; }
+    #splash { display: none !important; }
+  }
+}

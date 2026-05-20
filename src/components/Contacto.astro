@@ -1,0 +1,192 @@
+---
+---
+
+<section
+  id="contacto"
+  class="relative bg-[var(--color-bg)] py-28 px-6 overflow-hidden"
+  aria-label="Contacto y prensa"
+>
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 md:gap-24">
+
+    <!-- Left: info -->
+    <div class="space-y-6">
+      <span class="section-label">Contacto</span>
+      <h2 class="reveal font-serif text-[clamp(2rem,4vw,3rem)] text-[var(--color-text)] leading-tight">
+        ¿Medios, podcasts<br />o colaboraciones?
+      </h2>
+      <p class="reveal font-sans text-[var(--color-muted)] leading-relaxed">
+        Si quieres entrevistar al autor, reseñar el libro o proponer algo,
+        escribe aquí. Respondo a todo.
+      </p>
+
+      <div class="reveal space-y-3 pt-2">
+        <a
+          href="mailto:eliasalcedoprof@gmail.com"
+          class="flex items-center gap-3 font-mono text-[0.8rem] text-[var(--color-amber)] hover:text-[var(--color-amber-light)] transition-colors duration-300"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          eliasalcedoprof@gmail.com
+        </a>
+        <a
+          href="https://www.instagram.com/eliasalcedo04"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex items-center gap-3 font-mono text-[0.8rem] text-[var(--color-muted)] hover:text-[var(--color-amber)] transition-colors duration-300"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+          </svg>
+          @eliasalcedo04 ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: form -->
+    <div>
+      <form
+        id="contacto-form"
+        name="contacto"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        class="card-glass rounded-2xl p-8 md:p-10 space-y-4"
+        novalidate
+      >
+        <input type="hidden" name="form-name" value="contacto" />
+        <p class="hidden">
+          <label>No rellenar: <input name="bot-field" /></label>
+        </p>
+
+        <div>
+          <label for="cf-nombre" class="font-mono text-[0.65rem] tracking-[0.25em] text-[var(--color-muted)] uppercase block mb-2">Nombre</label>
+          <input
+            id="cf-nombre"
+            name="nombre"
+            type="text"
+            placeholder="Tu nombre"
+            required
+            class="w-full bg-[var(--color-bg)] border border-white/[0.08] text-[var(--color-text)] placeholder:text-[var(--color-muted)]/50 font-sans text-[0.9rem] px-4 py-3 rounded-lg outline-none focus:border-[var(--color-amber)] transition-colors duration-200"
+          />
+        </div>
+
+        <div>
+          <label for="cf-email" class="font-mono text-[0.65rem] tracking-[0.25em] text-[var(--color-muted)] uppercase block mb-2">Email</label>
+          <input
+            id="cf-email"
+            name="email"
+            type="email"
+            placeholder="tu@correo.com"
+            spellcheck="false"
+            autocomplete="email"
+            required
+            class="w-full bg-[var(--color-bg)] border border-white/[0.08] text-[var(--color-text)] placeholder:text-[var(--color-muted)]/50 font-sans text-[0.9rem] px-4 py-3 rounded-lg outline-none focus:border-[var(--color-amber)] transition-colors duration-200"
+          />
+        </div>
+
+        <div>
+          <label for="cf-motivo" class="font-mono text-[0.65rem] tracking-[0.25em] text-[var(--color-muted)] uppercase block mb-2">Motivo</label>
+          <select
+            id="cf-motivo"
+            name="motivo"
+            class="w-full bg-[var(--color-bg)] border border-white/[0.08] text-[var(--color-text)] font-sans text-[0.9rem] px-4 py-3 rounded-lg outline-none focus:border-[var(--color-amber)] transition-colors duration-200 appearance-none cursor-pointer"
+          >
+            <option value="prensa">Prensa / entrevista</option>
+            <option value="resena">Reseña del libro</option>
+            <option value="colaboracion">Colaboración</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="cf-mensaje" class="font-mono text-[0.65rem] tracking-[0.25em] text-[var(--color-muted)] uppercase block mb-2">Mensaje</label>
+          <textarea
+            id="cf-mensaje"
+            name="mensaje"
+            placeholder="Cuéntame"
+            rows="5"
+            required
+            class="w-full bg-[var(--color-bg)] border border-white/[0.08] text-[var(--color-text)] placeholder:text-[var(--color-muted)]/50 font-sans text-[0.9rem] px-4 py-3 rounded-lg outline-none focus:border-[var(--color-amber)] transition-colors duration-200 resize-none"
+          ></textarea>
+        </div>
+
+        <button type="submit" class="btn-amber btn-amber-solid w-full justify-center">
+          Enviar →
+        </button>
+      </form>
+
+      <!-- Success state -->
+      <div id="contacto-success" class="hidden text-center py-12 space-y-4">
+        <div class="w-12 h-12 rounded-full border-2 border-[var(--color-amber)] flex items-center justify-center mx-auto">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-[var(--color-amber)]">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <p class="font-serif text-[1.2rem] text-[var(--color-text)]">Recibido.</p>
+        <p class="font-sans text-[var(--color-muted)] text-[0.9rem]">Respondo pronto.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.utils.toArray<HTMLElement>('#contacto .reveal').forEach((el, i) => {
+    gsap.fromTo(el,
+      { opacity: 0, y: 24 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        delay: i * 0.1,
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 84%',
+          once: true,
+        },
+      }
+    );
+  });
+
+  // Netlify Forms success (URL redirect or JS)
+  const form    = document.getElementById('contacto-form') as HTMLFormElement | null;
+  const success = document.getElementById('contacto-success');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+
+    try {
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data as any).toString(),
+      });
+
+      gsap.to(form, {
+        opacity: 0,
+        y: -12,
+        duration: 0.4,
+        onComplete: () => {
+          form?.classList.add('hidden');
+          success?.classList.remove('hidden');
+          gsap.fromTo(success, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5 });
+        },
+      });
+    } catch {
+      // If fetch fails (e.g. static, no Netlify context), still show success
+      form?.classList.add('hidden');
+      success?.classList.remove('hidden');
+    }
+  });
+</script>

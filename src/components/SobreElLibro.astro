@@ -1,0 +1,444 @@
+---
+const amazonEbook     = 'https://amzn.to/3RlmkaH';
+const amazonPaperback = 'https://amzn.to/4tIcIo0';
+---
+
+<section
+  id="sobre-el-libro"
+  class="bg-surface py-28 md:py-36 px-6"
+  aria-label="Sobre el libro"
+>
+  <div class="max-w-6xl mx-auto grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] gap-12 md:gap-16 items-start">
+
+    <!-- Three.js Book Canvas (left) — sticky en desktop para que acompañe -->
+    <div class="flex flex-col items-center md:items-end justify-center order-2 md:order-1 md:sticky md:top-24 md:self-start gap-3">
+      <div id="book-3d-stage" class="reveal-left relative w-full max-w-[440px] aspect-[3/4]">
+        <canvas
+          id="book-3d-canvas"
+          class="absolute inset-0 w-full h-full cursor-pointer"
+          aria-label="Vista 3D del libro 29 de Mayo"
+        ></canvas>
+        <!-- Fallback estático para no-JS o si Three.js falla -->
+        <noscript>
+          <img
+            src="/images/portada.jpg"
+            alt="Portada del libro 29 de Mayo"
+            width="340"
+            height="500"
+            class="absolute inset-0 m-auto max-w-[280px] rounded-sm shadow-2xl"
+          />
+        </noscript>
+      </div>
+      <!-- Tooltip que invita: aparece tras hover sostenido -->
+      <p id="book-3d-tooltip"
+         class="opacity-0 pointer-events-none whitespace-nowrap"
+         aria-hidden="true"
+         style="font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.45em; color: var(--color-amber); text-transform:uppercase; transition: opacity 0.6s ease;">
+        ← Movélo
+      </p>
+    </div>
+
+    <!-- Texto (right) — sin card, fluye directo sobre el surface -->
+    <div class="order-1 md:order-2 space-y-6 min-w-0">
+      <div class="reveal relative">
+        <span class="section-label">El libro</span>
+
+        <h2 class="font-serif text-[clamp(2rem,4vw,3rem)] text-[var(--color-text)] leading-tight mb-6">
+          Una historia real<br />sobre seguir adelante
+        </h2>
+
+        <div class="space-y-4">
+          <p class="font-sans text-[var(--color-muted)] leading-relaxed text-[1.05rem]">
+            El año 2023 se presentaba como un lienzo en blanco para Elías, lleno de promesas luminosas
+            y sueños a punto de cumplirse. Sin embargo, la vida, con su naturaleza caprichosa, escondía
+            entre sus pliegues una sombra dispuesta a cambiarlo todo. La llegada de mayo marcaría un
+            punto de inflexión definitivo, transformando para siempre la percepción de su propia existencia.
+          </p>
+
+          <p class="font-sans text-[var(--color-muted)] leading-relaxed text-[1.05rem]">
+            Esta narración nos adentra en una travesía de aprendizaje, donde el sendero de la juventud
+            transita bruscamente desde los tonos rosados de la ilusión hacia la negrura más absoluta.
+            A través de las páginas, somos testigos de cómo un joven se enfrenta a sus demonios internos,
+            buscando refugio en la literatura para transformar su profundo dolor en arte.
+          </p>
+
+          <p class="font-sans text-[var(--color-muted)] leading-relaxed text-[1.05rem]">
+            Lejos de ser un relato complaciente, esta obra es un reflejo íntimo y descarnado sobre la
+            supervivencia emocional. Un viaje conmovedor sobre la familia y la resiliencia que nos recuerda
+            que, incluso en los abismos más oscuros, el amor incondicional y la palabra aguardan siempre
+            para ofrecer un abrazo salvador.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-4 pt-8">
+          <a href="#fragmento" class="btn-amber">
+            Leer un fragmento ↓
+          </a>
+          <a
+            href={amazonEbook}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-amber btn-amber-solid"
+          >
+            Comprar en Amazon
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import * as THREE from 'three';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let bookCleanup: (() => void) | null = null;
+
+  function initBook() {
+    // Limpiar si ya existe una instancia previa (evitar duplicados en View Transitions)
+    if (bookCleanup) {
+      bookCleanup();
+      bookCleanup = null;
+    }
+
+    const localTriggers: any[] = [];
+
+    // ── Reveal del texto + entrada del libro ─────────────────────
+    gsap.utils.toArray<HTMLElement>('#sobre-el-libro .reveal').forEach((el, i) => {
+      const anim = gsap.fromTo(el,
+        { opacity: 0, y: 32 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          delay: i * 0.08,
+          scrollTrigger: { trigger: el, start: 'top 82%', once: true },
+        }
+      );
+      if (anim.scrollTrigger) localTriggers.push(anim.scrollTrigger);
+    });
+
+    const stageAnim = gsap.fromTo('#book-3d-stage',
+      { opacity: 0, x: -60 },
+      {
+        opacity: 1,
+        x: 0,
+        duration: 1.1,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: '#sobre-el-libro', start: 'top 70%', once: true },
+      }
+    );
+    if (stageAnim.scrollTrigger) localTriggers.push(stageAnim.scrollTrigger);
+
+    // ── Three.js: libro 3D con grosor, lomo y materiales ─────────
+    const canvas = document.getElementById('book-3d-canvas') as HTMLCanvasElement | null;
+    const stage  = document.getElementById('book-3d-stage');
+    if (!canvas || !stage) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const scene = new THREE.Scene();
+
+    // Cámara
+    const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+    camera.position.set(0, 0, 9);
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(stage.clientWidth, stage.clientHeight, false);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // ── Geometría del libro ────────────────────────────────────
+    const W = 2.6;   // ancho
+    const H = 3.9;   // alto
+    const D = 0.34;  // grosor
+    const geo = new THREE.BoxGeometry(W, H, D);
+
+    // ── Cargar textura de la portada ────────────────────────────
+    const loader = new THREE.TextureLoader();
+    const coverTex = loader.load('/images/portada.jpg', (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    });
+
+    // Material páginas: tono crema con textura sutil (canvas procedural)
+    function makePagesTexture(): THREE.Texture {
+      const c = document.createElement('canvas');
+      c.width  = 256;
+      c.height = 1024;
+      const ctx = c.getContext('2d')!;
+      ctx.fillStyle = '#E8DFD2';
+      ctx.fillRect(0, 0, c.width, c.height);
+      // Líneas finas horizontales (simulan páginas)
+      ctx.strokeStyle = 'rgba(120,90,70,0.15)';
+      ctx.lineWidth = 0.5;
+      for (let y = 0; y < c.height; y += 2) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(c.width, y);
+        ctx.stroke();
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+    const pagesTex = makePagesTexture();
+
+    // Material lomo: granate oscuro con sutil gradiente
+    function makeSpineTexture(): THREE.Texture {
+      const c = document.createElement('canvas');
+      c.width  = 64;
+      c.height = 512;
+      const ctx = c.getContext('2d')!;
+      const grad = ctx.createLinearGradient(0, 0, 0, c.height);
+      grad.addColorStop(0,    '#1A0808');
+      grad.addColorStop(0.5,  '#2A0F0F');
+      grad.addColorStop(1,    '#1A0808');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, c.width, c.height);
+      // Letras del lomo (título girado)
+      ctx.fillStyle = '#F2EAE0';
+      ctx.font      = 'bold 32px Georgia';
+      ctx.textAlign = 'center';
+      ctx.save();
+      ctx.translate(c.width / 2, c.height / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('29 DE MAYO', 0, 10);
+      ctx.restore();
+      // Nombre del autor (más pequeño)
+      ctx.fillStyle = 'rgba(242,234,224,0.65)';
+      ctx.font      = '14px monospace';
+      ctx.save();
+      ctx.translate(c.width / 2, c.height - 80);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('ELÍAS ALCEDO', 0, 5);
+      ctx.restore();
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+    const spineTex = makeSpineTexture();
+
+    // Material contraportada: granate oscuro
+    const backMaterial = new THREE.MeshStandardMaterial({
+      color: '#180808',
+      roughness: 0.85,
+      metalness: 0.05,
+    });
+
+    const materials = [
+      new THREE.MeshStandardMaterial({ map: pagesTex, roughness: 0.9 }),                   // +X (canto derecho de páginas)
+      new THREE.MeshStandardMaterial({ map: spineTex, roughness: 0.7, metalness: 0.05 }),  // -X (lomo izquierdo)
+      new THREE.MeshStandardMaterial({ map: pagesTex, roughness: 0.9 }),                   // +Y (canto superior)
+      new THREE.MeshStandardMaterial({ map: pagesTex, roughness: 0.9 }),                   // -Y (canto inferior)
+      new THREE.MeshStandardMaterial({ map: coverTex, roughness: 0.55, metalness: 0.08 }), // +Z (portada)
+      backMaterial,                                                                        // -Z (contraportada)
+    ];
+
+    const book = new THREE.Mesh(geo, materials);
+    book.castShadow = true;
+    book.receiveShadow = false;
+    book.rotation.y = -0.45;
+    book.rotation.x = 0.06;
+    scene.add(book);
+
+    // ── Plano de sombra (ground) ────────────────────────────────
+    const shadowGeo = new THREE.PlaneGeometry(10, 10);
+    const shadowMat = new THREE.ShadowMaterial({ opacity: 0.5 });
+    const shadowPlane = new THREE.Mesh(shadowGeo, shadowMat);
+    shadowPlane.rotation.x = -Math.PI / 2;
+    shadowPlane.position.y = -2.4;
+    shadowPlane.receiveShadow = true;
+    scene.add(shadowPlane);
+
+    // ── Iluminación cinematográfica ─────────────────────────────
+    const ambient = new THREE.AmbientLight(0xffe0c8, 0.45);
+    scene.add(ambient);
+
+    const keyLight = new THREE.DirectionalLight(0xfff0d8, 1.4);
+    keyLight.position.set(-4, 6, 5);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.set(1024, 1024);
+    keyLight.shadow.camera.left   = -4;
+    keyLight.shadow.camera.right  =  4;
+    keyLight.shadow.camera.top    =  4;
+    keyLight.shadow.camera.bottom = -4;
+    keyLight.shadow.bias = -0.0005;
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0xc41e1e, 0.6);
+    rimLight.position.set(5, 2, -3);
+    scene.add(rimLight);
+
+    const fillLight = new THREE.DirectionalLight(0xc0785a, 0.25);
+    fillLight.position.set(2, -3, 4);
+    scene.add(fillLight);
+
+    // ── Mouse tilt (parallax) ───────────────────────────────────
+    const REST_Y = -0.42;
+    const REST_X = 0.04;
+    const MAX_X  = 0.22;
+    const MAX_Y  = 0.40;
+    const target   = { x: REST_X, y: REST_Y };
+
+    const velocity = { x: 0, y: 0 };
+    const SPRING = 0.085;
+    const DAMP   = 0.78;
+
+    let mouseInside = false;
+    let mouseHasMoved = false;
+    const tooltipEl = document.getElementById('book-3d-tooltip');
+
+    function showTooltip() {
+      if (tooltipEl && !mouseHasMoved) {
+        tooltipEl.style.opacity = '0.7';
+        setTimeout(() => {
+          if (tooltipEl) tooltipEl.style.opacity = '0';
+        }, 3000);
+      }
+    }
+
+    const tooltipTimeout = setTimeout(() => {
+      if (!mouseHasMoved) showTooltip();
+    }, 4500);
+
+    const onMouseEnter = () => { mouseInside = true; };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!mouseHasMoved) {
+        mouseHasMoved = true;
+        if (tooltipEl) tooltipEl.style.opacity = '0';
+      }
+      const r = stage.getBoundingClientRect();
+      const dx = ((e.clientX - r.left) / r.width)  * 2 - 1;
+      const dy = ((e.clientY - r.top)  / r.height) * 2 - 1;
+      const easeX = Math.sign(dx) * Math.pow(Math.abs(dx), 1.4);
+      const easeY = Math.sign(dy) * Math.pow(Math.abs(dy), 1.4);
+      target.y = REST_Y + easeX * MAX_Y;
+      target.x = REST_X + easeY * MAX_X;
+    };
+    const onMouseLeave = () => {
+      mouseInside = false;
+      target.y = REST_Y;
+      target.x = REST_X;
+    };
+
+    if (!prefersReducedMotion) {
+      stage.addEventListener('mouseenter', onMouseEnter);
+      stage.addEventListener('mousemove', onMouseMove);
+      stage.addEventListener('mouseleave', onMouseLeave);
+    }
+
+    // ── Resize observer ─────────────────────────────────────────
+    const ro = new ResizeObserver(() => {
+      const w = stage.clientWidth;
+      const h = stage.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h, false);
+    });
+    ro.observe(stage);
+
+    // ── Render loop ─────────────────────────────────────────────
+    let isVisible = false;
+    let rafId: number | null = null;
+    let t = 0;
+
+    function tick() {
+      if (!isVisible) {
+        rafId = null;
+        return;
+      }
+
+      t += 0.01;
+
+      book.position.y = Math.sin(t * 0.6) * 0.04;
+      if (!mouseInside) {
+        const idleYaw = Math.sin(t * 0.35) * 0.025;
+        book.position.x = idleYaw * 0.6;
+      } else {
+        book.position.x += (0 - book.position.x) * 0.05;
+      }
+
+      const fx = (target.x - book.rotation.x) * SPRING;
+      const fy = (target.y - book.rotation.y) * SPRING;
+      velocity.x = (velocity.x + fx) * DAMP;
+      velocity.y = (velocity.y + fy) * DAMP;
+      book.rotation.x += velocity.x;
+      book.rotation.y += velocity.y;
+
+      renderer.render(scene, camera);
+      rafId = requestAnimationFrame(tick);
+    }
+
+    const sectionEl = document.getElementById('sobre-el-libro');
+    let visObs: IntersectionObserver;
+    if (sectionEl) {
+      visObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            isVisible = e.isIntersecting;
+            if (isVisible && rafId === null) {
+              tick();
+            }
+          });
+        },
+        { threshold: 0.05 }
+      );
+      visObs.observe(sectionEl);
+    } else {
+      renderer.render(scene, camera);
+    }
+
+    // Guardar callback de limpieza
+    bookCleanup = () => {
+      clearTimeout(tooltipTimeout);
+      ro.disconnect();
+      if (visObs) visObs.disconnect();
+
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+
+      if (!prefersReducedMotion) {
+        stage.removeEventListener('mouseenter', onMouseEnter);
+        stage.removeEventListener('mousemove', onMouseMove);
+        stage.removeEventListener('mouseleave', onMouseLeave);
+      }
+
+      localTriggers.forEach(t => t.kill());
+
+      scene.remove(book);
+      scene.remove(shadowPlane);
+      geo.dispose();
+      coverTex.dispose();
+      pagesTex.dispose();
+      spineTex.dispose();
+      materials.forEach(m => m.dispose());
+      backMaterial.dispose();
+      shadowGeo.dispose();
+      shadowMat.dispose();
+
+      renderer.dispose();
+    };
+  }
+
+  // Cargar en astro:page-load y limpiar antes de navegar
+  document.addEventListener('astro:page-load', initBook);
+  document.addEventListener('astro:before-swap', () => {
+    if (bookCleanup) {
+      bookCleanup();
+      bookCleanup = null;
+    }
+  });
+</script>

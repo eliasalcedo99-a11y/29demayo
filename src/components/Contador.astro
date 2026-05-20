@@ -1,0 +1,212 @@
+---
+---
+
+<section
+  id="contador"
+  class="relative py-32 md:py-40 px-6 overflow-hidden"
+  style="background: var(--color-bg);"
+  aria-label="Tiempo transcurrido desde el 29 de mayo"
+>
+
+  <!-- Halos atmosféricos -->
+  <div class="absolute top-1/3 left-[15%] w-[500px] h-[500px] rounded-full pointer-events-none"
+       style="background: radial-gradient(ellipse, rgba(163,21,21,0.06) 0%, transparent 65%); filter: blur(10px);"
+       aria-hidden="true"></div>
+  <div class="absolute bottom-1/4 right-[10%] w-[400px] h-[400px] rounded-full pointer-events-none"
+       style="background: radial-gradient(ellipse, rgba(196,30,30,0.04) 0%, transparent 70%); filter: blur(10px);"
+       aria-hidden="true"></div>
+
+  <div class="relative z-10 max-w-4xl mx-auto">
+
+    <!-- Eyebrow editorial: fecha origen → hoy -->
+    <div id="cnt-eyebrow" class="opacity-0 flex items-center gap-3 mb-12 md:mb-16">
+      <span class="font-mono text-[0.6rem] tracking-[0.4em] uppercase"
+            style="color: rgba(163,21,21,0.85);">29 · 05 · 2023</span>
+      <span class="flex-1 h-px" style="background: linear-gradient(to right, rgba(163,21,21,0.4), rgba(163,21,21,0.05));"></span>
+      <span class="font-mono text-[0.6rem] tracking-[0.4em] uppercase"
+            style="color: var(--color-muted);">Hoy</span>
+    </div>
+
+    <!-- ── Prosa editorial: el contador ES una frase del libro ───
+         Rompe el hero-metric pattern con tipografía Cormorant serif gigante
+         y composición asimétrica tipo página de novela.                  -->
+
+    <p id="cnt-line-1" class="opacity-0 font-italic italic mb-2 md:mb-4"
+       style="font-family: 'Lora', Georgia, serif;
+              font-size: clamp(1rem, 2vw, 1.35rem);
+              color: var(--color-muted);
+              letter-spacing: 0.005em;">
+      Han pasado
+    </p>
+
+    <h2 id="cnt-line-2"
+        class="opacity-0 font-serif leading-[0.92] flex items-baseline flex-wrap gap-x-5 md:gap-x-7"
+        style="letter-spacing: -0.035em; color: var(--color-text); font-weight: 500;">
+      <span
+        id="cnt-dias"
+        class="tabular-nums"
+        style="font-size: clamp(5rem, 18vw, 11rem);"
+        aria-label="Días transcurridos"
+      >0</span>
+      <span class="font-italic italic"
+            style="font-family: 'Lora', Georgia, serif;
+                   font-size: clamp(2rem, 6vw, 4rem);
+                   font-style: italic;
+                   color: var(--color-amber);
+                   font-weight: 400;
+                   letter-spacing: -0.01em;">
+        días.
+      </span>
+    </h2>
+
+    <!-- Línea de continuidad: prosa que extiende el dato como una respiración -->
+    <p id="cnt-line-3" class="opacity-0 mt-8 md:mt-10 max-w-2xl"
+       style="font-family: 'Lora', Georgia, serif;
+              font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+              color: var(--color-muted);
+              line-height: 1.75;">
+      Que son <span id="cnt-horas" class="tabular-nums" style="color: var(--color-text); font-weight: 500;">0</span>
+      horas. Que son <span id="cnt-minutos" class="tabular-nums" style="color: var(--color-text); font-weight: 500;">0</span>
+      minutos. Cada uno, una bocanada de seguir.
+    </p>
+
+    <!-- Cita final, integrada como cierre de párrafo no como blockquote SaaS -->
+    <div id="cnt-quote" class="opacity-0 mt-16 md:mt-20 max-w-xl">
+      <span class="font-serif select-none block leading-none mb-2" aria-hidden="true"
+            style="font-size: 3.5rem; color: rgba(163,21,21,0.4); height: 1.5rem;">"</span>
+      <p class="font-italic italic"
+         style="font-family: 'Lora', Georgia, serif;
+                font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+                color: var(--color-text);
+                line-height: 1.55;
+                letter-spacing: -0.005em;">
+        Quizás el duelo no sea olvidar,
+        sino recordar sin desmoronarse.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let scrollTriggerInstance: any = null;
+  let counterInterval: ReturnType<typeof setInterval> | null = null;
+  let countUpTweens: gsap.core.Tween[] = [];
+
+  function initContador() {
+    cleanupContador();
+
+    const ORIGIN = new Date('2023-05-29T08:30:00').getTime();
+
+    function getElapsed() {
+      const ms       = Date.now() - ORIGIN;
+      const totalMin = Math.floor(ms / 60000);
+      const totalH   = Math.floor(ms / 3600000);
+      const totalD   = Math.floor(ms / 86400000);
+      return { dias: totalD, horas: totalH, minutos: totalMin };
+    }
+
+    const elDias    = document.getElementById('cnt-dias');
+    const elHoras   = document.getElementById('cnt-horas');
+    const elMinutos = document.getElementById('cnt-minutos');
+
+    function updateDisplay() {
+      const { dias, horas, minutos } = getElapsed();
+      if (elDias)    elDias.textContent    = dias.toLocaleString('es-ES');
+      if (elHoras)   elHoras.textContent   = horas.toLocaleString('es-ES');
+      if (elMinutos) elMinutos.textContent = minutos.toLocaleString('es-ES');
+    }
+
+    // ── Animación al entrar ────────────────────────────────────
+    let animated = false;
+
+    // Estado inicial: ligeros desplazamientos
+    gsap.set('#cnt-eyebrow', { y: -8, opacity: 0 });
+    gsap.set('#cnt-line-1', { y: 12, opacity: 0 });
+    gsap.set('#cnt-line-2', { y: 24, opacity: 0 });
+    gsap.set('#cnt-line-3', { y: 16, opacity: 0 });
+    gsap.set('#cnt-quote',  { y: 16, opacity: 0 });
+
+    scrollTriggerInstance = ScrollTrigger.create({
+      trigger: '#contador',
+      start:   'top 65%',
+      once:    true,
+      onEnter: () => {
+        if (animated) return;
+        animated = true;
+
+        const final = getElapsed();
+
+        // Reveal escalonado: cada línea respira tras la anterior
+        gsap.to('#cnt-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' });
+        gsap.to('#cnt-line-1',  { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.4 });
+        gsap.to('#cnt-line-2',  { opacity: 1, y: 0, duration: 0.95, ease: 'power3.out', delay: 0.7 });
+        gsap.to('#cnt-line-3',  { opacity: 1, y: 0, duration: 0.85, ease: 'power3.out', delay: 1.6 });
+        gsap.to('#cnt-quote',   { opacity: 1, y: 0, duration: 0.95, ease: 'power3.out', delay: 2.4 });
+
+        // Count-up del número de días (el héroe emocional)
+        const objD = { v: 0 };
+        const tweenD = gsap.to(objD, {
+          v: final.dias,
+          duration: 2.3,
+          ease: 'power3.out',
+          delay: 0.9,
+          onUpdate: () => {
+            if (elDias) elDias.textContent = Math.floor(objD.v).toLocaleString('es-ES');
+          },
+        });
+        countUpTweens.push(tweenD);
+
+        // Horas y minutos cuentan a la vez que aparecen, sin protagonismo
+        const objH = { v: 0 };
+        const tweenH = gsap.to(objH, {
+          v: final.horas,
+          duration: 2.0,
+          delay: 1.7,
+          ease: 'power3.out',
+          onUpdate: () => {
+            if (elHoras) elHoras.textContent = Math.floor(objH.v).toLocaleString('es-ES');
+          },
+        });
+        countUpTweens.push(tweenH);
+
+        const objM = { v: 0 };
+        const tweenM = gsap.to(objM, {
+          v: final.minutos,
+          duration: 2.2,
+          delay: 1.9,
+          ease: 'power3.out',
+          onUpdate: () => {
+            if (elMinutos) elMinutos.textContent = Math.floor(objM.v).toLocaleString('es-ES');
+          },
+          onComplete: () => {
+            if (counterInterval) clearInterval(counterInterval);
+            counterInterval = setInterval(updateDisplay, 60000);
+          },
+        });
+        countUpTweens.push(tweenM);
+      },
+    });
+  }
+
+  function cleanupContador() {
+    if (scrollTriggerInstance) {
+      scrollTriggerInstance.kill();
+      scrollTriggerInstance = null;
+    }
+    if (counterInterval) {
+      clearInterval(counterInterval);
+      counterInterval = null;
+    }
+    countUpTweens.forEach(t => t.kill());
+    countUpTweens = [];
+  }
+
+  document.addEventListener('astro:page-load', initContador);
+  document.addEventListener('astro:before-swap', cleanupContador);
+</script>

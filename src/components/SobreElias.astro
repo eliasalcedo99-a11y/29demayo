@@ -1,0 +1,229 @@
+---
+---
+
+<section
+  id="sobre-elias"
+  class="relative bg-[var(--color-surface)] py-28 px-6 overflow-hidden"
+  aria-label="Sobre el autor"
+>
+  <!-- Ambient glow -->
+  <div class="absolute top-1/2 left-1/4 w-96 h-96 bg-amber/10 rounded-full blur-[120px] pointer-events-none -translate-y-1/2" aria-hidden="true"></div>
+
+  <div class="relative max-w-6xl mx-auto grid md:grid-cols-[1fr_1.2fr] gap-16 md:gap-20 items-center">
+
+    <!-- Photo -->
+    <div class="relative flex justify-center">
+      <div id="author-photo-wrap" class="relative group cursor-default">
+        <!-- Decorative frame -->
+        <div class="absolute -inset-3 border border-white/[0.06] rounded-lg pointer-events-none" aria-hidden="true"></div>
+        <div class="absolute -inset-6 border border-white/[0.03] rounded-xl pointer-events-none" aria-hidden="true"></div>
+        
+        <img
+          id="author-photo"
+          src="/images/autor.jpg"
+          alt="Elías Alcedo Espinosa, autor de 29 de Mayo"
+          width="480"
+          height="580"
+          class="w-full max-w-[380px] object-cover grayscale rounded-lg opacity-0"
+          style="filter: grayscale(100%) blur(8px);"
+          loading="lazy"
+        />
+        <!-- Easter egg overlay -->
+        <div
+          id="author-quote-overlay"
+          class="absolute inset-0 bg-[var(--color-bg)]/90 backdrop-blur-sm flex items-center justify-center p-8 opacity-0 transition-opacity duration-500 pointer-events-none rounded-lg"
+          aria-hidden="true"
+        >
+          <p class="font-italic text-[var(--color-text)] text-center leading-relaxed text-[1.05rem]">
+            "Escribir para Elías no era solo un pasatiempo;<br />era una forma de respirar cuando el aire parecía escasear."
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Text -->
+    <div class="space-y-6">
+      <span class="section-label">El autor</span>
+
+      <div class="relative reveal">
+        <h2 class="font-serif text-[clamp(2rem,4vw,3rem)] text-[var(--color-text)] leading-tight">
+          Elías Alcedo Espinosa
+        </h2>
+        <p class="font-mono text-[0.7rem] tracking-[0.3em] text-[var(--color-muted)] uppercase mt-2 mb-6">
+          Cádiz · 18 años · 2025
+        </p>
+
+        <div class="space-y-4">
+          <p class="font-sans text-[var(--color-muted)] leading-relaxed text-[1.05rem]">
+            Nací en Cádiz, en un entorno familiar que siempre ha sido mi mayor refugio, aunque la vida
+            no tardó en enseñarme también sus contornos más afilados. Desde que tengo memoria, mi libreta
+            verde ha sido la trinchera donde me sentía a salvo. En ella aprendí que las palabras tienen
+            el poder de ordenar el caos y dar forma a mis miedos más profundos.
+          </p>
+
+          <p class="font-sans text-[var(--color-muted)] leading-relaxed text-[1.05rem]">
+            A mis 18 años, compagino mis estudios de Marketing en Jerez con mi verdadera vocación:
+            contar historias. Escribir este libro ha sido enfrentarme a mi propio abismo tras la dolorosa
+            pérdida de mi tío Kike. No busco dar lecciones a nadie, tan solo pretendo ser honesto con
+            el dolor y demostrar que, a veces, es al nombrar nuestras heridas cuando empezamos a sanarlas.
+          </p>
+        </div>
+
+        <!-- Social links -->
+        <div class="flex items-center gap-6 pt-6 mt-6 border-t border-white/[0.06]">
+          <a
+            href="https://www.instagram.com/eliasalcedo04"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link-underline font-mono text-[0.75rem] tracking-[0.2em] text-[var(--color-muted)] hover:text-[var(--color-amber)] transition-colors duration-300 uppercase"
+          >
+            Instagram ↗
+          </a>
+          <a
+            href="https://amzn.to/3RlmkaH"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link-underline font-mono text-[0.75rem] tracking-[0.2em] text-[var(--color-muted)] hover:text-[var(--color-amber)] transition-colors duration-300 uppercase"
+          >
+            Amazon ↗
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let eliasTriggers: any[] = [];
+  let eliasTimers: ReturnType<typeof setTimeout>[] = [];
+  let wrapHandlers: { name: string; fn: any }[] = [];
+
+  function initSobreElias() {
+    cleanupSobreElias();
+
+    const photo = document.getElementById('author-photo');
+    if (photo) {
+      // Reset start state
+      gsap.set(photo, { opacity: 0, filter: 'grayscale(100%) blur(8px)' });
+
+      const trigger = ScrollTrigger.create({
+        trigger: '#sobre-elias',
+        start: 'top 70%',
+        once: true,
+        onEnter: () => {
+          gsap.to(photo, {
+            opacity: 1,
+            filter: 'grayscale(100%) blur(0px)',
+            duration: 1,
+            ease: 'power3.out',
+          });
+        },
+      });
+      eliasTriggers.push(trigger);
+    }
+
+    // Text reveals
+    gsap.utils.toArray<HTMLElement>('#sobre-elias .reveal').forEach((el, i) => {
+      // Reset start state
+      gsap.set(el, { opacity: 0, y: 28 });
+
+      const anim = gsap.fromTo(el,
+        { opacity: 0, y: 28 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          delay: i * 0.1,
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 84%',
+            once: true,
+          },
+        }
+      );
+      if (anim.scrollTrigger) eliasTriggers.push(anim.scrollTrigger);
+    });
+
+    // Easter egg: hover/long-press reveals quote overlay
+    const wrap    = document.getElementById('author-photo-wrap');
+    const overlay = document.getElementById('author-quote-overlay');
+    if (wrap && overlay) {
+      // Ensure start state
+      overlay.style.opacity = '0';
+      overlay.style.pointerEvents = 'none';
+
+      let timer: ReturnType<typeof setTimeout>;
+      let touchTimer: ReturnType<typeof setTimeout>;
+      let touchEndTimer: ReturnType<typeof setTimeout>;
+
+      const onMouseEnter = () => {
+        timer = setTimeout(() => {
+          overlay.style.opacity = '1';
+          overlay.style.pointerEvents = 'auto';
+        }, 2000);
+        eliasTimers.push(timer);
+      };
+
+      const onMouseLeave = () => {
+        if (timer) clearTimeout(timer);
+        overlay.style.opacity = '0';
+        overlay.style.pointerEvents = 'none';
+      };
+
+      const onTouchStart = () => {
+        touchTimer = setTimeout(() => {
+          overlay.style.opacity = '1';
+          overlay.style.pointerEvents = 'auto';
+        }, 700);
+        eliasTimers.push(touchTimer);
+      };
+
+      const onTouchEnd = () => {
+        if (touchTimer) clearTimeout(touchTimer);
+        touchEndTimer = setTimeout(() => {
+          overlay.style.opacity = '0';
+          overlay.style.pointerEvents = 'none';
+        }, 2000);
+        eliasTimers.push(touchEndTimer);
+      };
+
+      wrap.addEventListener('mouseenter', onMouseEnter);
+      wrap.addEventListener('mouseleave', onMouseLeave);
+      wrap.addEventListener('touchstart', onTouchStart);
+      wrap.addEventListener('touchend', onTouchEnd);
+
+      wrapHandlers = [
+        { name: 'mouseenter', fn: onMouseEnter },
+        { name: 'mouseleave', fn: onMouseLeave },
+        { name: 'touchstart', fn: onTouchStart },
+        { name: 'touchend', fn: onTouchEnd }
+      ];
+    }
+  }
+
+  function cleanupSobreElias() {
+    eliasTriggers.forEach(t => t.kill());
+    eliasTriggers = [];
+
+    eliasTimers.forEach(t => clearTimeout(t));
+    eliasTimers = [];
+
+    const wrap = document.getElementById('author-photo-wrap');
+    if (wrap && wrapHandlers.length > 0) {
+      wrapHandlers.forEach(h => {
+        wrap.removeEventListener(h.name, h.fn);
+      });
+      wrapHandlers = [];
+    }
+  }
+
+  document.addEventListener('astro:page-load', initSobreElias);
+  document.addEventListener('astro:before-swap', cleanupSobreElias);
+</script>

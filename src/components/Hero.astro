@@ -1,0 +1,282 @@
+---
+const amazonEbook     = 'https://amzn.to/3RlmkaH';
+const amazonPaperback = 'https://amzn.to/4tIcIo0';
+---
+
+<section id="hero" class="relative h-screen min-h-[640px] overflow-hidden flex items-end pb-16 md:pb-24">
+
+  <!-- Ambient particles canvas -->
+  <div id="hero-particles" class="absolute inset-0 z-[1] pointer-events-none" aria-hidden="true"></div>
+
+  <!-- Video background -->
+  <video
+    id="hero-video"
+    class="absolute inset-0 w-full h-full object-cover opacity-0 scale-110"
+    autoplay muted loop playsinline
+    poster="/images/portada.jpg"
+    aria-hidden="true"
+  >
+    <source src="/video/hero.mp4" type="video/mp4" />
+  </video>
+
+  <!--
+    Overlays en capas:
+    1. Vignette perimetral — oscurece bordes, respeta el centro del vídeo
+    2. Gradiente inferior — legibilidad del texto sin matar la imagen
+    3. Gradiente lateral izquierdo — ancla el bloque editorial
+  -->
+  <div class="absolute inset-0 z-10" aria-hidden="true"
+       style="background: radial-gradient(ellipse at center, transparent 30%, rgba(8,6,8,0.55) 100%);"></div>
+  <div class="absolute inset-0 z-10" aria-hidden="true"
+       style="background: linear-gradient(to top, rgba(8,6,8,0.95) 0%, rgba(8,6,8,0.45) 35%, transparent 65%);"></div>
+  <div class="absolute inset-0 z-10" aria-hidden="true"
+       style="background: linear-gradient(to right, rgba(8,6,8,0.7) 0%, rgba(8,6,8,0.2) 45%, transparent 70%);"></div>
+
+  <!-- ── Top: barra editorial con tagline + autor ── -->
+  <div class="absolute top-0 left-0 right-0 z-20 px-8 md:px-16 pt-8 md:pt-10">
+    <div class="max-w-7xl mx-auto flex items-center gap-4">
+      <!-- Línea decorativa que crece -->
+      <div id="hero-rule" class="h-px"
+           style="background:#A31515; width:0; max-width:5rem; transition: none;"></div>
+      <div class="flex flex-col gap-1.5 min-w-0">
+        <p id="hero-tagline"
+           class="opacity-0 whitespace-nowrap"
+           style="font-family:'DM Mono',monospace; font-size:0.7rem; letter-spacing:0.45em; color:#A09078; text-transform:uppercase;">
+          Un viaje de duelo · familia · resiliencia
+        </p>
+        <p id="hero-author"
+           class="opacity-0 whitespace-nowrap"
+           style="font-family:'DM Mono',monospace; font-size:0.75rem; letter-spacing:0.38em; color:#C41E1E; text-transform:uppercase; font-weight: 400;">
+          Elías Alcedo Espinosa
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Bottom: título dominante + cita + CTAs ── -->
+  <div class="relative z-20 w-full px-8 md:px-16 max-w-7xl mx-auto">
+
+    <!-- Título principal: dramatic kinetic, palabra a palabra -->
+    <div class="mb-8 md:mb-10">
+      <h1
+        id="hero-title"
+        class="font-serif leading-[0.85] select-none"
+        style="
+          font-size: clamp(4rem, 14vw, 12rem);
+          letter-spacing: -0.035em;
+          color: #F2EAE0;
+          font-weight: 500;
+          text-wrap: balance;
+          filter: drop-shadow(0 8px 48px rgba(163,21,21,0.45));
+        "
+        aria-label="29 de Mayo"
+      ></h1>
+    </div>
+
+    <!-- Fila inferior: cita + botones -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+
+      <div id="hero-quote-wrap" class="opacity-0 max-w-sm">
+        <div style="width:2rem; height:1px; background:#A31515; margin-bottom:1rem;"></div>
+        <p class="font-lora-italic leading-relaxed"
+           style="font-size:clamp(0.95rem,1.8vw,1.15rem); color:#8A7A74;">
+          "De la herida nació la palabra,<br />
+          y al nombrar el dolor,<br />
+          la soledad se volvió abrazo."
+        </p>
+      </div>
+
+      <div id="hero-buttons" class="flex flex-wrap gap-3 opacity-0">
+        <a href={amazonEbook} target="_blank" rel="noopener noreferrer"
+           class="btn-amber btn-amber-solid">
+          Leer en Amazon
+        </a>
+        <a href={amazonPaperback} target="_blank" rel="noopener noreferrer"
+           class="btn-amber">
+          Tapa blanda
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scroll indicator: bottom-right -->
+  <div id="hero-scroll"
+       class="absolute bottom-8 right-8 md:right-16 z-20 flex flex-col items-center gap-2 opacity-0"
+       aria-hidden="true">
+    <div id="scroll-line"
+         style="width:1px; height:4rem; background:linear-gradient(to bottom, transparent, #A31515); transform-origin:top; transform:scaleY(0);"></div>
+    <span style="font-family:'DM Mono',monospace; font-size:0.55rem; letter-spacing:0.5em; color:#8A7A74; text-transform:uppercase;">
+      Scroll
+    </span>
+  </div>
+
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener('astro:page-load', () => {
+    const video   = document.getElementById('hero-video') as HTMLVideoElement | null;
+    const section = document.getElementById('hero');
+
+    // ── Vídeo: sólo en desktop ────────────────────────────────────
+    if (video && !window.matchMedia('(max-width: 768px)').matches) {
+      video.play().catch(() => {});
+      gsap.to(video, { opacity: 1, duration: 2.2, ease: 'power2.inOut', delay: 0.1 });
+    } else if (video) {
+      video.pause();
+      video.src = '';
+      video.load();
+    }
+
+    // ── Partículas ambient (tonos cálidos como brasas) ────────────
+    const isLowEnd = navigator.hardwareConcurrency <= 4;
+    if (!isLowEnd) {
+      import('@tsparticles/engine').then(({ tsParticles }) =>
+        import('@tsparticles/slim').then(({ loadSlim }) =>
+          loadSlim(tsParticles).then(() =>
+            tsParticles.load({
+              id: 'hero-particles',
+              options: {
+                fullScreen: { enable: false },
+                background: { color: { value: 'transparent' } },
+                fpsLimit: 40,
+                particles: {
+                  number: { value: 32, density: { enable: true, width: 1920 } },
+                  color: { value: ['#C0785A', '#D4A57A', '#8A3A2A'] },
+                  opacity: {
+                    value: { min: 0.03, max: 0.16 },
+                    animation: { enable: true, speed: 0.4, minimumValue: 0.03, sync: false },
+                  },
+                  size: { value: { min: 0.6, max: 2.0 } },
+                  move: {
+                    enable: true,
+                    speed: { min: 0.15, max: 0.6 },
+                    direction: 'top',
+                    random: true,
+                    straight: false,
+                    outModes: { default: 'out', top: 'out', bottom: 'destroy' },
+                  },
+                  shape: { type: 'circle' },
+                  twinkle: { particles: { enable: true, frequency: 0.035, opacity: 0.2 } },
+                },
+                detectRetina: true,
+                interactivity: {
+                  events: {
+                    onHover: { enable: true, mode: 'slow' },
+                    resize: { enable: true },
+                  },
+                  modes: { slow: { factor: 3, radius: 100 } },
+                },
+              },
+            })
+          )
+        )
+      ).catch(() => {});
+    }
+
+    // ── Kinetic title: cada carácter sale de un mask, más dramático ──
+    const titleEl = document.getElementById('hero-title');
+    if (titleEl) {
+      const text = '29 de Mayo';
+      titleEl.innerHTML = text.split('').map((ch) =>
+        ch === ' '
+          ? '<span style="display:inline-block; width:0.32em;"></span>'
+          : `<span class="hero-char" style="display:inline-block; overflow:hidden; vertical-align:top; padding-bottom:0.08em;"><span class="hero-char-inner" style="display:inline-block; will-change:transform;">${ch}</span></span>`
+      ).join('');
+
+      gsap.set('.hero-char-inner', { yPercent: 115, opacity: 0, rotateZ: 4 });
+      gsap.to('.hero-char-inner', {
+        yPercent: 0,
+        opacity:  1,
+        rotateZ:  0,
+        duration: 1.25,
+        stagger:  0.055,
+        ease:     'expo.out',  // ease-out-expo: más cinematográfico
+        delay:    1.0,
+      });
+    }
+
+    // ── Línea editorial que crece desde la izquierda ──────────
+    gsap.to('#hero-rule', {
+      width: '5rem',
+      duration: 0.9,
+      ease: 'expo.out',
+      delay: 0.4,
+    });
+
+    // ── Tagline + autor desliza desde arriba ──────────────────
+    gsap.set(['#hero-tagline', '#hero-author'], { y: -8 });
+    gsap.to(['#hero-tagline', '#hero-author'], {
+      opacity: 1,
+      y: 0,
+      duration: 0.85,
+      stagger: 0.18,
+      ease: 'expo.out',
+      delay: 0.6,
+    });
+
+    // ── Elementos inferiores ──────────────────────────────────────
+    gsap.set('#hero-buttons', { y: 14 });
+    gsap.to('#hero-quote-wrap', { opacity: 1, duration: 1.0, ease: 'power2.out', delay: 1.9 });
+    gsap.to('#hero-buttons',    { opacity: 1, y: 0, duration: 0.75, ease: 'power3.out', delay: 2.1 });
+
+    // ── Scroll indicator ──────────────────────────────────────────
+    gsap.to('#hero-scroll', { opacity: 1, duration: 0.5, delay: 2.6 });
+    gsap.to('#scroll-line', {
+      scaleY: 1,
+      duration: 1.1,
+      ease: 'power3.out',
+      delay: 2.7,
+    });
+    gsap.to('#scroll-line', {
+      opacity: 0.35,
+      duration: 1.3,
+      repeat: -1,
+      yoyo: true,
+      ease: 'power1.inOut',
+      delay: 3.8,
+    });
+
+    if (!section) return;
+
+    // ── Parallax: vídeo escala suavemente al hacer scroll ────────
+    if (video) {
+      gsap.to(video, {
+        scale: 1.16,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end:   'bottom top',
+          scrub: 2.5,
+        },
+      });
+    }
+
+    // ── Texto flota y se desvanece al hacer scroll ────────────────
+    gsap.to('#hero-title, #hero-quote-wrap, #hero-buttons', {
+      y: -110,
+      opacity: 0,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: section,
+        start: 'top top',
+        end:   '55% top',
+        scrub: 1.2,
+      },
+    });
+
+    // ── Ocultar scroll indicator al empezar a bajar ───────────────
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top+=80 top',
+      onEnter:     () => gsap.to('#hero-scroll', { opacity: 0, duration: 0.4 }),
+      onLeaveBack: () => gsap.to('#hero-scroll', { opacity: 1, duration: 0.4 }),
+    });
+  });
+</script>

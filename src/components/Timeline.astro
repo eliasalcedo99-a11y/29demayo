@@ -1,0 +1,295 @@
+---
+interface Nodo {
+  mes: string;
+  titulo: string;
+  texto: string;
+  especial?: boolean;
+}
+
+const nodos: Nodo[] = [
+  {
+    mes: 'ENE 2023',
+    titulo: 'El peso de la rutina',
+    texto: 'Tras las fiestas, la vuelta a clases trae desmotivación, pero la curiosidad y la escritura se mantienen como un refugio sagrado ante un pasado marcado por el aislamiento y las sombras familiares.',
+  },
+  {
+    mes: 'FEB 2023',
+    titulo: 'Promesas y dulzura',
+    texto: 'El mes se presenta como una brisa tibia en pleno invierno. Cada día es un recordatorio de lo hermoso y desafiante que puede ser el amor, llenando de ilusión un horizonte que parecía gris.',
+  },
+  {
+    mes: 'MAR 2023',
+    titulo: 'Ecos del pasado',
+    texto: 'Mientras el entorno evoca viejas historias de su pueblo, Elías se asoma a la vida con la certeza de que el destino sigue tejiendo contrastes entre luces que guían y sombras que persisten.',
+  },
+  {
+    mes: 'ABR 2023',
+    titulo: 'Un sueño sobre ruedas',
+    texto: 'La llegada de la primavera parece compensar los calvarios superados. Un anhelado sueño de motos se hace realidad, avivando la ilusión y afianzando los lazos compartidos con su tío Kike.',
+  },
+  {
+    mes: 'MAY 2023',
+    titulo: 'La fractura del destino',
+    texto: 'Un 29 de mayo, todo cambia. En una mañana aparentemente normal, la carretera se lleva a Kike en un accidente de moto. La luz del año se apaga de golpe, dejando una herida y un vacío insondable.',
+    especial: true,
+  },
+  {
+    mes: 'JUN 2023',
+    titulo: 'El eco del silencio',
+    texto: 'La felicidad se esfuma. Elías vive atrapado en los ecos de lo que no pudo decir, consumiéndose en un torbellino de pensamientos en los que parece no haber un final para la tristeza.',
+  },
+  {
+    mes: 'JUL 2023',
+    titulo: 'El fondo del abismo',
+    texto: 'Lo que parecía ser el final de la caída resulta ser el prólogo de un descenso emocional profundo. Las inseguridades erosionan aquello que un día le sostuvo.',
+  },
+  {
+    mes: 'AGO 2023',
+    titulo: 'Días estáticos',
+    texto: 'El calendario avanza bajo un calor denso, pero el alma permanece anclada al mismo punto. La soledad se erige como la única compañera verdadera en medio de una profunda confusión.',
+  },
+  {
+    mes: 'SEP 2023',
+    titulo: 'Espejismos de calma',
+    texto: 'Una tregua cálida y engañosa se asoma tímidamente. La aparente estabilidad ofrece un breve respiro, aunque no deja de ser un espejismo en medio de la montaña rusa que es el duelo.',
+  },
+  {
+    mes: 'OCT 2023',
+    titulo: 'El frío que cala',
+    texto: 'Las tardes se acortan y un frío intenso penetra los huesos. A pesar del dolor persistente, algunos destellos de serenidad asoman, pidiendo que no olvide mirar hacia arriba.',
+  },
+  {
+    mes: 'NOV 2023',
+    titulo: 'Sombras largas',
+    texto: 'El mes se abre paso con un silencio reverente. La melancolía navideña comienza a arañar el alma, reabriendo cicatrices de ausencias y recuerdos.',
+  },
+  {
+    mes: 'DIC 2023',
+    titulo: 'Luces y cenizas',
+    texto: 'El año se acerca a su irremediable desenlace. Entre luces que deslumbran a todos y sombras que ahogan su pecho, la vida impone cerrar el ciclo, asimilando cada golpe para intentar sanar.',
+  },
+];
+---
+
+<section
+  id="timeline-section"
+  class="bg-[var(--color-bg)] py-20 overflow-hidden"
+  aria-label="Timeline 2023"
+>
+  <div class="max-w-7xl mx-auto px-6 mb-12">
+    <span class="section-label">El año</span>
+    <h2 class="font-serif text-[clamp(2rem,4vw,3rem)] text-[var(--color-text)]">
+      2023, mes a mes
+    </h2>
+  </div>
+
+  <!-- Desktop: horizontal scroll -->
+  <div id="timeline-pin" class="hidden md:block overflow-hidden">
+    <!-- The line lives here, NOT inside the scrolling track -->
+    <div id="timeline-line" class="timeline-h-line"></div>
+
+    <div id="timeline-track" class="flex items-start gap-0 w-max px-6">
+
+      {nodos.map((nodo, i) => (
+        <div class="timeline-card relative flex flex-col items-center w-[280px] shrink-0 px-6 pt-6 pb-8">
+
+          <!-- Node dot, sits on the line -->
+          <div class={`
+            relative z-10 rounded-full border-2 mb-4
+            ${nodo.especial
+              ? 'w-5 h-5 bg-amber border-amber animate-pulse-amber'
+              : 'w-3 h-3 bg-bg border-border'
+            }
+          `}></div>
+
+          <!-- Month label -->
+          <span class="font-mono text-[0.58rem] tracking-[0.35em] text-amber uppercase mb-4">
+            {nodo.mes}
+          </span>
+
+          <!-- Card -->
+          <div class={`
+            card-glass rounded-sm p-5 w-full opacity-0
+            ${nodo.especial ? 'ring-1 ring-amber/30' : ''}
+          `}>
+            <h3 class={`
+              font-serif text-[1.05rem] leading-tight mb-2
+              ${nodo.especial ? 'text-amber' : 'text-text'}
+            `}>
+              {nodo.titulo}
+            </h3>
+            <p class="font-sans text-[0.82rem] text-muted leading-relaxed">
+              {nodo.texto}
+            </p>
+          </div>
+
+        </div>
+      ))}
+
+    </div>
+  </div>
+
+  <!-- Mobile: vertical stack -->
+  <div class="md:hidden px-6 space-y-6">
+    {nodos.map((nodo) => (
+      <div class="relative pl-8">
+        <div class={`
+          absolute left-0 top-1 rounded-full border-2
+          ${nodo.especial
+            ? 'w-4 h-4 bg-[var(--color-amber)] border-[var(--color-amber)]'
+            : 'w-3 h-3 bg-[var(--color-bg)] border-[var(--color-border)] mt-0.5'
+          }
+        `}></div>
+        <div class="absolute left-[5px] top-4 bottom-0 w-px bg-[var(--color-border)]"></div>
+        <span class="font-mono text-[0.6rem] tracking-[0.3em] text-[var(--color-amber)] uppercase block mb-2">
+          {nodo.mes}
+        </span>
+        <div class="card-glass rounded-sm p-4">
+          <h3 class={`font-serif text-base mb-1 ${nodo.especial ? 'text-[var(--color-amber)]' : 'text-[var(--color-text)]'}`}>
+            {nodo.titulo}
+          </h3>
+          <p class="font-sans text-[0.82rem] text-[var(--color-muted)] leading-relaxed">{nodo.texto}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let timelineTriggers: any[] = [];
+
+  function initTimeline() {
+    cleanupTimeline();
+
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+    if (!isMobile) {
+      const section = document.getElementById('timeline-section');
+      const pin     = document.getElementById('timeline-pin');
+      const track   = document.getElementById('timeline-track');
+
+      if (section && pin && track) {
+        const scrollDist = track.scrollWidth - window.innerWidth;
+        const line = document.getElementById('timeline-line');
+
+        // Reset track position before starting new ScrollTrigger
+        gsap.set(track, { x: 0 });
+
+        // Horizontal scroll animation
+        const hScroll = gsap.to(track, {
+          x: -scrollDist,
+          ease: 'none',
+          scrollTrigger: {
+            id: 'timeline-h',
+            trigger: section,
+            start:   'top top',
+            end:     () => `+=${scrollDist}`,
+            scrub:   1.4,
+            pin:     true,
+            anticipatePin: 1,
+            onUpdate: (self) => {
+              if (line) {
+                line.style.setProperty('--timeline-progress', `${self.progress * 100}%`);
+              }
+            },
+          },
+        });
+        if (hScroll.scrollTrigger) timelineTriggers.push(hScroll.scrollTrigger);
+
+        // Cards reveal as they scroll into the viewport
+        const cards = gsap.utils.toArray<HTMLElement>('.timeline-card .card-glass');
+        gsap.set(cards, { y: 16, opacity: 0 });
+
+        cards.forEach((card) => {
+          const anim = gsap.to(card, {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: card,
+              start: 'left 78%',
+              containerAnimation: hScroll,
+              once: true,
+            },
+          });
+          if (anim.scrollTrigger) timelineTriggers.push(anim.scrollTrigger);
+        });
+      }
+    } else {
+      // Mobile: vertical reveal
+      gsap.utils.toArray<HTMLElement>('.md\\:hidden .card-glass').forEach((card) => {
+        gsap.set(card, { opacity: 0, x: -24 });
+        const anim = gsap.fromTo(card,
+          { opacity: 0, x: -24 },
+          {
+            opacity: 1, x: 0,
+            duration: 0.7,
+            ease: 'power3.out',
+            scrollTrigger: { trigger: card, start: 'top 85%', once: true },
+          }
+        );
+        if (anim.scrollTrigger) timelineTriggers.push(anim.scrollTrigger);
+      });
+    }
+  }
+
+  function cleanupTimeline() {
+    timelineTriggers.forEach(t => t.kill());
+    timelineTriggers = [];
+  }
+
+  document.addEventListener('astro:page-load', initTimeline);
+  document.addEventListener('astro:before-swap', cleanupTimeline);
+</script>
+
+<style>
+  #timeline-pin {
+    position: relative;
+  }
+
+  .timeline-h-line {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(163,21,21,0.18) 8%,
+      rgba(163,21,21,0.18) 92%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* Línea de progreso granate que avanza con el scroll */
+  .timeline-h-line::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    height: 3px;
+    width: var(--timeline-progress, 0%);
+    background: linear-gradient(90deg, transparent, #A31515, #C41E1E);
+    box-shadow: 0 0 14px rgba(163,21,21,0.6), 0 0 30px rgba(163,21,21,0.25);
+    border-radius: 2px;
+    transition: width 0.1s linear;
+  }
+
+  /* Hover glow en cards de desktop */
+  .timeline-card .card-glass {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .timeline-card .card-glass:hover {
+    border-color: rgba(163,21,21,0.22);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.65), 0 0 20px rgba(163,21,21,0.1);
+  }
+</style>

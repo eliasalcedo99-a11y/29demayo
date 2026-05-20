@@ -1,0 +1,139 @@
+---
+interface Resenya {
+  nombre: string;
+  ciudad: string;
+  estrellas: number;
+  texto: string;
+}
+
+const resenyas: Resenya[] = [
+  {
+    nombre: 'Carmen',
+    ciudad: 'Sevilla',
+    estrellas: 5,
+    texto: 'Un relato desgarrador pero hermoso. Elías consigue poner en palabras ese vacío asfixiante que deja la pérdida de un ser querido. Me hizo llorar y, a la vez, tener ganas de abrazar más fuerte a mi familia.',
+  },
+  {
+    nombre: 'Javier',
+    ciudad: 'Madrid',
+    estrellas: 5,
+    texto: 'Sorprende la madurez con la que está escrito teniendo el autor solo 18 años. No es el típico libro de autoayuda, es literatura pura nacida del dolor. Una lectura imprescindible.',
+  },
+  {
+    nombre: 'Lucía',
+    ciudad: 'Cádiz',
+    estrellas: 5,
+    texto: 'Se nota que cada página está escrita desde el fondo del alma. La honestidad con la que trata la soledad y la resiliencia me ha conmovido profundamente.',
+  },
+  {
+    nombre: 'Antonio',
+    ciudad: 'Málaga',
+    estrellas: 4,
+    texto: 'Una historia intensa que te atrapa desde el principio. Te hace reflexionar sobre la fragilidad de la vida y cómo un solo segundo en una carretera puede cambiarlo todo.',
+  },
+  {
+    nombre: 'Marta',
+    ciudad: 'Barcelona',
+    estrellas: 5,
+    texto: 'Es un viaje duro pero muy necesario. Me quedo con la última cita del libro, que resonará en mí durante mucho tiempo. Es un gran debut de este joven talento andaluz.',
+  },
+  {
+    nombre: 'Raúl',
+    ciudad: 'Valencia',
+    estrellas: 5,
+    texto: 'Íntimo, sincero y sin cursilerías. Elías desnuda sus emociones de una forma admirable. Me sentí reflejado en su manera de procesar el duelo tras haber pasado por una situación parecida.',
+  },
+];
+
+// Duplicate for infinite loop
+const all = [...resenyas, ...resenyas];
+---
+
+<section
+  id="resenyas"
+  class="relative bg-[var(--color-bg)] py-28 overflow-hidden"
+  aria-label="Reseñas"
+>
+  <!-- Ambient glow -->
+  <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-amber/8 rounded-full blur-[100px] pointer-events-none" aria-hidden="true"></div>
+
+  <div class="max-w-7xl mx-auto px-6 mb-14">
+    <span class="section-label">Lectores</span>
+    <h2 class="font-serif text-[clamp(2rem,4vw,3rem)] text-[var(--color-text)]">
+      Lo que dicen
+    </h2>
+  </div>
+
+  <!-- Slider wrapper -->
+  <div
+    id="slider-wrap"
+    class="relative overflow-hidden"
+    role="region"
+    aria-label="Slider de reseñas"
+  >
+    <!-- Fades on edges -->
+    <div class="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--color-bg)] to-transparent z-10 pointer-events-none"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--color-bg)] to-transparent z-10 pointer-events-none"></div>
+
+    <div id="slider-track" class="slider-track py-2" aria-hidden="true">
+      {all.map((r) => (
+        <article class="resenya-card w-[320px] md:w-[380px] shrink-0 flex flex-col gap-4 py-7 px-7">
+          <!-- Comilla decorativa serif -->
+          <span class="font-serif leading-none select-none" aria-hidden="true"
+                style="font-size: 3.5rem; color: rgba(163,21,21,0.32); margin-bottom: -1.5rem;">"</span>
+          <p class="font-italic italic leading-relaxed text-[var(--color-text)]"
+             style="font-family: 'Lora', Georgia, serif; font-size: 0.95rem;">
+            {r.texto}
+          </p>
+          <footer class="flex items-center justify-between mt-auto pt-4"
+                  style="border-top: 1px solid rgba(242,234,224,0.08);">
+            <cite class="font-sans text-[0.78rem] text-[var(--color-muted)] not-italic">
+              {r.nombre} · {r.ciudad}
+            </cite>
+            <span style="color: var(--color-amber); font-size: 0.75rem; letter-spacing: 0.08em;"
+                  aria-label={`${r.estrellas} estrellas`}>
+              {'★'.repeat(r.estrellas)}
+            </span>
+          </footer>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .resenya-card {
+    background: rgba(17,13,14,0.55);
+    border-top: 1px solid rgba(242,234,224,0.08);
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+  .resenya-card:hover {
+    background: rgba(26,18,20,0.85);
+    border-top-color: rgba(163,21,21,0.4);
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+
+  const track = document.getElementById('slider-track');
+  if (track) {
+    const half = track.scrollWidth / 2;
+
+    const tween = gsap.to(track, {
+      x: -half,
+      duration: 50,
+      repeat: -1,
+      ease: 'none',
+      modifiers: {
+        x: gsap.utils.unitize((x: number) => parseFloat(x) % half),
+      },
+    });
+
+    const wrap = document.getElementById('slider-wrap');
+    wrap?.addEventListener('mouseenter', () => tween.pause());
+    wrap?.addEventListener('mouseleave', () => tween.resume());
+    wrap?.addEventListener('focusin',    () => tween.pause());
+    wrap?.addEventListener('focusout',   () => tween.resume());
+  }
+</script>

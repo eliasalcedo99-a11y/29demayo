@@ -1,0 +1,132 @@
+---
+---
+
+<section
+  id="newsletter"
+  class="relative bg-[var(--color-surface)] py-28 px-6 overflow-hidden"
+  aria-label="Newsletter"
+>
+  <!-- Ambient glow -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-amber/6 rounded-full blur-[100px] pointer-events-none" aria-hidden="true"></div>
+
+  <div class="relative max-w-2xl mx-auto">
+    <div class="card-glass p-10 md:p-14 rounded-2xl text-center relative">
+
+    <span class="section-label">Newsletter</span>
+
+    <h2 class="reveal font-serif text-[clamp(2rem,4vw,3rem)] text-[var(--color-text)] mb-4">
+      Recibe mis próximas letras.
+    </h2>
+
+    <p class="reveal font-sans text-[var(--color-muted)] leading-relaxed mb-10 max-w-md mx-auto">
+      Únete a mi rincón y acompáñame en mi camino literario.
+      Prometo enviarte solo palabras que nazcan de verdad.
+    </p>
+
+    <!-- Form -->
+    <form
+      id="newsletter-form"
+      class="reveal flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+      novalidate
+    >
+      <label for="nl-email" class="sr-only">Tu correo electrónico</label>
+      <input
+        id="nl-email"
+        name="email"
+        type="email"
+        placeholder="tu@correo.com"
+        autocomplete="email"
+        spellcheck="false"
+        required
+        class="flex-1 bg-[var(--color-bg)] border border-white/[0.08] text-[var(--color-text)] placeholder:text-[var(--color-muted)] font-sans text-[0.9rem] px-4 py-3 rounded-lg outline-none focus:border-[var(--color-amber)] transition-colors duration-200"
+      />
+      <button
+        type="submit"
+        id="nl-submit"
+        class="btn-amber btn-amber-solid shrink-0 whitespace-nowrap"
+      >
+        Suscribirse →
+      </button>
+    </form>
+
+    <!-- States -->
+    <div id="nl-success" class="hidden mt-6 font-lora-italic text-[var(--color-amber)] text-[1rem]">
+      Recibido. Respondo pronto. ✓
+    </div>
+    <div id="nl-error" class="hidden mt-6 font-sans text-red-400 text-[0.85rem]">
+      Algo salió mal. Inténtalo de nuevo.
+    </div>
+
+    <p class="reveal font-mono text-[0.65rem] tracking-[0.2em] text-[var(--color-muted)] mt-6">
+      No saturaré tu bandeja. Solo literatura, reflexiones y actualizaciones.
+    </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Reveal animations
+  gsap.utils.toArray<HTMLElement>('#newsletter .reveal').forEach((el, i) => {
+    gsap.fromTo(el,
+      { opacity: 0, y: 24 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        delay: i * 0.1,
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 84%',
+          once: true,
+        },
+      }
+    );
+  });
+
+  // Form submission
+  const form    = document.getElementById('newsletter-form') as HTMLFormElement | null;
+  const submit  = document.getElementById('nl-submit') as HTMLButtonElement | null;
+  const success = document.getElementById('nl-success');
+  const error   = document.getElementById('nl-error');
+  const emailIn = document.getElementById('nl-email') as HTMLInputElement | null;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = emailIn?.value.trim();
+    if (!email) return;
+
+    if (submit) {
+      submit.disabled = true;
+      submit.textContent = 'Enviando…';
+    }
+
+    try {
+      const res  = await fetch('/api/newsletter', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        gsap.to(form,    { opacity: 0, y: -10, duration: 0.4, onComplete: () => form?.classList.add('hidden') });
+        gsap.fromTo(success, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.4 });
+        success?.classList.remove('hidden');
+      } else {
+        throw new Error(data.error || 'Error');
+      }
+    } catch {
+      error?.classList.remove('hidden');
+      if (submit) {
+        submit.disabled = false;
+        submit.textContent = 'Suscribirse →';
+      }
+    }
+  });
+</script>

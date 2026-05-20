@@ -1,0 +1,162 @@
+---
+---
+
+<section
+  id="fragmento"
+  class="relative py-28 md:py-36 px-6 overflow-hidden"
+  style="background: #1A1210;"
+  aria-label="Fragmento del libro"
+>
+
+  <!-- Fondo atmosférico: halo suave centrado -->
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
+       style="background: radial-gradient(ellipse at center, rgba(163,21,21,0.04) 0%, transparent 70%);"></div>
+
+  <!-- Texto vertical decorativo (izquierda) -->
+  <div
+    class="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 flex-col items-center gap-3"
+    aria-hidden="true"
+  >
+    <div class="w-px h-16" style="background: rgba(163,21,21,0.25);"></div>
+    <span
+      class="font-mono text-[0.55rem] uppercase select-none"
+      style="writing-mode: vertical-rl; letter-spacing: 0.5em; color: rgba(163,21,21,0.55);"
+    >Fragmento</span>
+    <div class="w-px h-16" style="background: rgba(163,21,21,0.25);"></div>
+  </div>
+
+  <div class="max-w-2xl mx-auto">
+
+    <!-- Label -->
+    <span class="font-mono text-[0.62rem] tracking-[0.45em] uppercase block mb-10"
+          style="color: #A31515;">
+      Del libro · Capítulo 7
+    </span>
+
+    <!-- Hoja de papel -->
+    <div class="paper pl-20 md:pl-24 pr-10 md:pr-12 py-12 md:py-16"
+         style="background: #F0EDE8; box-shadow: 0 4px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(240,237,232,0.15);">
+
+      <!-- Título del capítulo -->
+      <div class="overflow-hidden mb-8">
+        <h2 id="frag-title"
+            class="font-serif text-[1.15rem]"
+            style="letter-spacing: 0.05em; color: #180A0A;">
+          29 de Mayo
+        </h2>
+      </div>
+
+      <!-- Prosa — líneas con reveal enmascarado -->
+      <div class="space-y-3 leading-[1.9] frag-prose"
+           style="font-family: 'Lora', Georgia, serif; font-style: italic;
+                  font-size: clamp(1rem, 2vw, 1.1rem); color: rgba(24,10,10,0.85);">
+
+        <!-- Drop cap literario en la primera línea -->
+        <div class="overflow-hidden"><p id="fl-a"><span class="drop-cap">L</span>unes. Un día como cualquier otro.</p></div>
+        <div class="overflow-hidden"><p id="fl-b">Elías, a las 8:00, ya estaba listo para ir a clase.</p></div>
+        <div class="overflow-hidden"><p id="fl-c">Todo transcurría con normalidad.</p></div>
+        <div class="overflow-hidden"><p id="fl-d" class="opacity-0 h-4">&nbsp;</p></div>
+        <div class="overflow-hidden"><p id="fl-e">Cuando salieron del instituto, David respondió:</p></div>
+        <div class="overflow-hidden">
+          <p id="fl-f" class="not-italic pl-8"
+             style="font-weight: 700; color: #180A0A;">
+            — Tito Kike ha tenido un accidente con la moto.
+          </p>
+        </div>
+        <div class="overflow-hidden"><p id="fl-g" class="opacity-0 h-4">&nbsp;</p></div>
+        <div class="overflow-hidden"><p id="fl-h">La respuesta fue clara y concisa:</p></div>
+        <div class="overflow-hidden">
+          <!-- Esta línea es el golpe emocional — granate, negrita -->
+          <p id="fl-i" class="not-italic"
+             style="font-weight: 700; font-size: 1.15rem; color: #A31515;">
+            — Ya no está.
+          </p>
+        </div>
+        <div class="overflow-hidden"><p id="fl-j" class="opacity-0 h-4">&nbsp;</p></div>
+        <div class="overflow-hidden">
+          <p id="fl-k">A las 8:30, Kike decidió, esta vez, ir en moto al trabajo.</p>
+        </div>
+        <div class="overflow-hidden">
+          <p id="fl-l">Al terminar una curva a ciegas, una inmensa vaca se interpuso</p>
+        </div>
+        <div class="overflow-hidden">
+          <p id="fl-m">entre él y su destino, dejándolo en aquella carretera para siempre.</p>
+        </div>
+
+      </div>
+
+      <!-- Pie de capítulo -->
+      <div id="frag-footer" class="mt-10 pt-6" style="opacity:0; border-top: 1px solid rgba(163,21,21,0.12);">
+        <p class="font-mono text-[0.65rem] tracking-[0.35em] uppercase"
+           style="color: rgba(24,10,10,0.45);">
+          — Capítulo 7 · Mayo 2023
+        </p>
+      </div>
+
+    </div>
+
+    <!-- CTAs post-fragmento -->
+    <div id="frag-cta" class="mt-10 flex flex-wrap gap-4" style="opacity:0;">
+      <!-- Secundario: continuar en la web (si existe la página /demo) -->
+      <a href="/demo" class="frag-btn-secondary inline-flex items-center gap-2 px-7 py-3.5 font-mono text-[0.75rem] tracking-[0.18em] uppercase">
+        Continuar leyendo →
+      </a>
+      <!-- Principal: Amazon -->
+      <a
+        href="https://amzn.to/3RlmkaH"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-amber btn-amber-solid"
+      >
+        Leer completo en Amazon
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const lines  = ['#fl-a','#fl-b','#fl-c','#fl-e','#fl-f','#fl-h','#fl-i','#fl-k','#fl-l','#fl-m'];
+
+  // Estado inicial — enmascarado hacia abajo
+  gsap.set('#frag-title', { yPercent: 110 });
+  gsap.set(lines, { yPercent: 110 });
+  gsap.set('#frag-cta', { y: 16 });
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: '#fragmento',
+      start: 'top 62%',
+      once: true,
+    },
+  });
+
+  tl
+    .to('#frag-title', {
+      yPercent: 0,
+      duration: 0.7,
+      ease: 'power3.out',
+    })
+    .to(lines, {
+      yPercent: 0,
+      duration: 0.65,
+      ease: 'power3.out',
+      stagger: 0.1,
+    }, '-=0.3')
+    .to('#frag-footer', {
+      opacity: 1,
+      duration: 0.6,
+      ease: 'power2.out',
+    }, '-=0.2')
+    .to('#frag-cta', {
+      opacity: 1,
+      y: 0,
+      duration: 0.7,
+      ease: 'power3.out',
+    }, '-=0.1');
+</script>

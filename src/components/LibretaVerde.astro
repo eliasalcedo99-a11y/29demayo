@@ -1,0 +1,766 @@
+---
+---
+
+<!-- Import Google Font for the handwriting effect in the open notebook -->
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet" />
+
+<section
+  id="libreta-verde-section"
+  class="relative bg-[var(--color-bg)] py-24 px-6 overflow-hidden border-t border-white/[0.04]"
+  aria-label="La Libreta Verde"
+>
+  <!-- Ambient green/gold glow for storytelling atmosphere -->
+  <div class="absolute top-1/2 left-2/3 w-[500px] h-[500px] bg-emerald-900/10 rounded-full blur-[140px] pointer-events-none -translate-y-1/2 -translate-x-1/2" aria-hidden="true"></div>
+
+  <div class="relative max-w-6xl mx-auto grid md:grid-cols-[1.2fr_1fr] gap-16 md:gap-20 items-center">
+    
+    <!-- Text Storytelling -->
+    <div class="space-y-6 reveal">
+      <span class="section-label">El Refugio</span>
+      <h2 class="font-serif text-[clamp(2.2rem,4vw,3.2rem)] text-[var(--color-text)] leading-tight">
+        La Libreta Verde
+      </h2>
+      <p class="font-mono text-[0.7rem] tracking-[0.3em] text-[var(--color-amber)] uppercase">
+        El santuario de las primeras palabras
+      </p>
+
+      <div class="space-y-4 font-sans text-[var(--color-muted)] leading-relaxed text-[1.05rem]">
+        <p>
+          Fue en los pupitres de la clase, bajo el zumbido de las explicaciones escolares, donde empecé a escribir en una pequeña libreta verde. Aquel cuaderno de tapas sencillas y hojas cuadriculadas pronto se convirtió en mi trinchera; el único rincón donde el caos del mundo y la punzada de la ausencia de mi tío Kike tomaban un orden comprensible.
+        </p>
+        <p>
+          Escribir no era una elección; era la única manera que encontré para ordenar los pedazos rotos del dolor, una forma de respirar cuando el aire parecía escasear.
+        </p>
+      </div>
+
+      <!-- Call to action for interaction -->
+      <div class="pt-4">
+        <button
+          id="btn-abrir-libreta-txt"
+          class="link-underline font-mono text-[0.78rem] tracking-[0.2em] text-[var(--color-amber)] hover:text-white uppercase transition-colors duration-300"
+        >
+          Tocar libreta para leer apuntes ➔
+        </button>
+      </div>
+    </div>
+
+    <!-- 3D Interactive Stage -->
+    <div class="relative flex flex-col items-center justify-center">
+      <div id="libreta-3d-stage" class="relative w-full aspect-[4/3] max-w-[420px] rounded-lg cursor-pointer group">
+        <!-- Floating canvas -->
+        <canvas id="libreta-3d-canvas" class="w-full h-full block touch-none"></canvas>
+
+        <!-- Hover instructions overlay -->
+        <div
+          id="libreta-3d-tooltip"
+          class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-[var(--color-surface)]/90 backdrop-blur-sm px-4 py-2 rounded-full border border-white/5 pointer-events-none opacity-0 transition-opacity duration-500 z-10"
+        >
+          <p class="font-mono text-[0.62rem] tracking-wider text-[var(--color-muted)] whitespace-nowrap uppercase">
+            Arrastra para rotar · Haz clic para abrir
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Fullscreen Open Notebook Modal Overlay -->
+  <div
+    id="libreta-modal"
+    class="fixed inset-0 z-[9995] bg-[#080608]/96 backdrop-blur-md flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-500 p-4 md:p-8"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="libreta-modal-title"
+  >
+    <!-- Modal Close Button -->
+    <button
+      id="libreta-modal-close"
+      class="absolute top-6 right-6 font-mono text-[0.7rem] tracking-[0.3em] text-[var(--color-muted)] hover:text-white transition-colors duration-300 uppercase z-50 p-2"
+      aria-label="Cerrar libreta"
+    >
+      Cerrar [esc] ×
+    </button>
+
+    <!-- Notebook Container -->
+    <div class="relative w-full max-w-4xl aspect-[1.41/1] md:aspect-[1.5/1] bg-[#1a3824] rounded-lg p-2 md:p-4 shadow-[0_30px_70px_rgba(0,0,0,0.85)] border border-white/10 flex transform scale-95 transition-transform duration-500 overflow-hidden" id="libreta-book-spine">
+      
+      <!-- SPREAD 1: Pág. 1-2 (La Derbi) -->
+      <div class="libreta-spread absolute inset-2 md:inset-4 flex active" data-spread="0">
+        <!-- Left Page -->
+        <div class="flex-1 bg-[#FBF9F4] rounded-l-sm p-4 md:p-8 shadow-[inset_-10px_0_20px_rgba(0,0,0,0.06)] flex flex-col justify-between relative overflow-hidden border-r border-[#ece8dd]">
+          <div class="absolute inset-0 bg-ruled-lines pointer-events-none opacity-50"></div>
+          <div class="absolute top-0 bottom-0 left-[10%] md:left-[15%] w-px bg-red-400/40 pointer-events-none"></div>
+          
+          <!-- Drawing: Derbi GPR sketch -->
+          <div class="relative z-10 flex-1 flex flex-col items-center justify-center pl-[12%] md:pl-[18%] pr-4 pt-4 pb-2">
+            <svg viewBox="0 0 200 130" class="w-full h-auto max-h-[85%] max-w-[160px] md:max-w-[210px] stroke-[#1e3c72] opacity-80 fill-none stroke-[1.8] stroke-linecap-round stroke-linejoin-round" aria-label="Boceto de moto Derbi">
+              <!-- Wheel Left -->
+              <circle cx="45" cy="90" r="22" class="draw-path" />
+              <circle cx="45" cy="90" r="4" class="draw-path" />
+              <!-- Wheel Right -->
+              <circle cx="155" cy="90" r="22" class="draw-path" />
+              <circle cx="155" cy="90" r="4" class="draw-path" />
+              <!-- Frame & Body -->
+              <path d="M 45,90 L 70,55 L 122,55 L 155,90" class="draw-path" />
+              <path d="M 70,55 L 85,28 L 132,28 L 122,55" class="draw-path" />
+              <path d="M 45,90 L 98,90 L 122,55" class="draw-path" />
+              <!-- Handlebar -->
+              <path d="M 85,28 L 92,18 L 78,16" class="draw-path" />
+              <!-- Seat -->
+              <path d="M 102,40 L 128,40 L 140,55" class="draw-path" />
+              <!-- Exhaust -->
+              <path d="M 115,72 L 150,72 L 160,62" class="draw-path" />
+              <!-- Shock absorber -->
+              <path d="M 102,90 L 108,65" class="draw-path" />
+            </svg>
+            <p class="font-mono text-[0.5rem] text-[#8a7e6b] tracking-wider uppercase mt-2 select-none">Boceto I: Derbi GPR blanca</p>
+          </div>
+
+          <div class="relative z-10 text-right font-mono text-[0.6rem] tracking-widest text-[#8a7e6b] pl-[12%] select-none">
+            PÁG. 1
+          </div>
+        </div>
+
+        <!-- Right Page -->
+        <div class="flex-1 bg-[#FBF9F4] rounded-r-sm p-4 md:p-8 shadow-[inset_10px_0_20px_rgba(0,0,0,0.06)] flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute inset-0 bg-ruled-lines pointer-events-none opacity-50"></div>
+          <div class="absolute top-0 bottom-0 right-[10%] md:right-[15%] w-px bg-red-400/40 pointer-events-none"></div>
+
+          <div class="relative z-10 space-y-4 md:space-y-6 font-handwriting pr-[12%] md:pr-[18%] pl-4 pt-4">
+            <h3 id="libreta-modal-title" class="sr-only">Apuntes manuscritos de la Libreta Verde</h3>
+            <p class="text-[clamp(0.95rem,2vw,1.35rem)] leading-relaxed text-[#2c3d30]">
+              "Es curioso cómo, en los momentos más oscuros de nuestra vida, anhelamos tanto la compañía de alguien que, incluso si ese alguien es un ser sin vida, como aquella moto, puede servirnos de consuelo."
+            </p>
+            <p class="text-[clamp(0.85rem,1.8vw,1.2rem)] leading-relaxed text-[#5a2e2e] italic indent-4">
+              La Derbi GPR blanca... mi trinchera en el garaje. Mi forma de gritarle al universo que, aunque me sienta pequeño y vulnerable, mi voz tiene el poder de resonar.
+            </p>
+          </div>
+
+          <div class="relative z-10 text-left font-mono text-[0.6rem] tracking-widest text-[#8a7e6b] select-none">
+            PÁG. 2
+          </div>
+        </div>
+      </div>
+
+      <!-- SPREAD 2: Pág. 3-4 (El Mirador) -->
+      <div class="libreta-spread absolute inset-2 md:inset-4 flex opacity-0 pointer-events-none" data-spread="1">
+        <!-- Left Page -->
+        <div class="flex-1 bg-[#FBF9F4] rounded-l-sm p-4 md:p-8 shadow-[inset_-10px_0_20px_rgba(0,0,0,0.06)] flex flex-col justify-between relative overflow-hidden border-r border-[#ece8dd]">
+          <div class="absolute inset-0 bg-ruled-lines pointer-events-none opacity-50"></div>
+          <div class="absolute top-0 bottom-0 left-[10%] md:left-[15%] w-px bg-red-400/40 pointer-events-none"></div>
+
+          <div class="relative z-10 space-y-4 md:space-y-6 font-handwriting pl-[12%] md:pl-[18%] pr-4 pt-4">
+            <p class="text-[clamp(0.9rem,1.9vw,1.25rem)] leading-relaxed text-[#2c3d30]">
+              Aquel anciano en el mirador, mirando el horizonte de la ciudad, me dijo unas palabras que se quedaron grabadas como un faro discreto:
+            </p>
+            <p class="text-[clamp(1.05rem,2.2vw,1.45rem)] leading-relaxed text-[#8c2d2d] italic">
+              "Perder no es un castigo, es una forma que tiene la vida de enseñarte a abrazar más fuerte."
+            </p>
+          </div>
+
+          <div class="relative z-10 text-right font-mono text-[0.6rem] tracking-widest text-[#8a7e6b] pl-[12%] select-none">
+            PÁG. 3
+          </div>
+        </div>
+
+        <!-- Right Page -->
+        <div class="flex-1 bg-[#FBF9F4] rounded-r-sm p-4 md:p-8 shadow-[inset_10px_0_20px_rgba(0,0,0,0.06)] flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute inset-0 bg-ruled-lines pointer-events-none opacity-50"></div>
+          <div class="absolute top-0 bottom-0 right-[10%] md:right-[15%] w-px bg-red-400/40 pointer-events-none"></div>
+
+          <div class="relative z-10 space-y-4 md:space-y-6 font-handwriting pr-[12%] md:pr-[18%] pl-4 pt-4">
+            <p class="text-[clamp(0.95rem,2vw,1.35rem)] leading-relaxed text-[#2c3d30]">
+              Quizás el duelo no sea olvidar, sino recordar sin desmoronarse. 
+            </p>
+            <p class="text-[clamp(0.95rem,2vw,1.35rem)] leading-relaxed text-[#2c3d30] indent-4">
+              Aprender a llevar su ausencia... Hacerle sitio en el alma sin que te destroce por dentro. Y eso es mucho más difícil que llorar todos los días.
+            </p>
+          </div>
+
+          <div class="relative z-10 text-left font-mono text-[0.6rem] tracking-widest text-[#8a7e6b] select-none">
+            PÁG. 4
+          </div>
+        </div>
+      </div>
+
+      <!-- SPREAD 3: Pág. 5-6 (El Cincel del Dolor) -->
+      <div class="libreta-spread absolute inset-2 md:inset-4 flex opacity-0 pointer-events-none" data-spread="2">
+        <!-- Left Page -->
+        <div class="flex-1 bg-[#FBF9F4] rounded-l-sm p-4 md:p-8 shadow-[inset_-10px_0_20px_rgba(0,0,0,0.06)] flex flex-col justify-between relative overflow-hidden border-r border-[#ece8dd]">
+          <div class="absolute inset-0 bg-ruled-lines pointer-events-none opacity-50"></div>
+          <div class="absolute top-0 bottom-0 left-[10%] md:left-[15%] w-px bg-red-400/40 pointer-events-none"></div>
+
+          <!-- Drawing: Quill and waves -->
+          <div class="relative z-10 flex-1 flex flex-col items-center justify-center pl-[12%] md:pl-[18%] pr-4 pt-4 pb-2">
+            <svg viewBox="0 0 200 130" class="w-full h-auto max-h-[85%] max-w-[160px] md:max-w-[210px] stroke-[#1e3c72] opacity-80 fill-none stroke-[1.8] stroke-linecap-round stroke-linejoin-round" aria-label="Boceto de pluma y olas">
+              <!-- Feather -->
+              <path d="M 60,110 C 65,95 80,70 115,50 C 130,42 145,35 160,30 C 150,42 140,58 125,72 C 105,90 85,102 70,108 Z" class="draw-path" />
+              <path d="M 60,110 L 165,25" class="draw-path" />
+              <path d="M 98,62 C 92,62 86,55 88,48" class="draw-path" />
+              <path d="M 120,48 C 114,48 108,40 110,33" class="draw-path" />
+              <!-- Waves/Sea -->
+              <path d="M 20,118 C 35,110 45,125 60,118 C 75,110 85,125 100,118" class="draw-path" />
+              <path d="M 10,124 C 25,116 35,131 50,124 C 65,116 75,131 90,124" class="draw-path" />
+            </svg>
+            <p class="font-mono text-[0.5rem] text-[#8a7e6b] tracking-wider uppercase mt-2 select-none">Boceto II: Tinta y ausencia</p>
+          </div>
+
+          <div class="relative z-10 text-right font-mono text-[0.6rem] tracking-widest text-[#8a7e6b] pl-[12%] select-none">
+            PÁG. 5
+          </div>
+        </div>
+
+        <!-- Right Page -->
+        <div class="flex-1 bg-[#FBF9F4] rounded-r-sm p-4 md:p-8 shadow-[inset_10px_0_20px_rgba(0,0,0,0.06)] flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute inset-0 bg-ruled-lines pointer-events-none opacity-50"></div>
+          <div class="absolute top-0 bottom-0 right-[10%] md:right-[15%] w-px bg-red-400/40 pointer-events-none"></div>
+
+          <div class="relative z-10 space-y-4 md:space-y-6 font-handwriting pr-[12%] md:pr-[18%] pl-4 pt-4">
+            <p class="text-[clamp(0.95rem,2vw,1.35rem)] leading-relaxed text-[#2c3d30]">
+              "Porque el dolor es un escultor implacable, y solo quienes resisten su cincel pueden convertirse en verdaderas obras de arte."
+            </p>
+            <p class="text-[clamp(0.85rem,1.8vw,1.2rem)] leading-relaxed text-[#2c3d30] indent-4">
+              Cada palabra que escribo en este papel es una lágrima que no me atrevo a derramar. Una grieta que convierto en arte antes de que me consuma.
+            </p>
+          </div>
+
+          <div class="relative z-10 text-left font-mono text-[0.6rem] tracking-widest text-[#8a7e6b] select-none">
+            PÁG. 6
+          </div>
+        </div>
+      </div>
+
+      <!-- SPREAD 4: Pág. 7-8 (El Sueño y Cita Final) -->
+      <div class="libreta-spread absolute inset-2 md:inset-4 flex opacity-0 pointer-events-none" data-spread="3">
+        <!-- Left Page -->
+        <div class="flex-1 bg-[#FBF9F4] rounded-l-sm p-4 md:p-8 shadow-[inset_-10px_0_20px_rgba(0,0,0,0.06)] flex flex-col justify-between relative overflow-hidden border-r border-[#ece8dd]">
+          <div class="absolute inset-0 bg-ruled-lines pointer-events-none opacity-50"></div>
+          <div class="absolute top-0 bottom-0 left-[10%] md:left-[15%] w-px bg-red-400/40 pointer-events-none"></div>
+
+          <div class="relative z-10 space-y-3 md:space-y-4 font-handwriting pl-[12%] md:pl-[18%] pr-4 pt-4">
+            <p class="text-[clamp(0.88rem,1.8vw,1.2rem)] leading-relaxed text-[#2c3d30]">
+              Soñé con él. Sentado en la encimera. Se bajó y me abrazó. Fue un abrazo real, cálido. Sentí todo su cuerpo. Y me dijo: 
+            </p>
+            <p class="text-[clamp(0.88rem,1.8vw,1.2rem)] leading-relaxed text-[#5a2e2e] italic">
+              "No te preocupes, nene, estoy bien. Estoy orgulloso de ti. Ya es hora de despedirnos. Tienes que ir al instituto, te espera un examen."
+            </p>
+            <p class="text-[clamp(0.85rem,1.7vw,1.15rem)] leading-relaxed text-[#2c3d30] indent-4">
+              Y desperté. Con una paz breve, fugaz. Pero paz al fin y al cabo.
+            </p>
+          </div>
+
+          <div class="relative z-10 text-right font-mono text-[0.6rem] tracking-widest text-[#8a7e6b] pl-[12%] select-none">
+            PÁG. 7
+          </div>
+        </div>
+
+        <!-- Right Page -->
+        <div class="flex-1 bg-[#FBF9F4] rounded-r-sm p-4 md:p-8 shadow-[inset_10px_0_20px_rgba(0,0,0,0.06)] flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute inset-0 bg-ruled-lines pointer-events-none opacity-50"></div>
+          <div class="absolute top-0 bottom-0 right-[10%] md:right-[15%] w-px bg-red-400/40 pointer-events-none"></div>
+
+          <div class="relative z-10 space-y-4 md:space-y-6 font-handwriting pr-[12%] md:pr-[18%] pl-4 pt-6 flex flex-col justify-center h-full">
+            <p class="text-[clamp(1.15rem,2.4vw,1.65rem)] leading-relaxed text-[#233527] italic text-center font-bold">
+              "De la herida nació la palabra, y al nombrar el dolor, la soledad se volvió abrazo."
+            </p>
+            <div class="text-center text-[#8c2d2d] font-bold text-[clamp(0.95rem,2vw,1.3rem)] mt-6 select-none">
+              Para Kike. Siempre Kike.
+            </div>
+          </div>
+
+          <div class="relative z-10 text-left font-mono text-[0.6rem] tracking-widest text-[#8a7e6b] select-none">
+            PÁG. 8
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Pinned Pagination Controls below the notebook -->
+    <div class="mt-6 flex items-center justify-center gap-6 z-10">
+      <button
+        id="btn-libreta-prev"
+        class="px-4 py-1.5 font-mono text-[0.65rem] tracking-[0.25em] bg-[#0c1810]/70 hover:bg-white/10 text-[var(--color-muted)] hover:text-white border border-white/10 rounded-full transition-all duration-300 uppercase disabled:opacity-20 disabled:pointer-events-none"
+        aria-label="Página anterior"
+      >
+        ← Anterior
+      </button>
+      <span id="libreta-page-indicator" class="font-mono text-[0.65rem] tracking-[0.2em] text-[var(--color-amber)] uppercase select-none">
+        Pág. 1-2 / 8
+      </span>
+      <button
+        id="btn-libreta-next"
+        class="px-4 py-1.5 font-mono text-[0.65rem] tracking-[0.25em] bg-[#0c1810]/70 hover:bg-white/10 text-[var(--color-muted)] hover:text-white border border-white/10 rounded-full transition-all duration-300 uppercase disabled:opacity-20 disabled:pointer-events-none"
+        aria-label="Página siguiente"
+      >
+        Siguiente →
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let libretaCleanup: (() => void) | null = null;
+
+  function initLibreta() {
+    cleanupLibreta();
+
+    const localTriggers: any[] = [];
+
+    // ── Reveal del texto ───────────────────────────────────────
+    gsap.fromTo('#libreta-verde-section .reveal',
+      { opacity: 0, y: 35 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.95,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '#libreta-verde-section',
+          start: 'top 75%',
+          once: true,
+        },
+      }
+    );
+
+    // ── Three.js: libreta verde 3D interactiva ────────────────
+    const canvas = document.getElementById('libreta-3d-canvas') as HTMLCanvasElement | null;
+    const stage  = document.getElementById('libreta-3d-stage');
+    if (!canvas || !stage) return;
+
+    const scene = new THREE.Scene();
+
+    // Cámara
+    const camera = new THREE.PerspectiveCamera(26, stage.clientWidth / stage.clientHeight, 0.1, 100);
+    camera.position.set(0, 0, 7.5);
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(stage.clientWidth, stage.clientHeight, false);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // ── Geometría y materiales de la libreta ───────────────────
+    const W = 2.0;   // Ancho
+    const H = 2.8;   // Alto
+    const D = 0.22;  // Grosor
+
+    const geo = new THREE.BoxGeometry(W, H, D);
+
+    // Textura de cuero verde procedural
+    function makeGreenLeatherTexture(): THREE.Texture {
+      const c = document.createElement('canvas');
+      c.width  = 512;
+      c.height = 512;
+      const ctx = c.getContext('2d')!;
+      
+      // Fondo verde cuero oscuro
+      ctx.fillStyle = '#1b3824';
+      ctx.fillRect(0, 0, c.width, c.height);
+
+      // Ruido para textura de cuero
+      for (let i = 0; i < 60000; i++) {
+        const x = Math.random() * c.width;
+        const y = Math.random() * c.height;
+        const size = Math.random() * 1.5;
+        ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.025)';
+        ctx.fillRect(x, y, size, size);
+      }
+
+      // Detalle de marco dorado sutil en la tapa
+      ctx.strokeStyle = 'rgba(212, 165, 122, 0.35)'; // Dorado vintage
+      ctx.lineWidth = 4;
+      ctx.strokeRect(20, 20, c.width - 40, c.height - 40);
+
+      // Círculo decorativo en el centro
+      ctx.beginPath();
+      ctx.arc(c.width / 2, c.height / 2, 40, 0, Math.PI * 2);
+      ctx.stroke();
+
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+    const leatherTex = makeGreenLeatherTexture();
+
+    // Textura para las páginas (borde)
+    function makePagesTexture(): THREE.Texture {
+      const c = document.createElement('canvas');
+      c.width  = 128;
+      c.height = 512;
+      const ctx = c.getContext('2d')!;
+      ctx.fillStyle = '#f4ebd0'; // Tono crema antiguo
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.strokeStyle = 'rgba(130,100,70,0.12)';
+      ctx.lineWidth = 0.5;
+      for (let y = 0; y < c.height; y += 3) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(c.width, y);
+        ctx.stroke();
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+    const pagesTex = makePagesTexture();
+
+    // Materiales del BoxGeometry de la libreta
+    const leatherMat = new THREE.MeshStandardMaterial({
+      map: leatherTex,
+      roughness: 0.8,
+      metalness: 0.1,
+    });
+
+    const pagesMat = new THREE.MeshStandardMaterial({
+      map: pagesTex,
+      roughness: 0.95,
+    });
+
+    const materials = [
+      pagesMat,    // +X
+      leatherMat,  // -X (lomo)
+      pagesMat,    // +Y
+      pagesMat,    // -Y
+      leatherMat,  // +Z (portada)
+      leatherMat,  // -Z (contraportada)
+    ];
+
+    const notebook = new THREE.Mesh(geo, materials);
+    notebook.castShadow = true;
+    notebook.receiveShadow = false;
+    notebook.rotation.set(0.1, -0.35, 0);
+    scene.add(notebook);
+
+    // ── Cinta marca-páginas dorada (ribbon) ───────────────────
+    const ribbonGeo = new THREE.BoxGeometry(0.12, 1.4, 0.02);
+    const ribbonMat = new THREE.MeshStandardMaterial({
+      color: '#d4a57a', // Dorado mate
+      roughness: 0.6,
+    });
+    const ribbon = new THREE.Mesh(ribbonGeo, ribbonMat);
+    ribbon.position.set(0.2, -1.8, 0);
+    ribbon.rotation.z = 0.08;
+    notebook.add(ribbon);
+
+    // ── Plano de sombra ────────────────────────────────────────
+    const shadowGeo = new THREE.PlaneGeometry(10, 10);
+    const shadowMat = new THREE.ShadowMaterial({ opacity: 0.45 });
+    const shadowPlane = new THREE.Mesh(shadowGeo, shadowMat);
+    shadowPlane.rotation.x = -Math.PI / 2;
+    shadowPlane.position.y = -1.8;
+    shadowPlane.receiveShadow = true;
+    scene.add(shadowPlane);
+
+    // ── Luces ──────────────────────────────────────────────────
+    const ambient = new THREE.AmbientLight(0xfff5ea, 0.5);
+    scene.add(ambient);
+
+    const keyLight = new THREE.DirectionalLight(0xfff8ee, 1.2);
+    keyLight.position.set(-3, 5, 4);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.set(1024, 1024);
+    keyLight.shadow.bias = -0.001;
+    scene.add(keyLight);
+
+    const greenRim = new THREE.DirectionalLight(0x2d6a4f, 0.8);
+    greenRim.position.set(4, 2, -2);
+    scene.add(greenRim);
+
+    // ── Controles de órbita ────────────────────────────────────
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.enableZoom = false; // Bloquear zoom para mantener el layout
+    controls.autoRotate = true;  // Rotar solo cuando no se interactúa
+    controls.autoRotateSpeed = 0.75;
+    controls.maxPolarAngle = Math.PI / 2 + 0.15; // No ver demasiado por debajo
+    controls.minPolarAngle = Math.PI / 4;
+
+    // ── Parallax con ratón y tooltip ───────────────────────────
+    let mouseHasMoved = false;
+    const tooltipEl = document.getElementById('libreta-3d-tooltip');
+
+    function showTooltip() {
+      if (tooltipEl && !mouseHasMoved) {
+        tooltipEl.style.opacity = '1';
+        setTimeout(() => {
+          if (tooltipEl) tooltipEl.style.opacity = '0';
+        }, 3500);
+      }
+    }
+
+    const tooltipTimeout = setTimeout(showTooltip, 4000);
+
+    const onStageDown = () => {
+      mouseHasMoved = true;
+      controls.autoRotate = false; // Desactivar autorotación en interacción
+      if (tooltipEl) tooltipEl.style.opacity = '0';
+    };
+    stage.addEventListener('pointerdown', onStageDown);
+
+    // ── Resize Observer ────────────────────────────────────────
+    const ro = new ResizeObserver(() => {
+      const w = stage.clientWidth;
+      const h = stage.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h, false);
+    });
+    ro.observe(stage);
+
+    // ── Loop de renderizado ────────────────────────────────────
+    let isVisible = false;
+    let rafId: number | null = null;
+    let t = 0;
+
+    function tick() {
+      if (!isVisible) {
+        rafId = null;
+        return;
+      }
+      t += 0.008;
+
+      // Micro balanceo cuando gira automático
+      if (controls.autoRotate) {
+        notebook.position.y = Math.sin(t * 1.5) * 0.035;
+        ribbon.rotation.y = Math.sin(t * 2) * 0.05;
+      } else {
+        notebook.position.y += (0 - notebook.position.y) * 0.05;
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+      rafId = requestAnimationFrame(tick);
+    }
+
+    const sectionEl = document.getElementById('libreta-verde-section');
+    let visObs: IntersectionObserver;
+    if (sectionEl) {
+      visObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            isVisible = e.isIntersecting;
+            if (isVisible && rafId === null) {
+              tick();
+            }
+          });
+        },
+        { threshold: 0.05 }
+      );
+      visObs.observe(sectionEl);
+    } else {
+      renderer.render(scene, camera);
+    }
+
+    // ── Modal de apertura y paginación ───────────────────────────
+    const modal = document.getElementById('libreta-modal');
+    const closeBtn = document.getElementById('libreta-modal-close');
+    const triggerTxt = document.getElementById('btn-abrir-libreta-txt');
+    const bookSpine = document.getElementById('libreta-book-spine');
+
+    let currentSpread = 0;
+    const spreads = document.querySelectorAll('.libreta-spread');
+    const prevBtn = document.getElementById('btn-libreta-prev');
+    const nextBtn = document.getElementById('btn-libreta-next');
+    const pageIndicator = document.getElementById('libreta-page-indicator');
+
+    function updateSpreads() {
+      spreads.forEach((spread, idx) => {
+        if (idx === currentSpread) {
+          spread.classList.add('active');
+        } else {
+          spread.classList.remove('active');
+        }
+      });
+
+      if (prevBtn) {
+        (prevBtn as HTMLButtonElement).disabled = currentSpread === 0;
+      }
+      if (nextBtn) {
+        (nextBtn as HTMLButtonElement).disabled = currentSpread === spreads.length - 1;
+      }
+      if (pageIndicator) {
+        const p1 = currentSpread * 2 + 1;
+        const p2 = currentSpread * 2 + 2;
+        pageIndicator.textContent = `Pág. ${p1}-${p2} / 8`;
+      }
+    }
+
+    const onPrevClick = () => {
+      if (currentSpread > 0) {
+        currentSpread--;
+        updateSpreads();
+      }
+    };
+
+    const onNextClick = () => {
+      if (currentSpread < spreads.length - 1) {
+        currentSpread++;
+        updateSpreads();
+      }
+    };
+
+    function openModal() {
+      if (!modal) return;
+      currentSpread = 0;
+      updateSpreads();
+      modal.style.opacity = '1';
+      modal.style.pointerEvents = 'auto';
+      document.body.style.overflow = 'hidden';
+      if (bookSpine) {
+        bookSpine.classList.remove('scale-95');
+        bookSpine.classList.add('scale-100');
+      }
+    }
+
+    function closeModal() {
+      if (!modal) return;
+      modal.style.opacity = '0';
+      modal.style.pointerEvents = 'none';
+      document.body.style.overflow = '';
+      if (bookSpine) {
+        bookSpine.classList.remove('scale-100');
+        bookSpine.classList.add('scale-95');
+      }
+    }
+
+    // Doble gatillo: hacer clic en el stage 3D o en el botón del texto
+    stage.addEventListener('click', (e) => {
+      // Solo abrir si no fue un arrastre de cámara prolongado
+      if (controls.state === -1) {
+        openModal();
+      }
+    });
+
+    triggerTxt?.addEventListener('click', openModal);
+    closeBtn?.addEventListener('click', closeModal);
+    prevBtn?.addEventListener('click', onPrevClick);
+    nextBtn?.addEventListener('click', onNextClick);
+
+    // Cerrar con Escape / Pasar página con flechas de teclado
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeModal();
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
+        if (currentSpread < spreads.length - 1) {
+          currentSpread++;
+          updateSpreads();
+        }
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        if (currentSpread > 0) {
+          currentSpread--;
+          updateSpreads();
+        }
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+
+    // Guardar callback de limpieza
+    libretaCleanup = () => {
+      clearTimeout(tooltipTimeout);
+      ro.disconnect();
+      if (visObs) visObs.disconnect();
+
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+
+      stage.removeEventListener('pointerdown', onStageDown);
+      window.removeEventListener('keydown', onKeyDown);
+      prevBtn?.removeEventListener('click', onPrevClick);
+      nextBtn?.removeEventListener('click', onNextClick);
+      
+      controls.dispose();
+
+      scene.remove(notebook);
+      scene.remove(shadowPlane);
+      geo.dispose();
+      leatherTex.dispose();
+      pagesTex.dispose();
+      materials.forEach(m => m.dispose());
+      pagesMat.dispose();
+      leatherMat.dispose();
+      ribbonGeo.dispose();
+      ribbonMat.dispose();
+      shadowGeo.dispose();
+      shadowMat.dispose();
+
+      renderer.dispose();
+    };
+  }
+
+  function cleanupLibreta() {
+    if (libretaCleanup) {
+      libretaCleanup();
+      libretaCleanup = null;
+    }
+  }
+
+  document.addEventListener('astro:page-load', initLibreta);
+  document.addEventListener('astro:before-swap', cleanupLibreta);
+</script>
+
+<style>
+  /* Cursive handwriting layout details */
+  .font-handwriting {
+    font-family: 'Caveat', cursive, sans-serif;
+  }
+
+  /* Ruled lines for the school notebook look */
+  .bg-ruled-lines {
+    background-size: 100% 2.2rem;
+    background-image: linear-gradient(
+      to bottom,
+      transparent 96%,
+      rgba(35, 100, 200, 0.08) 96%
+    );
+    margin-top: 1.1rem;
+    background-attachment: local;
+  }
+  
+  @media (max-width: 768px) {
+    .bg-ruled-lines {
+      background-size: 100% 1.8rem;
+      background-image: linear-gradient(
+        to bottom,
+        transparent 95%,
+        rgba(35, 100, 200, 0.08) 95%
+      );
+      margin-top: 0.9rem;
+    }
+  }
+
+  /* Pages spreads layout transitions */
+  .libreta-spread {
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    transform: scale(0.97);
+  }
+  .libreta-spread.active {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+  }
+
+  /* SVG drawing paths */
+  .draw-path {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    transition: stroke-dashoffset 2.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .active .draw-path {
+    stroke-dashoffset: 0;
+  }
+</style>

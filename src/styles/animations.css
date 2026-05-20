@@ -1,0 +1,126 @@
+/* ─── Keyframe animations ───────────────────────────────────── */
+
+@keyframes pulse-amber {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(212, 119, 10, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(212, 119, 10, 0);
+  }
+}
+
+@keyframes bounce-arrow {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50%       { transform: translateY(10px); opacity: 0.6; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Utility classes ───────────────────────────────────────── */
+
+.animate-pulse-amber {
+  animation: pulse-amber 2s ease-in-out infinite;
+}
+
+.animate-bounce-arrow {
+  animation: bounce-arrow 1.8s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-text) 0%,
+    var(--color-amber-light) 50%,
+    var(--color-text) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ─── Timeline node ─────────────────────────────────────────── */
+.timeline-node-active {
+  animation: pulse-amber 2s ease-in-out infinite;
+}
+
+/* ─── Scroll-linked parallax wrapper ────────────────────────── */
+.parallax-wrapper {
+  will-change: transform;
+}
+
+/* ─── Book cover 3D ─────────────────────────────────────────── */
+.book-3d {
+  transform: perspective(1000px) rotateY(-15deg) rotateX(2deg);
+  box-shadow: 30px 30px 60px rgba(0, 0, 0, 0.8),
+              -5px -5px 30px rgba(212, 119, 10, 0.05);
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.7s ease;
+}
+
+.book-3d:hover {
+  transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+  box-shadow: 10px 20px 40px rgba(0, 0, 0, 0.6),
+              -2px -2px 20px rgba(212, 119, 10, 0.08);
+}
+
+/* ─── Paper fragment ────────────────────────────────────────── */
+.paper {
+  background: #FAF7F2;
+  box-shadow: 0 4px 80px rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+  position: relative;
+}
+
+.paper::before {
+  content: '';
+  position: absolute;
+  left: 4.5rem;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(212, 119, 10, 0.25);
+  pointer-events: none;
+}
+
+/* ─── Infinite slider ───────────────────────────────────────── */
+.slider-track {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+}
+
+/* ─── Backdrop card ─────────────────────────────────────────── */
+.card-glass {
+  background: rgba(26, 26, 46, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+}

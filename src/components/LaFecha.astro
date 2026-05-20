@@ -1,0 +1,312 @@
+---
+---
+<section id="seccion-fecha" class="relative w-full min-h-screen flex flex-col items-center justify-center bg-bg overflow-hidden py-24">
+
+  <!-- Atmósfera cinematográfica -->
+  <div
+    class="absolute inset-0 bg-cover bg-center"
+    style="background-image: url('/images/portada.jpg'); filter: blur(50px) saturate(0.3) brightness(0.25); transform: scale(1.15);"
+    aria-hidden="true"
+  ></div>
+  <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-bg)]/85 via-[var(--color-bg)]/55 to-[var(--color-bg)]/95" aria-hidden="true"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--color-amber)]/8 rounded-full blur-[140px] pointer-events-none" aria-hidden="true"></div>
+
+  <!-- Partículas ceniza -->
+  <div id="fecha-particles" class="absolute inset-0 z-[2] pointer-events-none" aria-hidden="true"></div>
+
+  <div class="relative z-10 px-6 max-w-3xl mx-auto">
+
+    <!-- Encabezado: contexto editorial -->
+    <div class="text-center mb-12">
+      <p id="fecha-eyebrow" class="opacity-0 font-mono text-[0.6rem] tracking-[0.55em] uppercase mb-3"
+         style="color: rgba(163,21,21,0.85);">
+        Capítulo 7 · Lunes
+      </p>
+      <p id="fecha-overture" class="opacity-0 font-italic italic max-w-md mx-auto leading-relaxed"
+         style="font-family:'Lora',Georgia,serif; font-size:clamp(0.95rem,1.6vw,1.05rem); color:var(--color-muted);">
+        Era un día como cualquier otro. Sólo que no lo fue.
+      </p>
+    </div>
+
+    <!-- ── Fecha gigante ─────────────────────────────────────── -->
+    <div class="text-center mb-8">
+      <div class="w-px h-12 bg-gradient-to-b from-transparent via-[var(--color-amber)]/40 to-transparent mx-auto mb-6" aria-hidden="true"></div>
+
+      <div class="overflow-hidden mb-3">
+        <h2
+          id="fecha-dia"
+          class="font-serif leading-[0.85] opacity-0"
+          style="
+            font-size: clamp(7rem, 28vw, 20rem);
+            letter-spacing: -0.045em;
+            font-feature-settings: 'kern' 1, 'liga' 1;
+            color: #F2EAE0;
+            font-weight: 500;
+            text-shadow: 0 0 80px rgba(163,21,21,0.18);
+          "
+          aria-label="29"
+        >29</h2>
+      </div>
+
+      <div class="overflow-hidden">
+        <div
+          id="fecha-mes-anyo"
+          class="font-mono opacity-0 flex items-center justify-center gap-3 md:gap-4"
+          style="color: var(--color-amber); font-size: clamp(0.85rem,2.2vw,1.5rem); letter-spacing: 0.7em;"
+        >
+          <span class="w-1 h-1 rounded-full bg-[var(--color-amber)]/50"></span>
+          <span>MAYO</span>
+          <span class="w-1 h-1 rounded-full bg-[var(--color-amber)]/50"></span>
+          <span>2023</span>
+          <span class="w-1 h-1 rounded-full bg-[var(--color-amber)]/50"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Narrativa escalonada: frases del libro ───────────── -->
+    <div class="mt-16 max-w-xl mx-auto space-y-6" id="fecha-narrativa">
+
+      <div class="overflow-hidden">
+        <p class="fecha-line opacity-0 translate-y-full font-sans leading-relaxed text-center"
+           style="font-size:clamp(0.95rem,1.7vw,1.15rem); color:rgba(242,234,224,0.85);">
+          A las <span style="color:var(--color-amber); font-weight:500;">8:30 de la mañana</span>,
+          Kike decidió ir en moto al trabajo.
+        </p>
+      </div>
+
+      <div class="overflow-hidden">
+        <p class="fecha-line opacity-0 translate-y-full font-sans leading-relaxed text-center"
+           style="font-size:clamp(0.95rem,1.7vw,1.15rem); color:rgba(242,234,224,0.7);">
+          Al terminar una curva a ciegas,<br/>
+          una inmensa vaca se interpuso entre él y su destino.
+        </p>
+      </div>
+
+      <!-- Pausa visual: línea -->
+      <div class="overflow-hidden flex justify-center py-3">
+        <div id="fecha-rule" class="w-0 h-px bg-[var(--color-amber)]/50"></div>
+      </div>
+
+      <!-- Frase clímax -->
+      <div class="overflow-hidden">
+        <p class="fecha-line opacity-0 translate-y-full font-italic italic text-center font-medium"
+           style="font-family:'Lora',Georgia,serif; font-size:clamp(1.15rem,2.4vw,1.6rem); color:var(--color-amber); letter-spacing:0.01em;">
+          Enrique no llegó a casa.
+        </p>
+      </div>
+
+      <!-- Reacción -->
+      <div class="overflow-hidden mt-8">
+        <p class="fecha-line opacity-0 translate-y-full font-italic italic text-center max-w-md mx-auto"
+           style="font-family:'Lora',Georgia,serif; font-size:clamp(0.9rem,1.5vw,1.05rem); color:var(--color-muted); line-height:1.7;">
+          "La luz del año se apagó de golpe,<br/>
+          dejando una herida y un vacío insondable."
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Cierre decorativo + CTA sutil -->
+    <div class="text-center mt-20" id="fecha-footer">
+      <div class="w-px h-12 bg-gradient-to-b from-[var(--color-amber)]/30 to-transparent mx-auto mb-6 opacity-0" id="fecha-line-bottom" aria-hidden="true"></div>
+      <a href="#fragmento"
+         id="fecha-cta"
+         class="opacity-0 inline-flex items-center gap-3 font-mono uppercase"
+         style="font-size:0.62rem; letter-spacing:0.4em; color:var(--color-muted); text-decoration:none;">
+        Leer cómo lo cuenta
+        <span style="color:var(--color-amber);">↓</span>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let particlesContainer: any = null;
+  let scrollTriggerInstance: any = null;
+  let scrambleInterval: ReturnType<typeof setInterval> | null = null;
+  let ctaHandlers: (() => void)[] | null = null;
+
+  function initFecha() {
+    // Limpiar instancias previas
+    cleanupFecha();
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isLowEnd = navigator.hardwareConcurrency <= 4;
+
+    // ── Partículas tipo ceniza/polvo flotando ────────────────────
+    if (!isLowEnd && !prefersReducedMotion) {
+      import('@tsparticles/engine').then(({ tsParticles }) =>
+        import('@tsparticles/slim').then(({ loadSlim }) =>
+          loadSlim(tsParticles).then(() =>
+            tsParticles.load({
+              id: 'fecha-particles',
+              options: {
+                fullScreen: { enable: false },
+                background: { color: { value: 'transparent' } },
+                fpsLimit: 30,
+                particles: {
+                  number: { value: 55, density: { enable: true, width: 1920 } },
+                  color: { value: ['#A31515', '#C0785A', '#8A7A74', '#D4A57A'] },
+                  opacity: {
+                    value: { min: 0.05, max: 0.22 },
+                    animation: { enable: true, speed: 0.3, minimumValue: 0.05, sync: false },
+                  },
+                  size: { value: { min: 0.4, max: 1.8 } },
+                  move: {
+                    enable: true,
+                    speed: { min: 0.15, max: 0.5 },
+                    direction: 'top',
+                    random: true,
+                    straight: false,
+                    outModes: { default: 'out', top: 'out', bottom: 'destroy' },
+                  },
+                  shape: { type: 'circle' },
+                  twinkle: {
+                    particles: { enable: true, frequency: 0.04, opacity: 0.35 },
+                  },
+                },
+                detectRetina: true,
+              },
+            }).then(container => {
+              particlesContainer = container;
+            })
+          )
+        )
+      ).catch(() => {});
+    }
+
+    const CHARS = '0123456789';
+
+    function scrambleTo(el: HTMLElement, target: string, duration = 1.2) {
+      const chars = target.split('');
+      let frame = 0;
+      const interval = 40;
+      const totalFrames = (duration * 1000) / interval;
+
+      gsap.set(el, { opacity: 1 });
+
+      scrambleInterval = setInterval(() => {
+        frame++;
+        const progress = frame / totalFrames;
+
+        el.textContent = chars.map((ch, i) => {
+          if (!/\d/.test(ch)) return ch;
+          if (progress > (i + 1) / chars.filter(c => /\d/.test(c)).length) return ch;
+          return CHARS[Math.floor(Math.random() * CHARS.length)];
+        }).join('');
+
+        if (frame >= totalFrames) {
+          if (scrambleInterval) clearInterval(scrambleInterval);
+          el.textContent = target;
+        }
+      }, interval);
+    }
+
+    let triggered = false;
+
+    scrollTriggerInstance = ScrollTrigger.create({
+      trigger: '#seccion-fecha',
+      start: 'top 60%',
+      once: true,
+      onEnter: () => {
+        if (triggered) return;
+        triggered = true;
+
+        // Reset elements to start state in case of navigation updates
+        gsap.set(['#fecha-eyebrow', '#fecha-overture', '#fecha-mes-anyo', '#fecha-line-bottom', '#fecha-cta'], { opacity: 0 });
+        gsap.set('.fecha-line', { opacity: 0, yPercent: 100 });
+        gsap.set('#fecha-rule', { width: 0 });
+
+        // 1. Eyebrow + overture
+        gsap.to('#fecha-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.1 });
+        gsap.to('#fecha-overture', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', delay: 0.3 });
+
+        // 2. El 29 entra dramático con scramble
+        gsap.fromTo('#fecha-dia',
+          { yPercent: 100, opacity: 0 },
+          {
+            yPercent: 0,
+            opacity: 1,
+            duration: 1.3,
+            ease: 'power4.out',
+            delay: 0.7,
+            onComplete: () => {
+              const el = document.getElementById('fecha-dia');
+              if (el) scrambleTo(el, '29', 0.7);
+            },
+          }
+        );
+
+        // 3. MAYO 2023
+        gsap.fromTo('#fecha-mes-anyo',
+          { y: 25, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', delay: 1.4 }
+        );
+
+        // 4. Narrativa escalonada
+        gsap.to('.fecha-line', {
+          opacity: 1,
+          y: 0,
+          duration: 0.85,
+          ease: 'power3.out',
+          stagger: 0.55,
+          delay: 2.1,
+        });
+
+        // 5. Línea separadora (entre las primeras frases y la frase clímax)
+        gsap.to('#fecha-rule', {
+          width: '4rem',
+          duration: 0.8,
+          ease: 'power2.out',
+          delay: 3.4,
+        });
+
+        // 6. Cierre: línea + CTA
+        gsap.to('#fecha-line-bottom', { opacity: 1, duration: 0.6, delay: 5.0 });
+        gsap.to('#fecha-cta', { opacity: 1, duration: 0.8, delay: 5.2 });
+      },
+    });
+
+    // Hover sutil en CTA
+    const cta = document.getElementById('fecha-cta');
+    if (cta) {
+      const enter = () => { cta.style.color = 'var(--color-text)'; };
+      const leave = () => { cta.style.color = 'var(--color-muted)'; };
+      cta.addEventListener('mouseenter', enter);
+      cta.addEventListener('mouseleave', leave);
+      ctaHandlers = [enter, leave];
+    }
+  }
+
+  function cleanupFecha() {
+    if (particlesContainer) {
+      particlesContainer.destroy();
+      particlesContainer = null;
+    }
+    if (scrollTriggerInstance) {
+      scrollTriggerInstance.kill();
+      scrollTriggerInstance = null;
+    }
+    if (scrambleInterval) {
+      clearInterval(scrambleInterval);
+      scrambleInterval = null;
+    }
+    if (ctaHandlers) {
+      const cta = document.getElementById('fecha-cta');
+      if (cta) {
+        cta.removeEventListener('mouseenter', ctaHandlers[0]);
+        cta.removeEventListener('mouseleave', ctaHandlers[1]);
+      }
+      ctaHandlers = null;
+    }
+  }
+
+  document.addEventListener('astro:page-load', initFecha);
+  document.addEventListener('astro:before-swap', cleanupFecha);
+</script>
