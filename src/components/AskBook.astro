@@ -38,7 +38,7 @@
         <span class="ask-eyebrow">Pregunta al libro</span>
         <h3 id="ask-title" class="ask-title">29 de Mayo</h3>
       </div>
-      <div style="display:flex; gap:0.5rem; align-items:center;">
+      <div style="display:flex; gap:0.25rem; align-items:center;">
         <button id="ask-reset" class="ask-close" title="Borrar conversación" aria-label="Borrar conversación" style="opacity:0.6; transition:opacity 0.2s;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
@@ -88,7 +88,7 @@
         maxlength="200"
       />
       <button type="submit" class="ask-send" aria-label="Enviar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
         </svg>
       </button>
@@ -251,28 +251,44 @@
     letter-spacing: -0.01em;
   }
   .ask-close {
-    width: 2.85rem;
-    height: 2.85rem;
+    position: relative;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     background: transparent;
-    border: 1px solid rgba(242,234,224,0.12);
-    color: var(--color-muted);
+    border: none;
+    color: rgba(138,122,116,0.45);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     flex-shrink: 0;
-    transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.2s;
+    transition: color 0.2s, background 0.2s;
+  }
+  /* Hit area extension — 26px visual → ~44px effective */
+  .ask-close::before {
+    content: '';
+    position: absolute;
+    inset: -9px;
+    border-radius: 50%;
   }
   .ask-close svg {
-    width: 18px;
-    height: 18px;
+    width: 11px;
+    height: 11px;
+    pointer-events: none;
   }
   .ask-close:hover {
     color: var(--color-text);
-    border-color: rgba(242,234,224,0.4);
-    background: rgba(163,21,21,0.15);
-    transform: scale(1.05);
+    background: rgba(242,234,224,0.07);
+  }
+  /* Touch devices: larger visual target */
+  @media (hover: none) and (pointer: coarse) {
+    .ask-close {
+      width: 36px;
+      height: 36px;
+    }
+    .ask-close::before { inset: -4px; }
+    .ask-close svg { width: 14px; height: 14px; }
   }
 
   /* Mensajes */
@@ -382,27 +398,31 @@
   .ask-chip {
     display: inline-flex;
     align-items: center;
-    min-height: 46px;
+    height: 28px;
     background: transparent;
-    border: 1px solid rgba(163,21,21,0.3);
-    color: var(--color-text);
+    border: 1px solid rgba(163,21,21,0.25);
+    color: rgba(242,234,224,0.65);
     font-family: 'DM Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 0.5rem 0.95rem;
-    border-radius: 999px;
+    padding: 0 0.8rem;
+    border-radius: 2px;
     cursor: pointer;
-    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
     white-space: nowrap;
   }
   .ask-chip:hover {
-    background: rgba(163,21,21,0.12);
-    border-color: rgba(163,21,21,0.55);
-    transform: translateY(-1px);
+    background: rgba(163,21,21,0.1);
+    border-color: rgba(163,21,21,0.5);
+    color: var(--color-text);
   }
   .ask-chip:active {
-    transform: translateY(0) scale(0.96);
+    transform: scale(0.97);
+  }
+  /* Touch: bigger tap area */
+  @media (hover: none) and (pointer: coarse) {
+    .ask-chip { height: 44px; padding: 0 1rem; border-radius: 999px; }
   }
   .ask-chip.used {
     background: rgba(163,21,21,0.18);
@@ -445,24 +465,23 @@
   .ask-send {
     background: var(--color-amber);
     border: 1px solid var(--color-amber);
-    color: var(--color-text);
-    width: 2.85rem;
-    height: 2.85rem;
+    color: var(--color-bg);
+    width: 2.2rem;
+    height: 2.2rem;
     flex-shrink: 0;
-    border-radius: 50%;
+    border-radius: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
+    transition: opacity 0.2s;
   }
-  .ask-send:hover {
-    background: var(--color-amber-light);
-    transform: scale(1.05);
-  }
-  .ask-send:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+  .ask-send svg { width: 13px; height: 13px; }
+  .ask-send:hover { opacity: 0.82; }
+  .ask-send:disabled { opacity: 0.35; cursor: not-allowed; }
+  @media (hover: none) and (pointer: coarse) {
+    .ask-send { width: 2.75rem; height: 2.75rem; border-radius: 50%; }
+    .ask-send svg { width: 16px; height: 16px; }
   }
 
   .ask-disclaimer {

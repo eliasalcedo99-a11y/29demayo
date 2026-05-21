@@ -603,8 +603,9 @@ const total = paginas.length;
       text-align: center;
     }
     .ctrl-btn {
-      width: 2.85rem;
-      height: 2.85rem;
+      position: relative;
+      width: 2.2rem;
+      height: 2.2rem;
       border-radius: 50%;
       border: 1px solid var(--border);
       background: transparent;
@@ -613,17 +614,29 @@ const total = paginas.length;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
-    .ctrl-btn svg { width: 16px; height: 16px; }
+    /* Extended hit area on desktop (2.2rem → ~44px) */
+    .ctrl-btn::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+    }
+    .ctrl-btn svg { width: 13px; height: 13px; pointer-events: none; }
     .ctrl-btn:hover:not(:disabled) {
       background: var(--amber);
       border-color: var(--amber);
-      transform: scale(1.05);
+      color: #0d0a0b;
     }
     .ctrl-btn:disabled {
       opacity: 0.28;
       cursor: not-allowed;
+    }
+    @media (hover: none) and (pointer: coarse) {
+      .ctrl-btn { width: 2.75rem; height: 2.75rem; }
+      .ctrl-btn::before { inset: -4px; }
+      .ctrl-btn svg { width: 16px; height: 16px; }
     }
     .ctrl-buy {
       padding: 0 1.25rem;
