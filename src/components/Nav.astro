@@ -29,8 +29,8 @@ const links = [
     <a
       href="#"
       id="nav-logo"
-      class="font-serif text-[1.1rem] text-[var(--color-text)] opacity-0 transition-colors duration-300 hover:text-[var(--color-amber)]"
-      style="letter-spacing: -0.02em;"
+      class="inline-flex items-center font-serif text-[1.1rem] text-[var(--color-text)] opacity-0 transition-colors duration-300 hover:text-[var(--color-amber)] py-3 -my-3"
+      style="letter-spacing: -0.02em; min-height: 44px;"
       aria-label="Inicio — 29 de Mayo"
     >
       29 de Mayo
@@ -39,14 +39,15 @@ const links = [
     <!-- Links desktop -->
     <ul
       id="nav-links"
-      class="hidden md:flex items-center gap-7 opacity-0"
+      class="hidden md:flex items-center gap-5 opacity-0"
       role="list"
     >
       {links.map((l) => (
-        <li>
+        <li class="flex">
           <a
             href={l.href}
-            class="nav-link font-mono text-[0.62rem] tracking-[0.28em] uppercase text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors duration-300"
+            class="nav-link inline-flex items-center px-2 font-mono text-[0.62rem] tracking-[0.28em] uppercase text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors duration-300"
+            style="min-height: 44px;"
           >
             {l.label}
           </a>
@@ -62,7 +63,7 @@ const links = [
         rel="noopener noreferrer"
         id="nav-cta"
         class="hidden md:inline-flex btn-amber btn-amber-solid opacity-0"
-        style="padding: 0.45rem 1.1rem; font-size: 0.62rem; min-height: 2.2rem;"
+        style="padding: 0.6rem 1.1rem; font-size: 0.62rem; min-height: 44px;"
       >
         Comprar →
       </a>
@@ -70,7 +71,7 @@ const links = [
       <!-- Hamburger (mobile) -->
       <button
         id="nav-hamburger"
-        class="md:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5 opacity-0"
+        class="md:hidden flex flex-col justify-center items-center w-11 h-11 gap-1.5 opacity-0"
         aria-label="Abrir menú"
         aria-expanded="false"
         aria-controls="nav-mobile-menu"
@@ -119,7 +120,8 @@ const links = [
 
   <button
     id="nav-mobile-close"
-    class="absolute top-5 right-6 font-mono text-[0.65rem] tracking-[0.3em] text-[var(--color-muted)] uppercase hover:text-[var(--color-text)] transition-colors duration-300"
+    class="absolute top-3 right-3 inline-flex items-center justify-center px-4 font-mono text-[0.65rem] tracking-[0.3em] text-[var(--color-muted)] uppercase hover:text-[var(--color-text)] transition-colors duration-300"
+    style="min-height: 44px; min-width: 44px;"
     aria-label="Cerrar menú"
   >
     Cerrar ×

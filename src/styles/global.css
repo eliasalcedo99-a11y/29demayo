@@ -212,6 +212,14 @@
   .lenis.lenis-stopped { overflow: hidden; }
   .lenis.lenis-scrolling iframe { pointer-events: none; }
 
+  /* Velocity Blur */
+  .velocity-blur {
+    will-change: filter, transform;
+    filter: blur(calc(var(--scroll-velocity, 0) * 0.4px));
+    transform: scaleY(calc(1 + var(--scroll-velocity, 0) * 0.001));
+    transition: filter 0.1s ease-out, transform 0.1s ease-out;
+  }
+
   body {
     @apply bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased overflow-x-hidden;
     font-feature-settings: "kern" 1, "liga" 1;

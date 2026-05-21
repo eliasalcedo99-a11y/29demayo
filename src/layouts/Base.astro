@@ -84,7 +84,11 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://29demayo.es');
             wheelMultiplier: 1,
             touchMultiplier: 2,
           });
-          lenis.on('scroll', ScrollTrigger.update);
+          lenis.on('scroll', (e: any) => {
+            ScrollTrigger.update();
+            const velocity = Math.min(Math.abs(e.velocity || 0), 10);
+            document.documentElement.style.setProperty('--scroll-velocity', String(velocity));
+          });
           gsap.ticker.add((time: number) => lenis?.raf(time * 1000));
           gsap.ticker.lagSmoothing(0);
         }

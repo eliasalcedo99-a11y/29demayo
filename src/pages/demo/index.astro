@@ -200,6 +200,11 @@ const total = paginas.length;
       text-decoration: none;
       transition: color 0.2s;
     }
+    .topbar a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
     .topbar a:hover { color: var(--amber-light); }
     .topbar .title {
       font-family: 'Cormorant Garamond', Georgia, serif;
@@ -236,6 +241,66 @@ const total = paginas.length;
         drop-shadow(0 50px 70px rgba(0,0,0,0.7))
         drop-shadow(0 18px 18px rgba(0,0,0,0.45));
     }
+
+    .book.theme-sepia {
+      --paper:      #F2EDE3;
+      --paper-soft: #E8E2D5;
+      --ink:        #1A1208;
+      --ink-soft:   rgba(26,18,8,0.82);
+    }
+    .book.theme-claro {
+      --paper:      #FAF9F6;
+      --paper-soft: #F0EFEA;
+      --ink:        #0A0A0A;
+      --ink-soft:   rgba(10,10,10,0.82);
+    }
+    .book.theme-noche {
+      --paper:      #1C1718;
+      --paper-soft: #120E0F;
+      --ink:        #E2D9CE;
+      --ink-soft:   rgba(226,217,206,0.82);
+    }
+
+    /* ── Selector de tema en topbar ────────────────────────── */
+    .theme-selector {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    /* Tap target 44x44 con swatch visible de 18px centrado (WCAG 2.5.5) */
+    .theme-btn {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      border-radius: 50%;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+    .theme-btn::before {
+      content: '';
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .theme-btn:hover::before {
+      transform: scale(1.2);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+    .theme-btn.active::before {
+      border-color: var(--amber-light);
+      transform: scale(1.2);
+      box-shadow: 0 0 6px var(--amber);
+    }
+    .theme-btn.theme-val-sepia::before { background: #F2EDE3; }
+    .theme-btn.theme-val-claro::before { background: #FAF9F6; }
+    .theme-btn.theme-val-noche::before { background: #1C1718; }
 
     /* Textura sutil de papel sobre todo el libro */
     .book::before {
@@ -562,7 +627,7 @@ const total = paginas.length;
     }
     .ctrl-buy {
       padding: 0 1.25rem;
-      height: 2.4rem;
+      height: 2.75rem;
       border-radius: 999px;
       background: var(--amber);
       color: var(--paper);
@@ -764,7 +829,11 @@ const total = paginas.length;
   <header class="topbar">
     <a href="/" aria-label="Volver a la web">← Volver</a>
     <span class="title">29 de Mayo</span>
-    <span style="opacity:0.5;">Demo</span>
+    <div class="theme-selector" id="theme-selector">
+      <button class="theme-btn theme-val-sepia active" data-theme="sepia" title="Modo Sepia" aria-label="Modo Sepia"></button>
+      <button class="theme-btn theme-val-claro" data-theme="claro" title="Modo Claro" aria-label="Modo Claro"></button>
+      <button class="theme-btn theme-val-noche" data-theme="noche" title="Modo Noche" aria-label="Modo Noche"></button>
+    </div>
   </header>
 
   <!-- Focus mode toggle -->
@@ -1024,6 +1093,32 @@ const total = paginas.length;
         }
       }
       focusToggle?.addEventListener('click', toggleFocus);
+
+      // ── Theme Selector ──────────────────────────────────
+      const themeBtns = document.querySelectorAll('.theme-btn');
+      const bookEl    = document.getElementById('book');
+
+      function setBookTheme(themeName) {
+        themeBtns.forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-theme') === themeName);
+        });
+        if (bookEl) {
+          bookEl.classList.remove('theme-sepia', 'theme-claro', 'theme-noche');
+          bookEl.classList.add(`theme-${themeName}`);
+        }
+        localStorage.setItem('demo-book-theme', themeName);
+      }
+
+      themeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const theme = btn.getAttribute('data-theme');
+          if (theme) setBookTheme(theme);
+        });
+      });
+
+      // Load initial theme
+      const savedTheme = localStorage.getItem('demo-book-theme') || 'sepia';
+      setBookTheme(savedTheme);
 
       // Teclado
       document.addEventListener('keydown', (e) => {
