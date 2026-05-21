@@ -38,9 +38,16 @@
         <span class="ask-eyebrow">Pregunta al libro</span>
         <h3 id="ask-title" class="ask-title">29 de Mayo</h3>
       </div>
-      <button id="ask-close" class="ask-close" aria-label="Cerrar">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+      <div style="display:flex; gap:0.5rem; align-items:center;">
+        <button id="ask-reset" class="ask-close" title="Borrar conversación" aria-label="Borrar conversación" style="opacity:0.6; transition:opacity 0.2s;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
+          </svg>
+        </button>
+        <button id="ask-close" class="ask-close" aria-label="Cerrar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
     </div>
 
     <!-- Mensajes -->
@@ -465,11 +472,17 @@
 </style>
 
 <script>
+  let askCleanup: (() => void) | null = null;
+
   function initAskBook() {
+    // Limpiar instancia previa (View Transitions re-ejecutan este init)
+    if (askCleanup) { askCleanup(); askCleanup = null; }
+
     const trigger     = document.getElementById('ask-book-trigger');
     const modal       = document.getElementById('ask-book-modal');
     const backdrop    = document.getElementById('ask-backdrop');
     const closeBtn    = document.getElementById('ask-close');
+    const resetBtn    = document.getElementById('ask-reset');
     const messages    = document.getElementById('ask-messages');
     const form        = document.getElementById('ask-form') as HTMLFormElement | null;
     const input       = document.getElementById('ask-input') as HTMLInputElement | null;
@@ -504,15 +517,45 @@
       modal!.setAttribute('aria-hidden', 'true');
       trigger!.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
+      (trigger as HTMLElement).focus();
+    }
+
+    const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+    function trapFocus(e: KeyboardEvent) {
+      if (e.key !== 'Tab') return;
+      const focusableElements = modal!.querySelectorAll(focusableSelector);
+      if (focusableElements.length === 0) return;
+      const firstFocusable = focusableElements[0] as HTMLElement;
+      const lastFocusable = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusable) {
+          lastFocusable.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastFocusable) {
+          firstFocusable.focus();
+          e.preventDefault();
+        }
+      }
     }
 
     trigger.addEventListener('click', openModal);
     closeBtn?.addEventListener('click', closeModal);
     backdrop?.addEventListener('click', closeModal);
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modal!.classList.contains('open')) closeModal();
-    });
+    function onDocKeydown(e: KeyboardEvent) {
+      if (modal!.classList.contains('open')) {
+        if (e.key === 'Escape') {
+          closeModal();
+        } else if (e.key === 'Tab') {
+          trapFocus(e);
+        }
+      }
+    }
+    document.addEventListener('keydown', onDocKeydown);
 
     // Chips de sugerencias — disparan directamente la respuesta pre-escrita
     // sin pasar por el endpoint (que devolveria 501 sin API key configurada).
@@ -569,7 +612,48 @@
       return 'Esa es una buena pregunta. Por ahora sólo puedo responder sobre los grandes temas del libro: el accidente, mi tío Kike, la escritura como refugio, el duelo. Pero te animo a leer un fragmento gratis en la <em>demo</em> — quizás encuentres mejor la respuesta ahí.';
     }
 
-    function addMessage(role: 'user' | 'bot', html: string) {
+    const HISTORY_KEY = 'ask-book-conversation-v1';
+
+    interface ChatMessage {
+      role: 'user' | 'bot';
+      html: string;
+    }
+
+    function getHistory(): ChatMessage[] {
+      try {
+        const stored = sessionStorage.getItem(HISTORY_KEY);
+        return stored ? JSON.parse(stored) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveMessageToHistory(role: 'user' | 'bot', html: string) {
+      try {
+        const history = getHistory();
+        history.push({ role, html });
+        sessionStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      } catch (e) {
+        console.error('Error saving history:', e);
+      }
+    }
+
+    function loadHistory() {
+      // Guard: cargar el historial una sola vez por DOM (evita duplicar)
+      if (messages!.dataset.historyLoaded === '1') return;
+      messages!.dataset.historyLoaded = '1';
+
+      const history = getHistory();
+      if (history.length > 0) {
+        // Si ya hubo conversación, ocultar las sugerencias iniciales
+        if (suggestions) suggestions.style.display = 'none';
+        history.forEach((msg) => {
+          addMessage(msg.role, msg.html, false);
+        });
+      }
+    }
+
+    function addMessage(role: 'user' | 'bot', html: string, saveToHistory = true) {
       const div = document.createElement('div');
       div.className = `ask-msg ask-msg-${role}`;
       div.innerHTML = `
@@ -580,7 +664,57 @@
       `;
       messages!.appendChild(div);
       messages!.scrollTop = messages!.scrollHeight;
+      
+      if (saveToHistory) {
+        saveMessageToHistory(role, html);
+      }
       return div;
+    }
+
+    function typeMessage(role: 'user' | 'bot', html: string, saveToHistory = true) {
+      const div = document.createElement('div');
+      div.className = `ask-msg ask-msg-${role}`;
+      div.innerHTML = `
+        <div class="ask-msg-meta">
+          <span class="ask-msg-author">${role === 'bot' ? '29 de Mayo · IA' : 'Tú'}</span>
+        </div>
+        <p class="typing-text"></p>
+      `;
+      messages!.appendChild(div);
+      messages!.scrollTop = messages!.scrollHeight;
+
+      const textContainer = div.querySelector('.typing-text') as HTMLElement;
+      let i = 0;
+      
+      return new Promise<void>((resolve) => {
+        function tick() {
+          if (i < html.length) {
+            if (html[i] === '<') {
+              const nextClose = html.indexOf('>', i);
+              if (nextClose !== -1) {
+                textContainer.innerHTML = html.substring(0, nextClose + 1);
+                i = nextClose + 1;
+              } else {
+                textContainer.innerHTML = html.substring(0, i + 1);
+                i++;
+              }
+            } else {
+              textContainer.innerHTML = html.substring(0, i + 1);
+              i++;
+            }
+            messages!.scrollTop = messages!.scrollHeight;
+            setTimeout(tick, 14);
+          } else {
+            textContainer.innerHTML = html;
+            messages!.scrollTop = messages!.scrollHeight;
+            if (saveToHistory) {
+              saveMessageToHistory(role, html);
+            }
+            resolve();
+          }
+        }
+        tick();
+      });
     }
 
     function addTyping() {
@@ -593,7 +727,7 @@
     }
 
     async function sendQuestion(q: string, fromChip = false) {
-      addMessage('user', q.replace(/</g, '&lt;'));
+      addMessage('user', q.replace(/</g, '&lt;'), true);
       input.value = '';
 
       const typing = addTyping();
@@ -601,10 +735,8 @@
       let reply = '';
 
       if (fromChip) {
-        // Chip click: usar directamente la respuesta pre-escrita (rapido)
         reply = findFallbackReply(q);
       } else {
-        // Pregunta libre: intentar el endpoint de IA, fallback si no hay API key
         try {
           const res = await fetch('/api/ask-book', {
             method: 'POST',
@@ -623,11 +755,11 @@
         }
       }
 
-      // Delay corto para sensacion natural de "escribiendo"
-      const delay = fromChip ? 550 : Math.min(700 + reply.length * 3, 1800);
+      const delay = fromChip ? 500 : Math.min(600 + reply.length * 2, 1400);
       setTimeout(() => {
         typing.remove();
-        addMessage('bot', reply);
+        // Fade-in instantáneo (CSS .ask-msg) en vez de tecleo lento de 4s
+        addMessage('bot', reply, true);
       }, delay);
     }
 
@@ -637,7 +769,44 @@
       if (!q) return;
       sendQuestion(q, /* fromChip */ false);
     });
+
+    resetBtn?.addEventListener('click', () => {
+      try {
+        sessionStorage.removeItem(HISTORY_KEY);
+        messages!.dataset.historyLoaded = '';
+      } catch (e) {
+        console.error(e);
+      }
+      
+      // Borrar solo los mensajes de conversación, conservando bienvenida + chips
+      messages!.querySelectorAll('.ask-msg').forEach((m, i) => {
+        if (i > 0) m.remove(); // i=0 es la bienvenida hardcodeada
+      });
+
+      // Restaurar sugerencias visibles y sin marcar
+      if (suggestions) {
+        suggestions.style.display = '';
+        suggestions.querySelectorAll<HTMLButtonElement>('.ask-chip').forEach((chip) => {
+          chip.classList.remove('used');
+        });
+      }
+
+      // Permitir recargar historial limpio si se reabre
+      messages!.dataset.historyLoaded = '1';
+    });
+
+    // Cargar historial en inicio (una sola vez por DOM)
+    loadHistory();
+
+    // Registrar limpieza: quitar listeners globales para no acumularlos
+    askCleanup = () => {
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('keydown', onDocKeydown);
+    };
   }
 
   document.addEventListener('astro:page-load', initAskBook);
+  document.addEventListener('astro:before-swap', () => {
+    if (askCleanup) { askCleanup(); askCleanup = null; }
+  });
 </script>

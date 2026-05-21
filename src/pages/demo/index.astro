@@ -353,7 +353,7 @@ const total = paginas.length;
       height: 100%;
       transform-style: preserve-3d;
       /* Animación más fluida con curva de papel real */
-      transition: transform 1.1s cubic-bezier(0.45, 0.05, 0.35, 1);
+      transition: transform 1.0s cubic-bezier(0.45, 0.05, 0.35, 1);
       will-change: transform;
       pointer-events: none;
       z-index: 25;
@@ -417,7 +417,7 @@ const total = paginas.length;
       background: linear-gradient(to left, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%);
       opacity: 0;
       pointer-events: none;
-      animation: flip-shadow 1.1s ease-in-out;
+      animation: flip-shadow 1.0s ease-in-out;
     }
     @keyframes flip-shadow {
       0%   { opacity: 0; }
@@ -892,16 +892,29 @@ const total = paginas.length;
         );
       }
 
+      function isMobileWidth() {
+        return window.innerWidth <= 720;
+      }
+
       function renderStatic() {
-        pageLeftEl.innerHTML  = buildPageHTML(pages[leftIdx]);
-        pageRightEl.innerHTML = buildPageHTML(pages[leftIdx + 1]);
+        if (isMobileWidth()) {
+          pageRightEl.innerHTML = buildPageHTML(pages[leftIdx]);
+          pageLeftEl.innerHTML  = '';
+        } else {
+          if (leftIdx % 2 !== 0) {
+            leftIdx = Math.max(0, leftIdx - 1);
+          }
+          pageLeftEl.innerHTML  = buildPageHTML(pages[leftIdx]);
+          pageRightEl.innerHTML = buildPageHTML(pages[leftIdx + 1]);
+        }
       }
 
       function updateProgress() {
-        const current = Math.min(leftIdx + 2, total);
+        const isMobile = isMobileWidth();
+        const current = isMobile ? (leftIdx + 1) : Math.min(leftIdx + 2, total);
         progressEl.textContent = current + ' / ' + total;
         prevBtn.disabled = leftIdx === 0;
-        nextBtn.disabled = leftIdx + 2 >= total;
+        nextBtn.disabled = false;
       }
 
       function showEnd() {
@@ -914,18 +927,22 @@ const total = paginas.length;
       }
 
       function flipForward() {
-        if (flipping || leftIdx + 2 >= total) {
-          if (leftIdx + 2 >= total) showEnd();
+        const isMobile = isMobileWidth();
+        const step = isMobile ? 1 : 2;
+        if (flipping || leftIdx + step >= total) {
+          if (leftIdx + step >= total) showEnd();
           return;
         }
         flipping = true;
         if (hintEl) hintEl.classList.add('gone');
 
-        // La hoja que se voltea muestra:
-        // - Frente: la página derecha actual (pages[leftIdx + 1])
-        // - Dorso:  la próxima página izquierda (pages[leftIdx + 2])
-        leafFrontEl.innerHTML = buildPageHTML(pages[leftIdx + 1]);
-        leafBackEl.innerHTML  = buildPageHTML(pages[leftIdx + 2]);
+        if (isMobile) {
+          leafFrontEl.innerHTML = buildPageHTML(pages[leftIdx]);
+          leafBackEl.innerHTML  = buildPageHTML(pages[leftIdx + 1]);
+        } else {
+          leafFrontEl.innerHTML = buildPageHTML(pages[leftIdx + 1]);
+          leafBackEl.innerHTML  = buildPageHTML(pages[leftIdx + 2]);
+        }
 
         // Configurar hoja para flip forward
         flipLeafEl.style.display = 'block';
@@ -937,22 +954,21 @@ const total = paginas.length;
         flipLeafEl.classList.add('flipping');
 
         setTimeout(() => {
-          leftIdx += 2;
+          leftIdx += step;
           flipLeafEl.style.display = 'none';
           flipLeafEl.classList.remove('flipping');
           renderStatic();
           updateProgress();
           flipping = false;
-        }, 1020);
+        }, 1000);
       }
 
       function flipBackward() {
+        const isMobile = isMobileWidth();
+        const step = isMobile ? 1 : 2;
         if (flipping || leftIdx === 0) return;
         flipping = true;
 
-        // La hoja vuelve:
-        // - Frente (visible al final, lado derecho): página derecha anterior (pages[leftIdx - 1])
-        // - Dorso (lado izquierdo durante flip): la página izquierda actual (pages[leftIdx])
         leafFrontEl.innerHTML = buildPageHTML(pages[leftIdx - 1]);
         leafBackEl.innerHTML  = buildPageHTML(pages[leftIdx]);
 
@@ -964,13 +980,13 @@ const total = paginas.length;
         flipLeafEl.classList.add('flipping');
 
         setTimeout(() => {
-          leftIdx -= 2;
+          leftIdx -= step;
           flipLeafEl.style.display = 'none';
           flipLeafEl.classList.remove('flipping');
           renderStatic();
           updateProgress();
           flipping = false;
-        }, 1020);
+        }, 1000);
       }
 
       // Eventos
@@ -981,6 +997,15 @@ const total = paginas.length;
       // Click en la página derecha avanza, en la izquierda retrocede
       pageRightEl.addEventListener('click', flipForward);
       pageLeftEl.addEventListener('click', flipBackward);
+
+      // Redimensionado
+      window.addEventListener('resize', () => {
+        if (!isMobileWidth() && leftIdx % 2 !== 0) {
+          leftIdx = Math.max(0, leftIdx - 1);
+        }
+        renderStatic();
+        updateProgress();
+      });
 
       // ── Focus mode ──────────────────────────────────────
       const focusToggle  = document.getElementById('focus-toggle');

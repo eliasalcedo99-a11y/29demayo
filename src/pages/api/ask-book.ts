@@ -50,12 +50,21 @@ INSTRUCCIONES:
 - Cierra invitando a leer el libro o la demo gratuita
 `;
 
+export interface AskBookRequest {
+  question: string;
+}
+
+export type AskBookResponse =
+  | { reply: string }
+  | { error: string; hint?: string };
+
 export const POST: APIRoute = async ({ request }) => {
-  const body = await request.json().catch(() => null);
+  const body = (await request.json().catch(() => null)) as AskBookRequest | null;
   const question: string | undefined = body?.question?.trim();
 
   if (!question || question.length > 500) {
-    return new Response(JSON.stringify({ error: 'Pregunta inválida.' }), {
+    const errorBody: AskBookResponse = { error: 'Pregunta inválida.' };
+    return new Response(JSON.stringify(errorBody), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -65,10 +74,11 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (!apiKey) {
     // No API key configured — devuelve 501 para que el cliente use fallbacks
-    return new Response(JSON.stringify({
+    const errorBody: AskBookResponse = {
       error: 'IA no configurada en este entorno.',
       hint:  'Configura ANTHROPIC_API_KEY en variables de entorno.',
-    }), {
+    };
+    return new Response(JSON.stringify(errorBody), {
       status: 501,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -96,23 +106,26 @@ export const POST: APIRoute = async ({ request }) => {
     if (!claudeRes.ok) {
       const errText = await claudeRes.text();
       console.error('Claude API error:', errText);
-      return new Response(JSON.stringify({ error: 'Error al consultar IA.' }), {
+      const errorBody: AskBookResponse = { error: 'Error al consultar IA.' };
+      return new Response(JSON.stringify(errorBody), {
         status: 502,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    const data  = await claudeRes.json();
+    const data  = await claudeRes.json() as any;
     const reply = data?.content?.[0]?.text ?? '';
 
-    return new Response(JSON.stringify({ reply }), {
+    const responseBody: AskBookResponse = { reply };
+    return new Response(JSON.stringify(responseBody), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
 
   } catch (err) {
     console.error('Ask-book error:', err);
-    return new Response(JSON.stringify({ error: 'Error al procesar.' }), {
+    const errorBody: AskBookResponse = { error: 'Error al procesar.' };
+    return new Response(JSON.stringify(errorBody), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

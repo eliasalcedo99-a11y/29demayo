@@ -5,15 +5,15 @@ export default {
     extend: {
       colors: {
         /* ── Noir literario + Granate ──────────────────────────── */
-        bg:           '#080608',
-        surface:      '#110D0E',
-        amber:        '#A31515',   // granate profundo
-        'amber-light':'#C41E1E',   // crimson vivo
-        text:         '#F2EAE0',   // crema cálida
-        muted:        '#8A7A74',   // taupe cálido
-        border:       '#231212',   // borde oscuro cálido
-        'bg-light':   '#F0EDE8',   // papel
-        'text-light': '#180A0A',   // tinta oscura sobre papel
+        bg:           'var(--color-bg)',
+        surface:      'var(--color-surface)',
+        amber:        'var(--color-amber)',
+        'amber-light':'var(--color-amber-light)',
+        text:         'var(--color-text)',
+        muted:        'var(--color-muted)',
+        border:       'var(--color-border)',
+        'bg-light':   'var(--color-bg-light)',
+        'text-light': 'var(--color-text-light)',
       },
       fontFamily: {
         serif:  ['"Cormorant Garamond"', '"Playfair Display"', 'Georgia', 'serif'],
