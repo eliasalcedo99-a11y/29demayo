@@ -26,7 +26,7 @@ import { posts } from '../data/posts';
 
     <!-- Grid -->
     <div class="grid md:grid-cols-3 gap-8">
-      {posts.map((post, i) => (
+      {posts.slice(0, 2).map((post, i) => (
         <article
           class="blog-card group relative overflow-hidden bg-[var(--color-bg)] rounded-sm opacity-0"
           style={`--delay: ${i * 0.12}s`}

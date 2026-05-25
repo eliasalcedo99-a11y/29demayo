@@ -34,7 +34,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Send welcome email
     await resend.emails.send({
-      from:    '29 de Mayo <hola@29demayo.es>',
+      from:    'Elías Alcedo <eliasalcedoprof@gmail.com>',
       to:      email,
       subject: 'Bienvenido/a — 29 de Mayo',
       html: `

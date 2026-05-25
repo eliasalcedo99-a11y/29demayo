@@ -165,13 +165,19 @@
     100% { transform: scale(2.2); opacity: 0; }
   }
 
-  /* Mobile: sólo icono */
+  /* Mobile: sólo icono + panel fullscreen */
   @media (max-width: 720px) {
     .ask-text { display: none; }
     .ask-book-trigger {
       padding: 0.75rem;
       bottom: 1.25rem;
       left: 1.25rem;
+    }
+    .ask-modal { padding: 0.5rem; align-items: flex-end; }
+    .ask-panel {
+      max-width: 100%;
+      height: min(88dvh, 600px);
+      border-radius: 8px 8px 2px 2px;
     }
   }
 
@@ -212,6 +218,7 @@
     width: 100%;
     max-width: 36rem;
     height: min(82vh, 640px);
+    height: min(82dvh, 640px); /* dvh se adapta al teclado virtual en móvil */
     display: flex;
     flex-direction: column;
     background: rgba(17,13,14,0.96);

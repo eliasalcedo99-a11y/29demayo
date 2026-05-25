@@ -122,10 +122,10 @@
           >29</h2>
         </div>
 
-        <!-- "MAYO 2023" como mini-créditos asimétricos a la derecha del 29 -->
-        <div class="absolute opacity-0"
+        <!-- "MAYO 2023" como mini-créditos asimétricos a la derecha del 29 — oculto en móvil pequeño -->
+        <div class="absolute opacity-0 hidden sm:flex"
              id="fecha-mes-stack"
-             style="right: 4%; top: 12%; bottom: 12%; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end;">
+             style="right: 4%; top: 12%; bottom: 12%; flex-direction:column; justify-content:space-between; align-items:flex-end;">
           <!-- Mayo gigante vertical -->
           <span
             class="font-serif"
@@ -402,71 +402,54 @@
 
     scrollTriggerInstance = ScrollTrigger.create({
       trigger: '#seccion-fecha',
-      start:   'top 55%',
+      start:   'top 85%',
       once:    true,
       onEnter: () => {
         if (prefersReducedMotion) return;
 
         const tl = gsap.timeline();
 
-        // 1. Apertura periodística
-        tl.to('#fecha-newshead-line', { opacity: 1, y: 0, duration: 0.65, ease: 'power3.out' })
-          .to('#fecha-metadata',      { opacity: 1, y: 0, duration: 0.65, ease: 'power3.out' }, '<')
-          .to('#fecha-overture',      { opacity: 1, y: 0, duration: 0.85, ease: 'power3.out' }, '-=0.35');
+        // 1. Apertura periodística — todo a la vez
+        tl.to('#fecha-newshead-line', { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' })
+          .to('#fecha-metadata',      { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }, '<')
+          .to('#fecha-overture',      { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, '<0.1');
 
-        // 2. Carretera SVG se dibuja sutilmente desde el horizonte
-        tl.to('#fecha-road', { opacity: 0.7, duration: 0.4 }, '-=0.4')
-          .to('#road-reveal-rect', {
-            height: 350,
-            duration: 1.6,
-            ease: 'power2.out',
-          }, '<')
-          .to('#road-cut', {
-            strokeDashoffset: 0,
-            duration: 0.65,
-            ease: 'expo.out',
-          }, '-=0.45');
+        // 2. Carretera SVG
+        tl.to('#fecha-road', { opacity: 0.7, duration: 0.3 }, '-=0.2')
+          .to('#road-reveal-rect', { height: 350, duration: 0.7, ease: 'power2.out' }, '<')
+          .to('#road-cut', { strokeDashoffset: 0, duration: 0.4, ease: 'expo.out' }, '-=0.3');
 
-        // 3. EL "29" gigante (climax visual)
-        tl.to('#fecha-num',       { opacity: 1, yPercent: 0, duration: 1.2, ease: 'expo.out' }, '+=0.1')
-          .to('#fecha-mes-stack', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.5');
+        // 3. "29" gigante
+        tl.to('#fecha-num',       { opacity: 1, yPercent: 0, duration: 0.6, ease: 'expo.out' }, '-=0.1')
+          .to('#fecha-mes-stack', { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }, '-=0.3');
 
-        // 4. La cicatriz horizontal granate
-        tl.to('#fecha-scar', {
-          width: '16rem',
-          duration: 0.9,
-          ease: 'expo.out',
-        }, '-=0.3')
-        .to('#fecha-scar-label', { opacity: 1, duration: 0.5 }, '-=0.2');
+        // 4. Cicatriz granate
+        tl.to('#fecha-scar',      { width: '16rem', duration: 0.45, ease: 'expo.out' }, '-=0.2')
+          .to('#fecha-scar-label',{ opacity: 1, duration: 0.3 }, '-=0.1');
 
         // 5. Timeline eyebrow
-        tl.to('#fecha-timeline-eyebrow', { opacity: 1, x: 0, duration: 0.7, ease: 'power3.out' }, '+=0.3');
+        tl.to('#fecha-timeline-eyebrow', { opacity: 1, x: 0, duration: 0.4, ease: 'power3.out' }, '-=0.1');
 
-        // 6. Cronología — eventos uno tras otro, dejando respirar
+        // 6. Cronología — stagger corto, fluido
         tl.to('.fecha-event', {
           opacity: 1,
           x: 0,
-          duration: 0.75,
+          duration: 0.4,
           ease: 'power3.out',
-          stagger: 0.45, // pausa dramática entre eventos
-        }, '-=0.3');
+          stagger: 0.12,
+        }, '-=0.2');
 
-        // 7. Monumento — frases clímax aparecen tras la cronología
-        tl.to('#fecha-monument-line', {
+        // 7. Monumento
+        tl.to(['#fecha-monument-line', '#fecha-monument-line-r'], {
           width: '100%',
-          duration: 0.7,
+          duration: 0.4,
           ease: 'expo.out',
-        }, '+=0.4');
-        tl.to('#fecha-monument-line-r', {
-          width: '100%',
-          duration: 0.7,
-          ease: 'expo.out',
-        }, '<');
-        tl.to('#fecha-monument', { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out' }, '-=0.4');
+        }, '-=0.1');
+        tl.to('#fecha-monument', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2');
 
         // 8. Cierre + CTA
-        tl.to('#fecha-quote',    { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '+=0.3');
-        tl.to('#fecha-cta-wrap', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4');
+        tl.to('#fecha-quote',    { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }, '-=0.1')
+          .to('#fecha-cta-wrap', { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }, '-=0.2');
       },
     });
 
