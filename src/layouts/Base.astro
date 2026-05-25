@@ -23,7 +23,9 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://29demayo.es');
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" sizes="any" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="canonical" href={canonicalURL} />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#080608" />
@@ -70,7 +72,19 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://29demayo.es');
 
       // Lenis singleton — created once, survives ViewTransitions
       let lenis: InstanceType<typeof Lenis> | null = null;
-      let cursorReady = false;
+      let cursorInitialized = false;
+      let entered = false;
+
+      // Module-level cursor elements
+      let dot: HTMLElement | null = null;
+      let ring: HTMLElement | null = null;
+      let label: HTMLElement | null = null;
+      let trail: HTMLElement | null = null;
+
+      let moveRingX: any = null;
+      let moveRingY: any = null;
+      let moveLabelX: any = null;
+      let moveLabelY: any = null;
 
       function boot() {
         // ── Smooth scroll ─────────────────────────────────────
@@ -104,89 +118,112 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://29demayo.es');
           });
         }
 
-        // ── Cursor follower expresivo (pointer devices only, init once) ─
-        if (!cursorReady && matchMedia('(pointer: fine)').matches) {
-          cursorReady = true;
-          const dot   = document.getElementById('cursor-dot');
-          const ring  = document.getElementById('cursor-ring');
-          const label = document.getElementById('cursor-label');
-          const trail = document.getElementById('cursor-trail');
+        // ── Cursor follower expresivo (pointer devices only) ─
+        if (matchMedia('(pointer: fine)').matches) {
+          // Re-query the elements in the new page DOM
+          dot   = document.getElementById('cursor-dot');
+          ring  = document.getElementById('cursor-ring');
+          label = document.getElementById('cursor-label');
+          trail = document.getElementById('cursor-trail');
 
           if (dot && ring && label && trail) {
             document.body.classList.add('has-custom-cursor');
             gsap.set([dot, ring, label], { xPercent: -50, yPercent: -50, opacity: 0 });
+            entered = false; // Reset entered so first mousemove on new page sets opacity to 1
 
-            const moveDotX   = gsap.quickTo(dot,   'x', { duration: 0.05 });
-            const moveDotY   = gsap.quickTo(dot,   'y', { duration: 0.05 });
-            const moveRingX  = gsap.quickTo(ring,  'x', { duration: 0.35, ease: 'power3.out' });
-            const moveRingY  = gsap.quickTo(ring,  'y', { duration: 0.35, ease: 'power3.out' });
-            const moveLabelX = gsap.quickTo(label, 'x', { duration: 0.45, ease: 'power3.out' });
-            const moveLabelY = gsap.quickTo(label, 'y', { duration: 0.45, ease: 'power3.out' });
+            // Re-initialize quickTo animators targeting the new DOM elements
+            moveRingX = gsap.quickTo(ring, 'x', { duration: 0.08, ease: 'power3.out' });
+            moveRingY = gsap.quickTo(ring, 'y', { duration: 0.08, ease: 'power3.out' });
+            moveLabelX = gsap.quickTo(label, 'x', { duration: 0.1, ease: 'power3.out' });
+            moveLabelY = gsap.quickTo(label, 'y', { duration: 0.1, ease: 'power3.out' });
 
-            // ── Trail: pequeñas chispitas que se quedan atrás ──
-            let lastSpawn = 0;
-            let mouseSpeed = 0;
-            let lastX = 0, lastY = 0;
+            if (!cursorInitialized) {
+              cursorInitialized = true;
 
-            function spawnTrailDot(x: number, y: number) {
-              const d = document.createElement('span');
-              d.className = 'cursor-spark';
-              d.style.left = x + 'px';
-              d.style.top  = y + 'px';
-              trail!.appendChild(d);
-              setTimeout(() => d.remove(), 900);
-            }
+              // ── Trail: pequeñas chispitas que se quedan atrás ──
+              let lastSpawn = 0;
+              let mouseSpeed = 0;
+              let lastX = 0, lastY = 0;
 
-            let entered = false;
-            window.addEventListener('mousemove', (e) => {
-              if (!entered) { gsap.to([dot, ring], { opacity: 1, duration: 0.4 }); entered = true; }
-
-              // Velocidad del ratón (para spawn de partículas)
-              const dx = e.clientX - lastX;
-              const dy = e.clientY - lastY;
-              mouseSpeed = Math.sqrt(dx*dx + dy*dy);
-              lastX = e.clientX; lastY = e.clientY;
-
-              moveDotX(e.clientX);  moveDotY(e.clientY);
-              moveRingX(e.clientX); moveRingY(e.clientY);
-              moveLabelX(e.clientX + 22); moveLabelY(e.clientY + 22);
-
-              // Trail solo cuando se mueve rápido
-              const now = performance.now();
-              if (mouseSpeed > 8 && now - lastSpawn > 35) {
-                spawnTrailDot(e.clientX, e.clientY);
-                lastSpawn = now;
+              function spawnTrailDot(x: number, y: number) {
+                if (!trail) return;
+                const d = document.createElement('span');
+                d.className = 'cursor-spark';
+                d.style.left = x + 'px';
+                d.style.top  = y + 'px';
+                trail.appendChild(d);
+                setTimeout(() => d.remove(), 900);
               }
-            });
 
-            const inflate = () => {
-              gsap.to(ring, { scale: 1.9, borderColor: 'rgba(163,21,21,0.85)', duration: 0.25 });
-              gsap.to(dot,  { scale: 0.4, duration: 0.25 });
-            };
-            const deflate = () => {
-              gsap.to(ring,  { scale: 1, borderColor: 'rgba(163,21,21,0.45)', duration: 0.35 });
-              gsap.to(dot,   { scale: 1, duration: 0.35 });
-              gsap.to(label, { opacity: 0, duration: 0.2 });
-            };
+              window.addEventListener('mousemove', (e) => {
+                if (!dot || !ring) return;
+                if (!entered) {
+                  gsap.to([dot, ring], { opacity: 1, duration: 0.4 });
+                  entered = true;
+                }
 
-            // Cursor label contextual: muestra texto al hover de elementos con data-cursor
-            const showLabel = (text: string) => {
-              label.textContent = text;
-              gsap.to(label, { opacity: 1, duration: 0.25 });
-            };
+                // Velocidad del ratón (para spawn de partículas)
+                const dx = e.clientX - lastX;
+                const dy = e.clientY - lastY;
+                mouseSpeed = Math.sqrt(dx*dx + dy*dy);
+                lastX = e.clientX; lastY = e.clientY;
 
-            document.addEventListener('mouseover', (e) => {
-              const target = (e.target as Element)?.closest('[data-cursor], a, button, [role="button"], label');
-              if (!target) return;
-              inflate();
-              const cursorText = (target as HTMLElement).dataset.cursor;
-              if (cursorText) showLabel(cursorText);
-            });
-            document.addEventListener('mouseout', (e) => {
-              if ((e.target as Element)?.closest('a, button, [role="button"], label, [data-cursor]')) deflate();
-            });
-            document.addEventListener('mousedown', () => gsap.to([dot, ring], { scale: 0.7, duration: 0.1 }));
-            document.addEventListener('mouseup',   () => gsap.to([dot, ring], { scale: 1, duration: 0.2 }));
+                // Drive elements via GPU-accelerated transforms
+                gsap.set(dot, { x: e.clientX, y: e.clientY });
+
+                if (moveRingX && moveRingY) {
+                  moveRingX(e.clientX);
+                  moveRingY(e.clientY);
+                }
+                if (label && moveLabelX && moveLabelY) {
+                  moveLabelX(e.clientX + 22);
+                  moveLabelY(e.clientY + 22);
+                }
+
+                // Trail solo cuando se mueve rápido
+                const now = performance.now();
+                if (mouseSpeed > 8 && now - lastSpawn > 35) {
+                  spawnTrailDot(e.clientX, e.clientY);
+                  lastSpawn = now;
+                }
+              });
+
+              const inflate = () => {
+                if (!ring || !dot) return;
+                gsap.to(ring, { scale: 1.9, borderColor: 'rgba(163,21,21,0.85)', duration: 0.25 });
+                gsap.to(dot,  { scale: 0.4, duration: 0.25 });
+              };
+              const deflate = () => {
+                if (!ring || !dot || !label) return;
+                gsap.to(ring,  { scale: 1, borderColor: 'rgba(163,21,21,0.45)', duration: 0.35 });
+                gsap.to(dot,   { scale: 1, duration: 0.35 });
+                gsap.to(label, { opacity: 0, duration: 0.2 });
+              };
+
+              // Cursor label contextual: muestra texto al hover de elementos con data-cursor
+              const showLabel = (text: string) => {
+                if (!label) return;
+                label.textContent = text;
+                gsap.to(label, { opacity: 1, duration: 0.25 });
+              };
+
+              document.addEventListener('mouseover', (e) => {
+                const target = (e.target as Element)?.closest('[data-cursor], a, button, [role="button"], label');
+                if (!target) return;
+                inflate();
+                const cursorText = (target as HTMLElement).dataset.cursor;
+                if (cursorText) showLabel(cursorText);
+              });
+              document.addEventListener('mouseout', (e) => {
+                if ((e.target as Element)?.closest('a, button, [role="button"], label, [data-cursor]')) deflate();
+              });
+              document.addEventListener('mousedown', () => {
+                if (dot && ring) gsap.to([dot, ring], { scale: 0.7, duration: 0.1 });
+              });
+              document.addEventListener('mouseup',   () => {
+                if (dot && ring) gsap.to([dot, ring], { scale: 1, duration: 0.2 });
+              });
+            }
 
             // ── Cursor cambia de color al pasar por secciones (data-cursor-tone) ──
             const sectionTones: Record<string, string> = {
@@ -199,12 +236,14 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://29demayo.es');
               if (!tone) return;
               const ro = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
-                  if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
-                    dot.style.background  = tone;
-                    ring.style.borderColor = tone + 'aa';
-                  } else if (!entry.isIntersecting) {
-                    dot.style.background  = '#C41E1E';
-                    ring.style.borderColor = 'rgba(163,21,21,0.45)';
+                  if (dot && ring) {
+                    if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
+                      dot.style.background  = tone;
+                      ring.style.borderColor = tone + 'aa';
+                    } else if (!entry.isIntersecting) {
+                      dot.style.background  = '#C41E1E';
+                      ring.style.borderColor = 'rgba(163,21,21,0.45)';
+                    }
                   }
                 });
               }, { threshold: [0, 0.4, 0.8] });
@@ -214,9 +253,6 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://29demayo.es');
         }
 
         // ── Scroll velocity: aplica blur sutil cuando se scrollea rápido ──
-        if (!cursorReady && !document.body.dataset.velocityWired) {
-          // wiring se hace una sola vez (independiente del cursor)
-        }
         if (!document.body.dataset.velocityWired) {
           document.body.dataset.velocityWired = '1';
           let lastScrollY = window.scrollY;

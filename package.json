@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@astrojs/netlify": "^7.0.10",
+    "@astrojs/sitemap": "^3.7.2",
     "@astrojs/tailwind": "^5.1.0",
     "@studio-freight/lenis": "^1.0.42",
     "@tsparticles/engine": "^4.0.5",
