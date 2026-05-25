@@ -143,19 +143,19 @@
         const final = getElapsed();
 
         // Reveal escalonado: cada línea respira tras la anterior
-        gsap.to('#cnt-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' });
-        gsap.to('#cnt-line-1',  { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.4 });
-        gsap.to('#cnt-line-2',  { opacity: 1, y: 0, duration: 0.95, ease: 'power3.out', delay: 0.7 });
-        gsap.to('#cnt-line-3',  { opacity: 1, y: 0, duration: 0.85, ease: 'power3.out', delay: 1.6 });
-        gsap.to('#cnt-quote',   { opacity: 1, y: 0, duration: 0.95, ease: 'power3.out', delay: 2.4 });
+        gsap.to('#cnt-eyebrow', { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' });
+        gsap.to('#cnt-line-1',  { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out', delay: 0.15 });
+        gsap.to('#cnt-line-2',  { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', delay: 0.3 });
+        gsap.to('#cnt-line-3',  { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out', delay: 0.6 });
+        gsap.to('#cnt-quote',   { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', delay: 1.0 });
 
         // Count-up del número de días (el héroe emocional)
         const objD = { v: 0 };
         const tweenD = gsap.to(objD, {
           v: final.dias,
-          duration: 2.3,
+          duration: 1.2,
           ease: 'power3.out',
-          delay: 0.9,
+          delay: 0.4,
           onUpdate: () => {
             if (elDias) elDias.textContent = Math.floor(objD.v).toLocaleString('es-ES');
           },
@@ -166,8 +166,8 @@
         const objH = { v: 0 };
         const tweenH = gsap.to(objH, {
           v: final.horas,
-          duration: 2.0,
-          delay: 1.7,
+          duration: 1.0,
+          delay: 0.7,
           ease: 'power3.out',
           onUpdate: () => {
             if (elHoras) elHoras.textContent = Math.floor(objH.v).toLocaleString('es-ES');
@@ -178,8 +178,8 @@
         const objM = { v: 0 };
         const tweenM = gsap.to(objM, {
           v: final.minutos,
-          duration: 2.2,
-          delay: 1.9,
+          duration: 1.1,
+          delay: 0.8,
           ease: 'power3.out',
           onUpdate: () => {
             if (elMinutos) elMinutos.textContent = Math.floor(objM.v).toLocaleString('es-ES');

@@ -33,20 +33,20 @@ const amazonPaperback = 'https://amzn.to/4tIcIo0';
        style="background: linear-gradient(to right, rgba(8,6,8,0.7) 0%, rgba(8,6,8,0.2) 45%, transparent 70%);"></div>
 
   <!-- ── Top: barra editorial con tagline + autor ── -->
-  <div class="absolute top-0 left-0 right-0 z-20 px-8 md:px-16 pt-8 md:pt-10">
-    <div class="max-w-7xl mx-auto flex items-center gap-4">
-      <!-- Línea decorativa que crece -->
-      <div id="hero-rule" class="h-px"
-           style="background:#A31515; width:0; max-width:5rem; transition: none;"></div>
-      <div class="flex flex-col gap-1.5 min-w-0">
+  <div class="absolute top-0 left-0 right-0 z-20 px-6 md:px-16 pt-8 md:pt-10">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center gap-2 md:gap-4 items-center text-center md:text-left">
+      <!-- Línea decorativa — solo desktop -->
+      <div id="hero-rule" class="h-px hidden md:block"
+           style="background:#A31515; width:0; max-width:5rem; transition: none; flex-shrink:0;"></div>
+      <div class="flex flex-col gap-1">
         <p id="hero-tagline"
-           class="opacity-0 whitespace-nowrap"
-           style="font-family:'DM Mono',monospace; font-size:0.7rem; letter-spacing:0.45em; color:#A09078; text-transform:uppercase;">
+           class="opacity-0"
+           style="font-family:'DM Mono',monospace; font-size:clamp(0.55rem,1.8vw,0.7rem); letter-spacing:0.3em; color:#A09078; text-transform:uppercase; line-height:1.4;">
           Un viaje de duelo · familia · resiliencia
         </p>
         <p id="hero-author"
-           class="opacity-0 whitespace-nowrap"
-           style="font-family:'DM Mono',monospace; font-size:0.75rem; letter-spacing:0.38em; color:#C41E1E; text-transform:uppercase; font-weight: 400;">
+           class="opacity-0"
+           style="font-family:'DM Mono',monospace; font-size:clamp(0.6rem,2vw,0.75rem); letter-spacing:0.28em; color:#C41E1E; text-transform:uppercase; font-weight:400;">
           Elías Alcedo Espinosa
         </p>
       </div>
@@ -123,14 +123,10 @@ const amazonPaperback = 'https://amzn.to/4tIcIo0';
     const video   = document.getElementById('hero-video') as HTMLVideoElement | null;
     const section = document.getElementById('hero');
 
-    // ── Vídeo: sólo en desktop ────────────────────────────────────
-    if (video && !window.matchMedia('(max-width: 768px)').matches) {
+    // ── Vídeo: desktop + móvil ───────────────────────────────────
+    if (video) {
       video.play().catch(() => {});
-      gsap.to(video, { opacity: 1, duration: 2.2, ease: 'power2.inOut', delay: 0.1 });
-    } else if (video) {
-      video.pause();
-      video.src = '';
-      video.load();
+      gsap.to(video, { opacity: 1, duration: 1.2, ease: 'power2.inOut', delay: 0.1 });
     }
 
     // ── Partículas ambient (tonos cálidos como brasas) ────────────
@@ -194,44 +190,46 @@ const amazonPaperback = 'https://amzn.to/4tIcIo0';
         yPercent: 0,
         opacity:  1,
         rotateZ:  0,
-        duration: 1.25,
-        stagger:  0.055,
-        ease:     'expo.out',  // ease-out-expo: más cinematográfico
-        delay:    1.0,
+        duration: 0.7,
+        stagger:  0.03,
+        ease:     'expo.out',
+        delay:    0.25,
       });
     }
 
-    // ── Línea editorial que crece desde la izquierda ──────────
-    gsap.to('#hero-rule', {
-      width: '5rem',
-      duration: 0.9,
-      ease: 'expo.out',
-      delay: 0.4,
-    });
+    // ── Línea editorial (solo desktop) ────────────────────────
+    if (window.matchMedia('(min-width: 768px)').matches) {
+      gsap.to('#hero-rule', {
+        width: '5rem',
+        duration: 0.5,
+        ease: 'expo.out',
+        delay: 0.15,
+      });
+    }
 
     // ── Tagline + autor desliza desde arriba ──────────────────
     gsap.set(['#hero-tagline', '#hero-author'], { y: -8 });
     gsap.to(['#hero-tagline', '#hero-author'], {
       opacity: 1,
       y: 0,
-      duration: 0.85,
-      stagger: 0.18,
+      duration: 0.5,
+      stagger: 0.1,
       ease: 'expo.out',
-      delay: 0.6,
+      delay: 0.2,
     });
 
     // ── Elementos inferiores ──────────────────────────────────────
     gsap.set('#hero-buttons', { y: 14 });
-    gsap.to('#hero-quote-wrap', { opacity: 1, duration: 1.0, ease: 'power2.out', delay: 1.9 });
-    gsap.to('#hero-buttons',    { opacity: 1, y: 0, duration: 0.75, ease: 'power3.out', delay: 2.1 });
+    gsap.to('#hero-quote-wrap', { opacity: 1, duration: 0.55, ease: 'power2.out', delay: 0.7 });
+    gsap.to('#hero-buttons',    { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out', delay: 0.9 });
 
     // ── Scroll indicator ──────────────────────────────────────────
-    gsap.to('#hero-scroll', { opacity: 1, duration: 0.5, delay: 2.6 });
+    gsap.to('#hero-scroll', { opacity: 1, duration: 0.4, delay: 1.2 });
     gsap.to('#scroll-line', {
       scaleY: 1,
-      duration: 1.1,
+      duration: 0.7,
       ease: 'power3.out',
-      delay: 2.7,
+      delay: 1.3,
     });
     gsap.to('#scroll-line', {
       opacity: 0.35,
@@ -239,7 +237,7 @@ const amazonPaperback = 'https://amzn.to/4tIcIo0';
       repeat: -1,
       yoyo: true,
       ease: 'power1.inOut',
-      delay: 3.8,
+      delay: 2.0,
     });
 
     if (!section) return;
@@ -258,15 +256,15 @@ const amazonPaperback = 'https://amzn.to/4tIcIo0';
       });
     }
 
-    // ── Texto flota y se desvanece al hacer scroll ────────────────
-    gsap.to('#hero-title, #hero-quote-wrap, #hero-buttons', {
-      y: -110,
+    // ── Solo el título se desvanece al hacer scroll (cita y botones no) ──
+    gsap.to('#hero-title', {
+      y: -80,
       opacity: 0,
       ease: 'none',
       scrollTrigger: {
         trigger: section,
         start: 'top top',
-        end:   '55% top',
+        end:   '40% top',
         scrub: 1.2,
       },
     });
